@@ -1,15 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import { StoreProvider } from "easy-peasy";
+import "easy-peasy/proxy-polyfill";
+import React from "react";
+import "react-app-polyfill/ie11";
+import "react-app-polyfill/stable";
+import ReactDOM from "react-dom/client";
+import { AppV3 } from "./AppV3";
+import "./index.css";
+import reportWebVitals from "./reportWebVitals";
+import { store } from "./store/v3";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
-    <App />
+    <StoreProvider store={store}>
+      <AppV3 />
+    </StoreProvider>
   </React.StrictMode>
 );
 
