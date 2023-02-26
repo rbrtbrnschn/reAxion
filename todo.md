@@ -1,6 +1,5 @@
 # Alpha v.0.0.1:
 
-- fix controlled input value
 - refactor to proper files & naming
   -> delete v2
 - create calc method to calculate if guess is close enough instead of exact
@@ -16,6 +15,8 @@
 
 # Completed:
 
+- fix addguess on reaction.reactionStatus !== IS_OVER V
+- fix controlled input value V
 - refactor game flow to create random reactions, with next button. V
 - fix first reaction to be random V
 - create random times, debug show times in console V
