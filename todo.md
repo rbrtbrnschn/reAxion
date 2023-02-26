@@ -1,9 +1,8 @@
 # Alpha v.0.0.1:
 
-- highscore show session highscore & gameover screen
-
 # Completed:
 
+- highscore show session highscore & gameover screen V
 - game model & store V
   - difficulty V
     -> 3 failed attempts and your'e out V

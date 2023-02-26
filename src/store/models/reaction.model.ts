@@ -1,4 +1,4 @@
-import { action, Action, ThunkOn, thunkOn } from "easy-peasy";
+import { action, Action, thunk, Thunk, ThunkOn, thunkOn } from "easy-peasy";
 import { GuessStatus } from "../../interfaces/guess.interface";
 import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
 import { Injections } from "../injections";
@@ -7,7 +7,7 @@ import { StoreModel } from "../store";
 export interface ReactionModel {
   reaction: IReaction | null;
   history: IReaction[];
-  setReaction: Action<ReactionModel, IReaction>;
+  setReaction: Action<ReactionModel, IReaction | null>;
   setHistory: Action<ReactionModel, IReaction[]>;
 
   /* Setters */
@@ -19,6 +19,7 @@ export interface ReactionModel {
   /* Helpers */
   addGuess: Action<ReactionModel, number>;
   copyToHistory: Action<ReactionModel>;
+  handleGameOver: Thunk<ReactionModel, undefined, Injections, StoreModel>;
 
   /* Listeners */
   onAddGuess: ThunkOn<ReactionModel, any, StoreModel>;
@@ -61,6 +62,10 @@ export const reactionModel: ReactionModel = {
     if (!state.reaction) return;
     state.history.push(state.reaction);
   }),
+  handleGameOver: thunk((actions, _, { injections }) => {
+    actions.setReaction(null);
+    actions.setHistory([]);
+  }),
 
   /* Listeners */
   onAddGuess: thunkOn(
@@ -96,9 +101,13 @@ export const reactionModel: ReactionModel = {
   onSetReaction: thunkOn(
     (actions) => actions.setReaction,
     (_, target, { injections }) => {
-      injections.loggerService.debug(
-        "New Reaction with duration of: " + target.payload.duration + "ms"
-      );
+      if (target.payload) {
+        injections.loggerService.debug(
+          "New Reaction with duration of: " + target.payload?.duration + "ms"
+        );
+      } else {
+        injections.loggerService.debug("Set Reaction to null");
+      }
     }
   ),
   onSetReactionStatus: thunkOn(

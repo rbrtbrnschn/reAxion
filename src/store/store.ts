@@ -1,4 +1,5 @@
-import { createStore, createTypedHooks } from "easy-peasy";
+import { createStore, createTypedHooks, persist } from "easy-peasy";
+import { whenDebugging } from "../utils/whenDebugging";
 import { injections } from "./injections";
 import { GameModel, gameModel } from "./models/game.model";
 import { ReactionModel, reactionModel } from "./models/reaction.model";
@@ -12,10 +13,15 @@ const globalStoreModel: StoreModel = {
   game: gameModel,
 };
 
-export const store = createStore<StoreModel>(globalStoreModel, {
-  name: "Global Store",
-  injections,
-});
+export const store = createStore<StoreModel>(
+  persist(globalStoreModel, {
+    storage: whenDebugging("sessionStorage", "localStorage"),
+  }),
+  {
+    name: "Global Store",
+    injections,
+  }
+);
 
 const typedHooks = createTypedHooks<StoreModel>();
 
