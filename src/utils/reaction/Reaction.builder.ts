@@ -1,6 +1,5 @@
 import { GuessStatus } from "../../interfaces/guess.interface";
-import { ReactionStatus } from "../../interfaces/reaction.interface";
-import { IReaction } from "../../store/models/reaction.model";
+import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
 
 export class ReactionBuilder {
   buildByDuration({ duration }: Pick<IReaction, "duration">): IReaction {

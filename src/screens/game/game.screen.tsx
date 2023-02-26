@@ -2,13 +2,112 @@ import { RecursiveActions } from "easy-peasy";
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Alert, AlertProps } from "../../components/alert";
-import { ColorsNames } from "../../interfaces/colors";
+import { Animation } from "../../components/animation";
+import { ColorsNames } from "../../interfaces/colors.interface";
 import { GuessStatus } from "../../interfaces/guess.interface";
-import { ReactionStatus } from "../../interfaces/reaction.interface";
+import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
 import { useStoreActions, useStoreState } from "../../store";
-import { IReaction, ReactionModel } from "../../store/models/reaction.model";
+import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
+import { Form } from "./game.form";
+
+/**
+ * Calculates `background-color` from reaction.
+ * @param reaction {IReaction | null}
+ * @returns tw className in format bg-`{color}`-500 for colors **fuchsia**, **red**, **orange**, **green**
+ */
+const calcColor = (reaction: IReaction | null): string => {
+  let color = "bg-fuchsia-500";
+  switch (reaction?.reactionStatus) {
+    case ReactionStatus.HAS_NOT_STARTED:
+      color = "bg-red-500";
+      break;
+    case ReactionStatus.IS_IN_PROGRESS:
+      color = "bg-orange-500";
+      break;
+    case ReactionStatus.IS_OVER:
+      color = "bg-green-500";
+      break;
+    default:
+      color = whenDebugging("bg-fuchsia-500", "" as ColorsNames);
+      break;
+  }
+  return color;
+};
+
+/**
+ * Calculates `color`, `title`, `description` for `<Alert />` component based on `reaction`
+ * @param reaction {IReaction | null}
+ * @returns {AlertProps}  props for `<Alert />` component
+ */
+const calcAlertProps = (reaction: IReaction | null): AlertProps => {
+  let props: AlertProps = {
+    color: "red",
+    title: "",
+    description: "",
+  };
+  switch (reaction?.reactionStatus) {
+    case ReactionStatus.HAS_NOT_STARTED:
+      props.color = "red";
+      props.title = "Hit ready to start.";
+      props.description = "";
+      break;
+    case ReactionStatus.IS_IN_PROGRESS:
+      props.color = "orange";
+      props.title = "In progress.";
+      props.description = "";
+      break;
+    case ReactionStatus.IS_OVER:
+      switch (reaction?.guessStatus) {
+        case GuessStatus.IS_RIGHT:
+          props.color = "green";
+          props.title = "You won";
+          props.description = "";
+          break;
+        case GuessStatus.IS_TOO_HIGH:
+          props.color = "red";
+          props.title = "Wrong. Take another guess.";
+          props.description = "Hint: too high";
+          break;
+        case GuessStatus.IS_TOO_LOW:
+          props.color = "red";
+          props.title = "Wrong. Take another guess.";
+          props.description = "Hint: too low";
+          break;
+        case GuessStatus.IS_WAITING:
+          props.color = "orange";
+          props.title = "Waiting for guess";
+          props.description = "";
+          break;
+        default:
+          props.color = "fuchsia";
+          props.title = whenDebugging("Default switch.guessStatus", "");
+          props.description = whenDebugging("Default switch.guessStatus", "");
+          break;
+      }
+      break;
+    default:
+      props.color = "fuchsia";
+      props.title = whenDebugging("Default switch.reactionStatus", "");
+      props.description = whenDebugging("Default switch.reactionStatus", "");
+  }
+  return props;
+};
+
+/**
+ * Initializes Reaction with random duration.
+ */
+function useInitializeRandomReaction(
+  reaction: IReaction | null,
+  actions: RecursiveActions<ReactionModel>
+) {
+  useEffect(() => {
+    if (reaction) return;
+
+    actions.setReaction(new ReactionBuilder().buildWithRandomDuration());
+  }, [reaction]);
+}
 
 export const GameScreen = () => {
   const reactionState = useStoreState((state) => state.reaction);
@@ -108,158 +207,8 @@ const Screen = styled.div`
   display: flex;
   flex-direction: column;
 `;
-
-/**
- * Calculates `background-color` from reaction.
- * @param reaction {IReaction | null}
- * @returns tw className in format bg-`{color}`-500 for colors **fuchsia**, **red**, **orange**, **green**
- */
-const calcColor = (reaction: IReaction | null): string => {
-  let color = "bg-fuchsia-500";
-  switch (reaction?.reactionStatus) {
-    case ReactionStatus.HAS_NOT_STARTED:
-      color = "bg-red-500";
-      break;
-    case ReactionStatus.IS_IN_PROGRESS:
-      color = "bg-orange-500";
-      break;
-    case ReactionStatus.IS_OVER:
-      color = "bg-green-500";
-      break;
-    default:
-      color = whenDebugging("bg-fuchsia-500", "" as ColorsNames);
-      break;
-  }
-  return color;
-};
-
-/**
- * Calculates `color`, `title`, `description` for `<Alert />` component based on `reaction`
- * @param reaction {IReaction | null}
- * @returns {AlertProps}  props for `<Alert />` component
- */
-const calcAlertProps = (reaction: IReaction | null): AlertProps => {
-  let props: AlertProps = {
-    color: "red",
-    title: "",
-    description: "",
-  };
-  switch (reaction?.reactionStatus) {
-    case ReactionStatus.HAS_NOT_STARTED:
-      props.color = "red";
-      props.title = "Hit ready to start.";
-      props.description = "";
-      break;
-    case ReactionStatus.IS_IN_PROGRESS:
-      props.color = "orange";
-      props.title = "In progress.";
-      props.description = "";
-      break;
-    case ReactionStatus.IS_OVER:
-      switch (reaction?.guessStatus) {
-        case GuessStatus.IS_RIGHT:
-          props.color = "green";
-          props.title = "You won";
-          props.description = "";
-          break;
-        case GuessStatus.IS_TOO_HIGH:
-          props.color = "red";
-          props.title = "Wrong. Take another guess.";
-          props.description = "Hint: too high";
-          break;
-        case GuessStatus.IS_TOO_LOW:
-          props.color = "red";
-          props.title = "Wrong. Take another guess.";
-          props.description = "Hint: too low";
-          break;
-        case GuessStatus.IS_WAITING:
-          props.color = "orange";
-          props.title = "Waiting for guess";
-          props.description = "";
-          break;
-        default:
-          props.color = "fuchsia";
-          props.title = whenDebugging("Default switch.guessStatus", "");
-          props.description = whenDebugging("Default switch.guessStatus", "");
-          break;
-      }
-      break;
-    default:
-      props.color = "fuchsia";
-      props.title = whenDebugging("Default switch.reactionStatus", "");
-      props.description = whenDebugging("Default switch.reactionStatus", "");
-  }
-  return props;
-};
-
-interface AnimationProps extends React.HTMLAttributes<HTMLDivElement> {
-  color: string;
-}
-const Animation = ({ color, className, ...props }: AnimationProps) => (
-  <div className={`flex-grow-[1] ${color} ${className}`} {...props}></div>
-);
-
 const Flex = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
 `;
-
-type ReadyOrNext = "Ready" | "Next";
-
-interface FormProps
-  extends Omit<React.HTMLAttributes<HTMLFormElement>, "onClick" | "onChange"> {
-  onClick: {
-    button1: (e?: React.MouseEvent<HTMLButtonElement>) => void;
-    button2: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  };
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  value?: number;
-  buttonText: ReadyOrNext;
-}
-const Form = ({ onClick, onChange, value, buttonText }: FormProps) => (
-  <form
-    className="w-full bg-white"
-    onSubmit={(e) => {
-      e.preventDefault();
-      onClick.button1();
-    }}
-  >
-    <div className="flex items-center border-b border-teal-500 py-2">
-      <input
-        className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
-        type="number"
-        placeholder="guess in ms"
-        aria-label="Full name"
-        value={value}
-        onChange={onChange}
-      />
-      <button
-        className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
-        type="button"
-        onClick={onClick.button1}
-      >
-        Guess
-      </button>
-
-      <button
-        className="flex-shrink-0 border-transparent border-4 text-teal-500 hover:text-teal-800 text-sm py-1 px-2 rounded"
-        type="button"
-        onClick={onClick.button2}
-      >
-        {buttonText}
-      </button>
-    </div>
-  </form>
-);
-
-function useInitializeRandomReaction(
-  reaction: IReaction | null,
-  actions: RecursiveActions<ReactionModel>
-) {
-  useEffect(() => {
-    if (reaction) return;
-
-    actions.setReaction(new ReactionBuilder().buildWithRandomDuration());
-  }, [reaction]);
-}

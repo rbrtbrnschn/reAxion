@@ -1,15 +1,7 @@
 import { action, Action, ThunkOn, thunkOn } from "easy-peasy";
 import { GuessStatus } from "../../interfaces/guess.interface";
-import { ReactionStatus } from "../../interfaces/reaction.interface";
+import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
 import { GlobalStoreModelV3, InjectionV3 } from "../store";
-
-export interface IReaction {
-  duration: number;
-  guesses: number[];
-  isGuessed: boolean;
-  guessStatus: GuessStatus;
-  reactionStatus: ReactionStatus;
-}
 
 export interface ReactionModel {
   reaction: IReaction | null;
