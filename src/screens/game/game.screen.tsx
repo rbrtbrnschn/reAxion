@@ -7,7 +7,8 @@ import { GuessStatus } from "../../interfaces/v2/guess.interface";
 import { ReactionStatus } from "../../interfaces/v2/reaction.interface";
 import { ReactionModel } from "../../store/v2/models/reaction.model";
 import { useStoreActions, useStoreState } from "../../store/v3";
-import { Reaction } from "../../store/v3/models/reaction.model";
+import { IReaction } from "../../store/v3/models/reaction.model";
+import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
 
 export const GameScreen = () => {
@@ -30,9 +31,10 @@ export const GameScreen = () => {
 
   /* Animation */
   function runAnimation(
-    reaction: Reaction | null,
+    reaction: IReaction | null,
     reactionActions: RecursiveActions<ReactionModel>
   ) {
+    _reactionState.setReactionStatus(ReactionStatus.IS_IN_PROGRESS);
     setTimeout(() => {
       reactionActions.setReactionStatus(ReactionStatus.IS_OVER);
     }, reaction?.duration ?? 0);
@@ -43,17 +45,13 @@ export const GameScreen = () => {
     const reactionNotOver =
       reactionState.reaction?.reactionStatus !== ReactionStatus.IS_OVER;
     if (reactionNotOver) {
-      _reactionState.setReactionStatus(ReactionStatus.IS_IN_PROGRESS);
       runAnimation(reaction, _reactionState as any);
       return;
     }
 
+    const newReaction = new ReactionBuilder().buildWithRandomDuration();
     _reactionState.setReaction({
-      duration: 2000,
-      guesses: [],
-      guessStatus: GuessStatus.IS_WAITING,
-      isGuessed: false,
-      reactionStatus: ReactionStatus.HAS_NOT_STARTED,
+      ...newReaction,
     });
   }
 
@@ -96,10 +94,10 @@ const Screen = styled.div`
 
 /**
  * Calculates `background-color` from reaction.
- * @param reaction {Reaction | null}
+ * @param reaction {IReaction | null}
  * @returns tw className in format bg-`{color}`-500 for colors **fuchsia**, **red**, **orange**, **green**
  */
-const calcColor = (reaction: Reaction | null): string => {
+const calcColor = (reaction: IReaction | null): string => {
   let color = "bg-fuchsia-500";
   switch (reaction?.reactionStatus) {
     case ReactionStatus.HAS_NOT_STARTED:
@@ -120,10 +118,10 @@ const calcColor = (reaction: Reaction | null): string => {
 
 /**
  * Calculates `color`, `title`, `description` for `<Alert />` component based on `reaction`
- * @param reaction {Reaction | null}
+ * @param reaction {IReaction | null}
  * @returns {AlertProps}  props for `<Alert />` component
  */
-const calcAlertProps = (reaction: Reaction | null): AlertProps => {
+const calcAlertProps = (reaction: IReaction | null): AlertProps => {
   let props: AlertProps = {
     color: "red",
     title: "",
