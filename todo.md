@@ -1,6 +1,7 @@
 # WIP:
 
-- fix first reaction to be random
+- fix next button not to skip
+- fix controlled input value
 - create calc method to calculate if guess is close enough instead of exact
   - use difficulties as modifiers for how close you can be
 - game model
@@ -15,6 +16,7 @@
 
 # Completed:
 
+- fix first reaction to be random V
 - create random times, debug show times in console V
 - on guesstatus.isRight => setTimeout => new Reaction V
 - essentially allow multiple reactions after one another V
