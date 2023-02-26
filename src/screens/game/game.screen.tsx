@@ -8,7 +8,7 @@ import { GuessStatus } from "../../interfaces/guess.interface";
 import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
 import { useStoreActions, useStoreState } from "../../store";
 import { ReactionModel } from "../../store/models/reaction.model";
-import { ReactionBuilder } from "../../utils/reaction/reaction.builder";
+import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
 import { Form } from "./game.form";
 

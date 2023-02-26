@@ -25,13 +25,6 @@ export interface ReactionModel {
   onSetReactionStatus: ThunkOn<ReactionModel, InjectionV3, GlobalStoreModelV3>;
 }
 
-const defaultReaction: IReaction = {
-  duration: 3000,
-  guesses: [],
-  guessStatus: GuessStatus.IS_WAITING,
-  isGuessed: false,
-  reactionStatus: ReactionStatus.HAS_NOT_STARTED,
-};
 export const reactionModel: ReactionModel = {
   reaction: null,
   history: [],
