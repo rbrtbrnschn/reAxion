@@ -1,4 +1,5 @@
 import { createStore, createTypedHooks } from "easy-peasy";
+import { loggerService } from "../../utils/loggerService/Logger.service";
 import { gameModel, GameModel } from "./models/game.model";
 import { ReactionModel, reactionModel } from "./models/reaction.model";
 
@@ -13,6 +14,9 @@ const globalStoreModel: GlobalStoreModelV2 = {
 
 export const store = createStore<GlobalStoreModelV2>(globalStoreModel, {
   name: "Global Stor V2",
+  injections: {
+    loggerService,
+  },
 });
 
 const typedHooks = createTypedHooks<GlobalStoreModelV2>();

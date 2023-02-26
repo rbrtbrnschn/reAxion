@@ -1,9 +1,9 @@
 import { action, Action, ThunkOn, thunkOn } from "easy-peasy";
 import { GuessStatus } from "../../../interfaces/v2/guess.interface";
 import { ReactionStatus } from "../../../interfaces/v2/reaction.interface";
-import { GlobalStoreModelV3 } from "../store";
+import { GlobalStoreModelV3, InjectionV3 } from "../store";
 
-export interface Reaction {
+export interface IReaction {
   duration: number;
   guesses: number[];
   isGuessed: boolean;
@@ -12,10 +12,10 @@ export interface Reaction {
 }
 
 export interface ReactionModel {
-  reaction: Reaction | null;
-  history: Reaction[];
-  setReaction: Action<ReactionModel, Reaction>;
-  setHistory: Action<ReactionModel, Reaction[]>;
+  reaction: IReaction | null;
+  history: IReaction[];
+  setReaction: Action<ReactionModel, IReaction>;
+  setHistory: Action<ReactionModel, IReaction[]>;
 
   /* Setters */
   setGuesses: Action<ReactionModel, number[]>;
@@ -29,9 +29,11 @@ export interface ReactionModel {
 
   /* Listeners */
   onAddGuess: ThunkOn<ReactionModel, any, GlobalStoreModelV3>;
+  onSetReaction: ThunkOn<ReactionModel, InjectionV3, GlobalStoreModelV3>;
+  onSetReactionStatus: ThunkOn<ReactionModel, InjectionV3, GlobalStoreModelV3>;
 }
 
-const defaultReaction: Reaction = {
+const defaultReaction: IReaction = {
   duration: 3000,
   guesses: [],
   guessStatus: GuessStatus.IS_WAITING,
@@ -93,6 +95,23 @@ export const reactionModel: ReactionModel = {
       else if (guess < state.reaction.duration)
         state.reaction.guessStatus = GuessStatus.IS_TOO_LOW;
       else state.reaction.guessStatus = GuessStatus.IS_WAITING;
+    }
+  ),
+  onSetReaction: thunkOn(
+    (actions) => actions.setReaction,
+    (_, target, { injections }) => {
+      injections.loggerService.debug(
+        "New Reaction with duration of: " + target.payload.duration + "ms"
+      );
+    }
+  ),
+  onSetReactionStatus: thunkOn(
+    (actions) => actions.setReactionStatus,
+    (_, target, { injections }) => {
+      if (target.payload === ReactionStatus.IS_IN_PROGRESS)
+        injections.loggerService.debugTime("animation");
+      else if (target.payload === ReactionStatus.IS_OVER)
+        injections.loggerService.debugTimeEnd("animation");
     }
   ),
 };
