@@ -1,20 +1,19 @@
 # Alpha v.0.0.1:
 
-- refactor to proper files & naming
-  -> delete v2
-- create calc method to calculate if guess is close enough instead of exact
-  -> use difficulties as modifiers for how close you can be
-- game model & store
-  - difficulty
-    -> 3 failed attempts and your'e out
-  - score
-  - highscore
-    -> how do we determine highscore? by not failing consecutively or will this be determined by difficulties model
-  - failedAttempts
-    -> per reaction or per game?
+- highscore show session highscore & gameover screen
 
 # Completed:
 
+- game model & store V
+  - difficulty V
+    -> 3 failed attempts and your'e out V
+  - score V
+  - failedAttempts V
+    -> per game V
+- create calc method to calculate if guess is close enough instead of exact V
+  -> use difficulties as modifiers for how close you can be V
+- refactor to proper files & naming V
+  -> delete v2 V
 - fix addguess on reaction.reactionStatus !== IS_OVER V
 - fix controlled input value V
 - refactor game flow to create random reactions, with next button. V
@@ -28,6 +27,8 @@
 
 # Icebox:
 
+- multiplayer game 1v1, via websockets
+- if input gets code.ENTER and guessStatus.IS_RIGHT => handleNext()
 - think about whole game flow from splash screen to routing
 - settings would have an option for automatic next
 - replay animation button

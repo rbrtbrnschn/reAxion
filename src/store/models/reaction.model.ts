@@ -1,7 +1,8 @@
 import { action, Action, ThunkOn, thunkOn } from "easy-peasy";
 import { GuessStatus } from "../../interfaces/guess.interface";
 import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
-import { GlobalStoreModelV3, InjectionV3 } from "../store";
+import { Injections } from "../injections";
+import { StoreModel } from "../store";
 
 export interface ReactionModel {
   reaction: IReaction | null;
@@ -20,9 +21,9 @@ export interface ReactionModel {
   copyToHistory: Action<ReactionModel>;
 
   /* Listeners */
-  onAddGuess: ThunkOn<ReactionModel, any, GlobalStoreModelV3>;
-  onSetReaction: ThunkOn<ReactionModel, InjectionV3, GlobalStoreModelV3>;
-  onSetReactionStatus: ThunkOn<ReactionModel, InjectionV3, GlobalStoreModelV3>;
+  onAddGuess: ThunkOn<ReactionModel, any, StoreModel>;
+  onSetReaction: ThunkOn<ReactionModel, Injections, StoreModel>;
+  onSetReactionStatus: ThunkOn<ReactionModel, Injections, StoreModel>;
 }
 
 export const reactionModel: ReactionModel = {
@@ -66,20 +67,30 @@ export const reactionModel: ReactionModel = {
     (actions) => actions.addGuess,
     (actions, target, helpers) => {
       const state = helpers.getState();
-
+      const { isGameOver } = helpers.getStoreState().game;
       const guess = target.payload;
+
+      if (isGameOver) return helpers.fail("Game Over. Cannot add guess.");
       if (!state.reaction)
         throw new Error("added Guess to non-existant state.reaction");
 
-      if (guess === state.reaction.duration) {
+      const difference = Math.abs(guess - state.reaction.duration);
+      const deviation = helpers.getStoreState().game.deviation;
+
+      const isCorrect = difference <= deviation;
+      const isTooHigh = guess > state.reaction.duration;
+
+      if (isCorrect) {
         state.reaction.guessStatus = GuessStatus.IS_RIGHT;
         state.reaction.isGuessed = true;
         actions.copyToHistory();
-      } else if (guess > state.reaction.duration)
-        state.reaction.guessStatus = GuessStatus.IS_TOO_HIGH;
-      else if (guess < state.reaction.duration)
-        state.reaction.guessStatus = GuessStatus.IS_TOO_LOW;
-      else state.reaction.guessStatus = GuessStatus.IS_WAITING;
+        helpers.getStoreActions().game.incrementScore();
+        return;
+      }
+      if (isTooHigh) state.reaction.guessStatus = GuessStatus.IS_TOO_HIGH;
+      else state.reaction.guessStatus = GuessStatus.IS_TOO_LOW;
+
+      helpers.getStoreActions().game.incrementFailedAttempts();
     }
   ),
   onSetReaction: thunkOn(
