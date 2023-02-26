@@ -1,28 +1,23 @@
 import { createStore, createTypedHooks } from "easy-peasy";
-import {
-  ILoggerService,
-  loggerService,
-} from "../utils/loggerService/Logger.service";
+import { injections } from "./injections";
+import { GameModel, gameModel } from "./models/game.mode";
 import { ReactionModel, reactionModel } from "./models/reaction.model";
 
-export interface GlobalStoreModelV3 {
+export interface StoreModel {
   reaction: ReactionModel;
+  game: GameModel;
 }
-const globalStoreModel: GlobalStoreModelV3 = {
+const globalStoreModel: StoreModel = {
   reaction: reactionModel,
+  game: gameModel,
 };
-export interface InjectionV3 {
-  loggerService: ILoggerService;
-}
-const injections: InjectionV3 = {
-  loggerService,
-};
-export const store = createStore<GlobalStoreModelV3>(globalStoreModel, {
-  name: "Global Store V3",
+
+export const store = createStore<StoreModel>(globalStoreModel, {
+  name: "Global Store",
   injections,
 });
 
-const typedHooks = createTypedHooks<GlobalStoreModelV3>();
+const typedHooks = createTypedHooks<StoreModel>();
 
 export const useStoreActions = typedHooks.useStoreActions;
 export const useStoreDispatch = typedHooks.useStoreDispatch;
