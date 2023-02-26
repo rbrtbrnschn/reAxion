@@ -46,8 +46,13 @@ export const GameScreen = () => {
   function handleReady(e: React.MouseEvent<HTMLButtonElement>) {
     const reactionNotOver =
       reactionState.reaction?.reactionStatus !== ReactionStatus.IS_OVER;
+    const hasGuessed =
+      reactionState.reaction?.guessStatus !== GuessStatus.IS_WAITING;
+
     if (reactionNotOver) {
       runAnimation(reaction, _reactionState as any);
+      return;
+    } else if (!hasGuessed) {
       return;
     }
     const newReaction = new ReactionBuilder().buildWithRandomDuration();
