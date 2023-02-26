@@ -1,6 +1,6 @@
 import { createStore, createTypedHooks } from "easy-peasy";
 import { injections } from "./injections";
-import { GameModel, gameModel } from "./models/game.mode";
+import { GameModel, gameModel } from "./models/game.model";
 import { ReactionModel, reactionModel } from "./models/reaction.model";
 
 export interface StoreModel {
