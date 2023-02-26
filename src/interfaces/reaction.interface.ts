@@ -8,7 +8,8 @@ export enum ReactionStatus {
 
 export interface IReaction {
   duration: number;
-  guess: number;
+  guesses: number[];
+  isGuessed: boolean;
   guessStatus: GuessStatus;
   reactionStatus: ReactionStatus;
 }

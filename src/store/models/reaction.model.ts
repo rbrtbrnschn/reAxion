@@ -1,15 +1,7 @@
 import { action, Action, ThunkOn, thunkOn } from "easy-peasy";
-import { GuessStatus } from "../../../interfaces/v2/guess.interface";
-import { ReactionStatus } from "../../../interfaces/v2/reaction.interface";
+import { GuessStatus } from "../../interfaces/guess.interface";
+import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
 import { GlobalStoreModelV3, InjectionV3 } from "../store";
-
-export interface IReaction {
-  duration: number;
-  guesses: number[];
-  isGuessed: boolean;
-  guessStatus: GuessStatus;
-  reactionStatus: ReactionStatus;
-}
 
 export interface ReactionModel {
   reaction: IReaction | null;
@@ -33,13 +25,6 @@ export interface ReactionModel {
   onSetReactionStatus: ThunkOn<ReactionModel, InjectionV3, GlobalStoreModelV3>;
 }
 
-const defaultReaction: IReaction = {
-  duration: 3000,
-  guesses: [],
-  guessStatus: GuessStatus.IS_WAITING,
-  isGuessed: false,
-  reactionStatus: ReactionStatus.HAS_NOT_STARTED,
-};
 export const reactionModel: ReactionModel = {
   reaction: null,
   history: [],

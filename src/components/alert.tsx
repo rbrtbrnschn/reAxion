@@ -1,4 +1,4 @@
-import { ColorsNames } from "../interfaces/colors";
+import { ColorsNames } from "../interfaces/colors.interface";
 
 export interface AlertProps {
   color: ColorsNames & ("fuchsia" | "green" | "orange" | "red");
