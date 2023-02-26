@@ -1,14 +1,13 @@
 import { RecursiveActions } from "easy-peasy";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Alert, AlertProps } from "../../components/alert";
 import { ColorsNames } from "../../interfaces/colors";
 import { GuessStatus } from "../../interfaces/v2/guess.interface";
 import { ReactionStatus } from "../../interfaces/v2/reaction.interface";
-import { ReactionModel } from "../../store/v2/models/reaction.model";
 import { useStoreActions, useStoreState } from "../../store/v3";
-import { IReaction } from "../../store/v3/models/reaction.model";
-import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
+import { IReaction, ReactionModel } from "../../store/v3/models/reaction.model";
+import { ReactionBuilder } from "../../utils/reaction/reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
 
 export const GameScreen = () => {
@@ -26,6 +25,9 @@ export const GameScreen = () => {
     () => calcColor(reaction),
     [reaction?.reactionStatus]
   );
+
+  /* Initialize */
+  useInitializeRandomReaction(reaction, _reactionState);
 
   if (!reaction) return <div>Loading...</div>;
 
@@ -48,7 +50,6 @@ export const GameScreen = () => {
       runAnimation(reaction, _reactionState as any);
       return;
     }
-
     const newReaction = new ReactionBuilder().buildWithRandomDuration();
     _reactionState.setReaction({
       ...newReaction,
@@ -235,3 +236,14 @@ const Form = ({
     </div>
   </form>
 );
+
+function useInitializeRandomReaction(
+  reaction: IReaction | null,
+  actions: RecursiveActions<ReactionModel>
+) {
+  useEffect(() => {
+    if (reaction) return;
+
+    actions.setReaction(new ReactionBuilder().buildWithRandomDuration());
+  }, [reaction]);
+}

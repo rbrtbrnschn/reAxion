@@ -41,7 +41,7 @@ const defaultReaction: IReaction = {
   reactionStatus: ReactionStatus.HAS_NOT_STARTED,
 };
 export const reactionModel: ReactionModel = {
-  reaction: defaultReaction,
+  reaction: null,
   history: [],
 
   /* Setters */
