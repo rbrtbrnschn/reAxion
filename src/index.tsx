@@ -4,10 +4,10 @@ import React from "react";
 import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
 import ReactDOM from "react-dom/client";
-import { AppV3 } from "./AppV3";
+import { App } from "./App";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { store } from "./store/v3";
+import { store } from "./store";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -15,7 +15,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <StoreProvider store={store}>
-      <AppV3 />
+      <App />
     </StoreProvider>
   </React.StrictMode>
 );

@@ -1,6 +1,6 @@
 import { action, Action, ThunkOn, thunkOn } from "easy-peasy";
-import { GuessStatus } from "../../../interfaces/v2/guess.interface";
-import { ReactionStatus } from "../../../interfaces/v2/reaction.interface";
+import { GuessStatus } from "../../interfaces/guess.interface";
+import { ReactionStatus } from "../../interfaces/reaction.interface";
 import { GlobalStoreModelV3, InjectionV3 } from "../store";
 
 export interface IReaction {

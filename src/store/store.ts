@@ -2,7 +2,7 @@ import { createStore, createTypedHooks } from "easy-peasy";
 import {
   ILoggerService,
   loggerService,
-} from "../../utils/loggerService/Logger.service";
+} from "../utils/loggerService/Logger.service";
 import { ReactionModel, reactionModel } from "./models/reaction.model";
 
 export interface GlobalStoreModelV3 {

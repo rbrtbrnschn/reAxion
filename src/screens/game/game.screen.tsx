@@ -3,10 +3,10 @@ import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { Alert, AlertProps } from "../../components/alert";
 import { ColorsNames } from "../../interfaces/colors";
-import { GuessStatus } from "../../interfaces/v2/guess.interface";
-import { ReactionStatus } from "../../interfaces/v2/reaction.interface";
-import { useStoreActions, useStoreState } from "../../store/v3";
-import { IReaction, ReactionModel } from "../../store/v3/models/reaction.model";
+import { GuessStatus } from "../../interfaces/guess.interface";
+import { ReactionStatus } from "../../interfaces/reaction.interface";
+import { useStoreActions, useStoreState } from "../../store";
+import { IReaction, ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
 
