@@ -15,7 +15,11 @@ export const GameScreen = () => {
   const _reactionState = useStoreActions((actions) => actions.reaction);
   const reaction = reactionState.reaction;
 
-  const [guessInput, setGuessInput] = useState<number | undefined>();
+  const [guessInput, setGuessInput] = useState<string>("");
+  const guessNumber = useMemo(() => {
+    if (!guessInput) return 0;
+    return parseInt(guessInput, 10);
+  }, [guessInput]);
 
   const alertProps = useMemo(
     () => calcAlertProps(reaction),
@@ -61,15 +65,22 @@ export const GameScreen = () => {
     });
   }
 
-  function handleSubmitGuess(e: React.MouseEvent<HTMLButtonElement>) {
+  function handleSubmitGuess(e?: React.MouseEvent<HTMLButtonElement>) {
     if (!guessInput) return;
     if (reaction?.isGuessed) return;
+    if (reaction?.reactionStatus !== ReactionStatus.IS_OVER) return;
 
-    _reactionState.addGuess(guessInput);
-    setGuessInput(undefined);
+    _reactionState.addGuess(guessNumber);
+    setGuessInput("");
   }
   function handleChangeGuess(e: React.ChangeEvent<HTMLInputElement>) {
-    setGuessInput(parseInt(e.currentTarget.value || "0"));
+    const { value } = e.currentTarget;
+    const isEmptyString = !value.length;
+
+    const parsed = parseInt(e.currentTarget.value);
+    if (isNaN(parsed) && !isEmptyString) return;
+
+    setGuessInput(e.currentTarget.value);
   }
 
   return (
@@ -83,7 +94,7 @@ export const GameScreen = () => {
             button2: handleReady,
           }}
           onChange={handleChangeGuess}
-          value={guessInput}
+          value={guessInput as any}
           buttonText={reaction.isGuessed ? "Next" : "Ready"}
         />
       </Flex>
@@ -199,21 +210,21 @@ type ReadyOrNext = "Ready" | "Next";
 interface FormProps
   extends Omit<React.HTMLAttributes<HTMLFormElement>, "onClick" | "onChange"> {
   onClick: {
-    button1: (e: React.MouseEvent<HTMLButtonElement>) => void;
+    button1: (e?: React.MouseEvent<HTMLButtonElement>) => void;
     button2: (e: React.MouseEvent<HTMLButtonElement>) => void;
   };
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value?: number;
   buttonText: ReadyOrNext;
 }
-const Form = ({
-  onSubmit,
-  onClick,
-  onChange,
-  value,
-  buttonText,
-}: FormProps) => (
-  <form className="w-full bg-white" onSubmit={onSubmit}>
+const Form = ({ onClick, onChange, value, buttonText }: FormProps) => (
+  <form
+    className="w-full bg-white"
+    onSubmit={(e) => {
+      e.preventDefault();
+      onClick.button1();
+    }}
+  >
     <div className="flex items-center border-b border-teal-500 py-2">
       <input
         className="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none"
