@@ -1,11 +1,14 @@
 import { RecursiveActions } from "easy-peasy";
 import { useEffect, useMemo, useState } from "react";
+import { NavigateFunction, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Alert, AlertProps } from "../../components/alert";
 import { Animation } from "../../components/animation";
 import { ColorsNames } from "../../interfaces/colors.interface";
 import { GuessStatus } from "../../interfaces/guess.interface";
 import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
+import { RouteNames } from "../../interfaces/route.interface";
+import { routes } from "../../routes";
 import { useStoreActions, useStoreState } from "../../store";
 import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
@@ -106,12 +109,27 @@ function useInitializeRandomReaction(
     if (reaction) return;
 
     actions.setReaction(new ReactionBuilder().buildWithRandomDuration());
-  }, [reaction]);
+  }, [actions, reaction]);
+}
+
+/**
+ * Navigates user to <GameOverScreen /> if state.game.isGameOver
+ * @param isGameOver {Boolean}
+ * @param navigate {NavigateFunction}
+ */
+function useHandleGameOverNavigation(
+  isGameOver: boolean,
+  navigate: NavigateFunction
+) {
+  useEffect(() => {
+    if (isGameOver) navigate(routes[RouteNames.GAME_OVER_PAGE].path);
+  }, [isGameOver, navigate]);
 }
 
 export const GameScreen = () => {
   const reactionState = useStoreState((state) => state.reaction);
   const _reactionState = useStoreActions((actions) => actions.reaction);
+  const isGameOver = useStoreState((state) => state.game.isGameOver);
   const reaction = reactionState.reaction;
 
   const [guessInput, setGuessInput] = useState<string>("");
@@ -130,7 +148,9 @@ export const GameScreen = () => {
   );
 
   /* Initialize */
+  const navigate = useNavigate();
   useInitializeRandomReaction(reaction, _reactionState);
+  useHandleGameOverNavigation(isGameOver, navigate);
 
   if (!reaction) return <div>Loading...</div>;
 

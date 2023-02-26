@@ -4,9 +4,10 @@ import React from "react";
 import "react-app-polyfill/ie11";
 import "react-app-polyfill/stable";
 import ReactDOM from "react-dom/client";
-import { App } from "./App";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
+import { routes } from "./routes";
 import { store } from "./store";
 
 const root = ReactDOM.createRoot(
@@ -15,7 +16,13 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <StoreProvider store={store}>
-      <App />
+      <BrowserRouter>
+        <Routes>
+          {Object.entries(routes).map(([key, route]) => (
+            <Route {...route} key={"route-" + key} />
+          ))}
+        </Routes>
+      </BrowserRouter>
     </StoreProvider>
   </React.StrictMode>
 );

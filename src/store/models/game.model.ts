@@ -1,5 +1,6 @@
-import { action, Action, computed, Computed } from "easy-peasy";
+import { action, Action, computed, Computed, thunk, Thunk } from "easy-peasy";
 import { GameDifficulty } from "../../interfaces/difficulty.interface";
+import { Injections } from "../injections";
 import { StoreModel } from "../store";
 
 export const gameDifficulties: Record<
@@ -35,6 +36,7 @@ export interface GameModel {
   /* Helpers */
   incrementFailedAttempts: Action<GameModel>;
   incrementScore: Action<GameModel>;
+  handleGameOver: Thunk<GameModel, undefined, Injections, StoreModel>;
 }
 
 export const gameModel: GameModel = {
@@ -66,5 +68,12 @@ export const gameModel: GameModel = {
   }),
   incrementScore: action((state) => {
     state.score += 1;
+  }),
+  handleGameOver: thunk((actions, _, helpers) => {
+    actions.setDifficulty(GameDifficulty.EASY);
+    actions.setFailedAttempts(0);
+    actions.setScore(0);
+
+    helpers.getStoreActions().reaction.handleGameOver();
   }),
 };

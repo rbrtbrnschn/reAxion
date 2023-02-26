@@ -13,3 +13,7 @@ export interface IReaction {
   guessStatus: GuessStatus;
   reactionStatus: ReactionStatus;
 }
+
+export interface IReactionStatistic extends IReaction {
+  deviation: number;
+}
