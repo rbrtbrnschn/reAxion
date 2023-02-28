@@ -36,7 +36,7 @@ export const Form = ({ onClick, onChange, value, buttonText }: Props) => (
       </button>
 
       <button
-        className="flex-shrink-0 border-transparent border-2 text-teal-500 hover:text-teal-800 text-sm w-20 py-1 px-2 ml-2 rounded"
+        className="flex-shrink-0 border-teal-500 border-2 text-teal-500 hover:bg-teal-100 text-sm w-20 py-1.5 px-2 ml-2 rounded"
         type="button"
         onClick={onClick.button2}
       >
