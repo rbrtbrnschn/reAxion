@@ -204,7 +204,9 @@ export const GameScreen = () => {
 
   return (
     <Screen id="game-screen">
-      <Alert {...alertProps} />
+      <div className="absolute top-10 left-1/2 -translate-x-[50%] w-3/5">
+        <Alert {...alertProps} />
+      </div>
       <Flex>
         <Animation color={animationColor} id="animation" />
         <Form
@@ -222,8 +224,8 @@ export const GameScreen = () => {
 };
 
 const Screen = styled.div`
-  width: 100vw;
-  height: 100vh;
+  width: 100svw;
+  height: 100svh;
   display: flex;
   flex-direction: column;
 `;
