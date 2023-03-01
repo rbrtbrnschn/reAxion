@@ -192,6 +192,7 @@ export const GameScreen = () => {
     _reactionState.addGuess(guessNumber);
     setGuessInput("");
   }
+
   function handleChangeGuess(e: React.ChangeEvent<HTMLInputElement>) {
     const { value } = e.currentTarget;
     const isEmptyString = !value.length;
@@ -202,8 +203,15 @@ export const GameScreen = () => {
     setGuessInput(e.currentTarget.value);
   }
 
+  function handleReturnToHome() {
+    navigate(routes[RouteNames.HOME_PAGE].path);
+  }
+  
   return (
     <Screen id="game-screen">
+      <div className="absolute w-max top-10 left-10">
+        <button onClick={handleReturnToHome} className="text-[3rem] text-transparent text-shadow-white hover:text-shadow-dark hover:opacity-40">🔙</button>
+      </div>
       <div className="absolute top-10 left-1/2 -translate-x-[50%] w-3/5">
         <Alert {...alertProps} />
       </div>
