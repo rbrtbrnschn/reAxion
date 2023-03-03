@@ -1,7 +1,5 @@
 # Alpha v.0.0.1:
 
-# Completed:
-
 - highscore show session highscore & gameover screen V
 - game model & store V
   - difficulty V
@@ -26,7 +24,18 @@
 
 # Icebox:
 
-- multiplayer game 1v1, via websockets
+- animations loading, buffering, particles
+- other visual cues
+- audible cues
+- timer before start
+  -> automating next button
+  -> pause function
+- difficulty exponentioal growth ( take game.score as multiplier )
+- sound effects & music
+- bonus points on how quickly a time is guess correctly
+- user metric tracking
+
+- multiplayer game 1v1, via websockets, ws can provide live leaderboard
 - if input gets code.ENTER and guessStatus.IS_RIGHT => handleNext()
 - think about whole game flow from splash screen to routing
 - settings would have an option for automatic next
