@@ -1,0 +1,13 @@
+name: Deploy Release Vercel
+run-name: ${{ github.actor }} released new Version 🚀
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '*' # Push events to every tag not containing /
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - run: curl -X POST -d {} ${{secrets.VERCEL_DEPLOY_HOOK}}
