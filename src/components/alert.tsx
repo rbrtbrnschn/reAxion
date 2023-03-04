@@ -17,7 +17,7 @@ export const Alert = ({ color, title, description }: AlertProps) => {
   };
 
   return (
-    <div className={`rounded-full p-5 ${colorVariants[color]} text-center shadow-lg`} role="alert">
+    <div className={`rounded-full p-5 ${colorVariants[color]} text-center shadow-lg w-4/5`} role="alert">
       <div className="w-max m-auto">
         <p className="font-bold">{title}</p>
         <p>{description}</p>

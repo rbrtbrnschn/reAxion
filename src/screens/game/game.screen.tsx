@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Alert, AlertProps } from "../../components/alert";
-import { Animation } from "../../components/animation";
+import { AnimationContent } from "../../components/animation";
 import { ColorsNames } from "../../interfaces/colors.interface";
 import { GuessStatus } from "../../interfaces/guess.interface";
 import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
@@ -15,7 +15,7 @@ import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
 import { Form } from "./game.form";
 import { Screen } from "../../components/common";
-
+import { Countdown } from "../../components/countdown";
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}
@@ -207,36 +207,36 @@ export const GameScreen = () => {
   function handleReturnToHome() {
     navigate(routes[RouteNames.HOME_PAGE].path);
   }
-  
+
   return (
-    <ScreenWithFlexColumn id="game-screen">
-      <div className="absolute w-max top-10 left-10">
-        <button onClick={handleReturnToHome} className="text-[3rem] text-transparent text-shadow-white hover:text-shadow-dark hover:opacity-40">🔙</button>
-      </div>
-      <div className="absolute top-10 left-1/2 -translate-x-[50%] w-3/5">
+    <Screen
+      id="game-screen"
+      className={`${animationColor} py-10 flex flex-col`}
+    >
+      <div className="flex justify-center">
         <Alert {...alertProps} />
       </div>
       <Flex>
-        <Animation color={animationColor} id="animation" />
-        <Form
-          onClick={{
-            button1: handleSubmitGuess,
-            button2: handleReady,
-          }}
-          onChange={handleChangeGuess}
-          value={guessInput as any}
-          buttonText={reaction.isGuessed ? "Next" : "Ready"}
-        />
+        <AnimationContent className="flex flex-col justify-center items-center">
+          <Countdown value={3} />
+          3
+        </AnimationContent>
+        <div className="flex justify-center">
+          <Form
+            onClick={{
+              button1: handleSubmitGuess,
+              button2: handleReady,
+            }}
+            onChange={handleChangeGuess}
+            value={guessInput as any}
+            buttonText={reaction.isGuessed ? "Next" : "Ready"}
+          />
+        </div>
       </Flex>
-    </ScreenWithFlexColumn>
+    </Screen>
   );
 };
 
-
-const ScreenWithFlexColumn = styled(Screen)`
-display: flex;
-flex-direction: column;
-`
 const Flex = styled.div`
   display: flex;
   flex-direction: column;

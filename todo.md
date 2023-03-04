@@ -3,6 +3,7 @@
 - center box on home screen V
 - homescreen: fix mobile width of vp V
 - timer in between reactions -> rendering next button redundant
+-> remove next button
 - user input takes 3 characters max -> like arcade
 - promp for user name (3 chars) on gameover?
 - global scoreboard
@@ -60,3 +61,6 @@
 - help
 - settings
 - history
+
+### Resources:
+https://github.com/bramus/viewport-resize-behavior/blob/main/explainer.md

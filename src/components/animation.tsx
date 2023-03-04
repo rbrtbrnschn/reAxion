@@ -1,6 +1,5 @@
-interface Props extends React.HTMLAttributes<HTMLDivElement> {
-  color: string;
-}
-export const Animation = ({ color, className, ...props }: Props) => (
-  <div className={`flex-grow-[1] ${color} ${className}`} {...props}></div>
+type Props = React.HTMLAttributes<HTMLDivElement>;
+
+export const AnimationContent = ({ className, ...props }: Props) => (
+  <div className={`flex-grow-[1] ${className}`} {...props}></div>
 );
