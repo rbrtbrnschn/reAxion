@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { NavComponent } from "../../components/navigation";
 import { RouteNames } from "../../interfaces/route.interface";
 import { routes } from "../../routes";
+import { Screen } from "../../components/common";
 
 export const HomeScreen = () => {
     const navigate = useNavigate();
@@ -12,15 +13,15 @@ export const HomeScreen = () => {
     };
 
     return (
-        <div>
+        <Screen className="flex flex-col">
             <NavComponent />
-            <div className=" mt-5 relative bg-indigo-700 mx-auto w-5/6 py-10 rounded-lg">
+            <div className="relative bg-indigo-700 mx-auto w-5/6 py-10 flex flex-col items-center gap-2 h-full w-full justify-center px-2">
 
                 <div className="">
                     <h1 className="text-white m-auto w-max md:text-4xl text-2xl font-bold uppercase">Know your milliseconds</h1>
-                    <p className="text-white m-auto w-max md:text-2xl text-xl">Milliseconds from red to green... guess and get good</p>
+                    <p className="text-white m-auto lg:w-max md:text-2xl text-xl break-normal">Milliseconds from red to green... guess and get good</p>
                 </div>
-                <div className="p-5 bg-white bg-opacity-20 border-white border-2 rounded-lg w-2/5 m-3 ml-10">
+                <div className="p-5 bg-white bg-opacity-20 border-white border-2 rounded-lg lg:w-2/5 m-3 lg:ml-10 flex flex-col justify-center items-center ">
                     <h2 className="text-white opacity-100 font-bold md:text-3xl text-1xl text-center mb-5">Start Playing</h2>
                     <input className="p-4 mb-5 w-full rounded-lg" type="text" placeholder="Insert name" />
                     <button
@@ -37,6 +38,6 @@ export const HomeScreen = () => {
                     </button>
                 </div>
             </div>
-        </div>
+        </Screen>
     );
 }

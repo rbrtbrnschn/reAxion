@@ -14,6 +14,7 @@ import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
 import { Form } from "./game.form";
+import { Screen } from "../../components/common";
 
 /**
  * Calculates `background-color` from reaction.
@@ -208,7 +209,7 @@ export const GameScreen = () => {
   }
   
   return (
-    <Screen id="game-screen">
+    <ScreenWithFlexColumn id="game-screen">
       <div className="absolute w-max top-10 left-10">
         <button onClick={handleReturnToHome} className="text-[3rem] text-transparent text-shadow-white hover:text-shadow-dark hover:opacity-40">🔙</button>
       </div>
@@ -227,16 +228,15 @@ export const GameScreen = () => {
           buttonText={reaction.isGuessed ? "Next" : "Ready"}
         />
       </Flex>
-    </Screen>
+    </ScreenWithFlexColumn>
   );
 };
 
-const Screen = styled.div`
-  width: 100svw;
-  height: 100svh;
-  display: flex;
-  flex-direction: column;
-`;
+
+const ScreenWithFlexColumn = styled(Screen)`
+display: flex;
+flex-direction: column;
+`
 const Flex = styled.div`
   display: flex;
   flex-direction: column;
