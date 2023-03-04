@@ -16,6 +16,8 @@ import { whenDebugging } from "../../utils/whenDebugging";
 import { Form } from "./game.form";
 import { Screen } from "../../components/common";
 import { Countdown } from "../../components/countdown";
+import { GameInput } from "./game.input";
+import { V2Alert } from "../../components/v2/alert";
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}
@@ -209,29 +211,17 @@ export const GameScreen = () => {
   }
 
   return (
-    <Screen
-      id="game-screen"
-      className={`${animationColor} py-10 flex flex-col`}
-    >
-      <div className="flex justify-center">
-        <Alert {...alertProps} />
-      </div>
+    <Screen className={"flex flex-col p-4 "}>
+      <V2Alert message={alertProps.title} />
       <Flex>
         <AnimationContent className="flex flex-col justify-center items-center">
           <Countdown value={3} />
-          3
         </AnimationContent>
-        <div className="flex justify-center">
-          <Form
-            onClick={{
-              button1: handleSubmitGuess,
-              button2: handleReady,
-            }}
-            onChange={handleChangeGuess}
-            value={guessInput as any}
-            buttonText={reaction.isGuessed ? "Next" : "Ready"}
-          />
-        </div>
+        <GameInput
+          onChange={handleChangeGuess}
+          value={guessInput}
+          onClick={handleSubmitGuess}
+        />
       </Flex>
     </Screen>
   );
