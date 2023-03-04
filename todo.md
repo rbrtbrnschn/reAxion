@@ -1,7 +1,8 @@
 # Alpha v0.0.2
 - fix keyboard ressize issue V
-- center box on home screen
-- homescreen: fix mobile width of vp 
+- center box on home screen V
+- homescreen: fix mobile width of vp V
+- timer in between reactions -> rendering next button redundant
 - user input takes 3 characters max -> like arcade
 - promp for user name (3 chars) on gameover?
 - global scoreboard
