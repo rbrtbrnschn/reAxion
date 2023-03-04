@@ -232,11 +232,12 @@ export const GameScreen = () => {
   }
 
   return (
-    <Screen className={"flex flex-col p-4 " + animationColor}>
+    <Screen className={"flex flex-col p-4 "}>
       <V2Alert message={alertProps.title} />
       <Flex>
         <AnimationContent className="flex flex-col justify-center items-center">
           {showTimer && <Countdown value={timer} />}
+          <Animation className={animationColor} />
         </AnimationContent>
         <GameInput
           onChange={handleChangeGuess}
