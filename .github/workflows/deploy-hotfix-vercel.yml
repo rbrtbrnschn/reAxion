@@ -1,0 +1,12 @@
+name: Deploy Vercel Hotfix
+run-name: ${{ github.actor }} is deploying a hotfix 🚀
+on:
+  push:
+    branches:
+      - hotfix
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -X POST -d {} ${{secrets.VERCEL_DEPLOY_HOOK}}

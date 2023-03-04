@@ -1,15 +1,16 @@
 import { FilterActionTypes, StateMapper } from "easy-peasy";
 import { useEffect, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import LightningBolt from "../../assets/img/lightning_bolt.png";
+import { NavComponent } from "../../components/navigation";
 import { Table } from "../../components/table";
 import { IReactionStatistic } from "../../interfaces/reaction.interface";
 import { RouteNames } from "../../interfaces/route.interface";
 import { routes } from "../../routes";
 import { useStoreActions, useStoreState } from "../../store";
 import { GameModel } from "../../store/models/game.model";
+import { Screen } from "../../components/common";
+
 export const GameOverScreen = () => {
-  const [show, setShow] = useState(false);
   const gameState = useStoreState((state) => state.game);
   const _gameState = useStoreActions((state) => state.game);
   const reactionState = useStoreState((state) => state.reaction);
@@ -37,56 +38,10 @@ export const GameOverScreen = () => {
   useRedirectToGamePage(gameState, navigate);
 
   return (
-    <div className="py-12">
+    <Screen className="py-12">
       {/* Code block starts */}
+      <NavComponent />
       <div>
-        <nav className="w-full">
-          <div className="container mx-auto px-6 flex items-center justify-between">
-            <div className="flex items-center" aria-label="Home" role="img">
-              <img
-                className="cursor-pointer w-8 sm:w-auto"
-                src={LightningBolt}
-                style={{ width: "54px", height: "54px" }}
-                alt="logo"
-              />
-              <p className="ml-2 lg:ml-4 text-base lg:text-2xl font-bold text-gray-800">
-                ReAxion
-              </p>
-            </div>
-            <div>
-              <button
-                onClick={() => setShow(!show)}
-                className="sm:block md:hidden lg:hidden text-gray-500 hover:text-gray-700 focus:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
-              >
-                <img
-                  className="h-8 w-8"
-                  src="https://tuk-cdn.s3.amazonaws.com/can-uploader/center_aligned_with_image-svg4.svg"
-                  alt="show"
-                />
-              </button>
-              <div
-                id="menu"
-                className={`md:block lg:block ${show ? "" : "hidden"}`}
-              >
-                <button
-                  onClick={() => setShow(!show)}
-                  className="block md:hidden lg:hidden text-gray-500 hover:text-gray-700 focus:text-gray-700 fixed focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white md:bg-transparent z-30 top-0 mt-3"
-                >
-                  <img
-                    className="h-8 w-8"
-                    src="https://tuk-cdn.s3.amazonaws.com/can-uploader/center_aligned_with_image-svg5.svg"
-                    alt="hide"
-                  />
-                </button>
-                <ul className="flex text-3xl md:text-base items-center py-8 md:flex flex-col md:flex-row justify-center fixed md:relative top-0 bottom-0 left-0 right-0 bg-white md:bg-transparent  z-20">
-                  <li className="text-gray-600 text-lg hover:text-gray-800 cursor-pointer md:ml-10 pt-10 md:pt-0">
-                    <a href="https://github.com/rbrtbrnschn/reaction">Github</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </nav>
         <div className="w-full px-6">
           <div className="mt-8 relative rounded-lg bg-indigo-700 container mx-auto flex flex-col items-center pt-12 sm:pt-24 pb-24 sm:pb-32 md:pb-48 lg:pb-56 xl:pb-64">
             <img
@@ -101,8 +56,9 @@ export const GameOverScreen = () => {
             />
             <div className="w-11/12 sm:w-2/3 mb-5 sm:mb-10">
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-center text-white font-bold leading-tight">
-                Game Over - Score: {gameState.score}
+                Game Over
               </h1>
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center text-white font-bold leading-tight">Final Score: <span className={gameState.score > 15 ? "text-green-400" : "text-yellow-400"}>{gameState.score}</span></h2>
             </div>
             <div className="flex justify-center items-center mb-10 sm:mb-20">
               <button
@@ -148,7 +104,7 @@ export const GameOverScreen = () => {
         </div>
       </div>
       {/* Code block ends */}
-    </div>
+    </Screen>
   );
 };
 

@@ -2,17 +2,18 @@ import { App } from "./App";
 import { RouteNames } from "./interfaces/route.interface";
 import { GameScreen } from "./screens/game/game.screen";
 import { GameOverScreen } from "./screens/game/gameover.screen";
+import { HomeScreen } from "./screens/home/home.screen";
 
 export const routes: Record<
   RouteNames,
   { path: string; element: React.ReactNode; index?: boolean }
 > = {
   [RouteNames.HOME_PAGE]: {
-    path: "/WIP",
+    path: "/",
     element: <App />,
   },
   [RouteNames.GAME_PAGE]: {
-    path: "/",
+    path: "/game",
     element: <GameScreen />,
     index: true,
   },

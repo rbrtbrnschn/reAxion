@@ -14,6 +14,7 @@ import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
 import { Form } from "./game.form";
+import { Screen } from "../../components/common";
 
 /**
  * Calculates `background-color` from reaction.
@@ -192,6 +193,7 @@ export const GameScreen = () => {
     _reactionState.addGuess(guessNumber);
     setGuessInput("");
   }
+
   function handleChangeGuess(e: React.ChangeEvent<HTMLInputElement>) {
     const { value } = e.currentTarget;
     const isEmptyString = !value.length;
@@ -202,9 +204,18 @@ export const GameScreen = () => {
     setGuessInput(e.currentTarget.value);
   }
 
+  function handleReturnToHome() {
+    navigate(routes[RouteNames.HOME_PAGE].path);
+  }
+  
   return (
-    <Screen id="game-screen">
-      <Alert {...alertProps} />
+    <ScreenWithFlexColumn id="game-screen">
+      <div className="absolute w-max top-10 left-10">
+        <button onClick={handleReturnToHome} className="text-[3rem] text-transparent text-shadow-white hover:text-shadow-dark hover:opacity-40">🔙</button>
+      </div>
+      <div className="absolute top-10 left-1/2 -translate-x-[50%] w-3/5">
+        <Alert {...alertProps} />
+      </div>
       <Flex>
         <Animation color={animationColor} id="animation" />
         <Form
@@ -217,16 +228,15 @@ export const GameScreen = () => {
           buttonText={reaction.isGuessed ? "Next" : "Ready"}
         />
       </Flex>
-    </Screen>
+    </ScreenWithFlexColumn>
   );
 };
 
-const Screen = styled.div`
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-`;
+
+const ScreenWithFlexColumn = styled(Screen)`
+display: flex;
+flex-direction: column;
+`
 const Flex = styled.div`
   display: flex;
   flex-direction: column;
