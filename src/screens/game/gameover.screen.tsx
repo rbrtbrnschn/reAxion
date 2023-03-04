@@ -8,6 +8,8 @@ import { RouteNames } from "../../interfaces/route.interface";
 import { routes } from "../../routes";
 import { useStoreActions, useStoreState } from "../../store";
 import { GameModel } from "../../store/models/game.model";
+import { Screen } from "../../components/common";
+
 export const GameOverScreen = () => {
   const gameState = useStoreState((state) => state.game);
   const _gameState = useStoreActions((state) => state.game);
@@ -36,7 +38,7 @@ export const GameOverScreen = () => {
   useRedirectToGamePage(gameState, navigate);
 
   return (
-    <div className="py-12">
+    <Screen className="py-12">
       {/* Code block starts */}
       <NavComponent />
       <div>
@@ -102,7 +104,7 @@ export const GameOverScreen = () => {
         </div>
       </div>
       {/* Code block ends */}
-    </div>
+    </Screen>
   );
 };
 
