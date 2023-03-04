@@ -1,3 +1,16 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer components {
+    .text-shadow-white {
+        color: transparent;
+        text-shadow: 0 0 white;
+    }
+
+    .text-shadow-dark {
+        color: transparent;
+        text-shadow: 0 0 black;
+    }
+  }
