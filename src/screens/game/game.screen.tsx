@@ -1,5 +1,5 @@
 import { RecursiveActions } from "easy-peasy";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Alert, AlertProps } from "../../components/alert";
@@ -57,7 +57,7 @@ const calcAlertProps = (reaction: IReaction | null): AlertProps => {
   switch (reaction?.reactionStatus) {
     case ReactionStatus.HAS_NOT_STARTED:
       props.color = "red";
-      props.title = "Hit ready to start.";
+      props.title = "Get ready.";
       props.description = "";
       break;
     case ReactionStatus.IS_IN_PROGRESS:
@@ -131,10 +131,38 @@ function useHandleGameOverNavigation(
 }
 
 export const GameScreen = () => {
+  function useToggleTimer() {
+    useEffect(() => {
+      if (timer === 0) {
+        setTimeout(() => {
+          setShowTimer(false);
+          runAnimation(reaction, _reactionState);
+        }, 1000);
+      }
+    }, [timer]);
+  }
+
+  function useAutomaticlyGenerateNewReactionOnSuccessfullGuess() {
+    useEffect(() => {
+      if (reaction?.isGuessed) handleGenerateNewReaction();
+    }, [reaction?.isGuessed]);
+  }
+
+  function useFocusInput() {
+    useEffect(() => {
+      if (
+        reaction?.reactionStatus === ReactionStatus.IS_OVER &&
+        reaction.guessStatus === GuessStatus.IS_WAITING
+      )
+        inputRef.current?.focus();
+    }, [reaction]);
+  }
+
   const reactionState = useStoreState((state) => state.reaction);
   const _reactionState = useStoreActions((actions) => actions.reaction);
   const isGameOver = useStoreState((state) => state.game.isGameOver);
   const reaction = reactionState.reaction;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const [showTimer, setShowTimer] = useState(true);
   const [guessInput, setGuessInput] = useState<string>("");
@@ -156,21 +184,10 @@ export const GameScreen = () => {
   const navigate = useNavigate();
   useInitializeRandomReaction(reaction, _reactionState);
   useHandleGameOverNavigation(isGameOver, navigate);
-
   const { timer, reset } = useCountdown(3);
-
-  useEffect(() => {
-    if (timer === 0) {
-      setTimeout(() => {
-        setShowTimer(false);
-        runAnimation(reaction, _reactionState);
-      }, 1000);
-    }
-  }, [timer]);
-
-  useEffect(() => {
-    if (reaction?.isGuessed) handleGenerateNewReaction();
-  }, [reaction?.isGuessed]);
+  useToggleTimer();
+  useAutomaticlyGenerateNewReactionOnSuccessfullGuess();
+  useFocusInput();
 
   if (!reaction) return <div>Loading...</div>;
 
@@ -225,6 +242,7 @@ export const GameScreen = () => {
           onChange={handleChangeGuess}
           value={guessInput}
           onClick={handleSubmitGuess}
+          ref={inputRef}
         />
       </Flex>
     </Screen>
