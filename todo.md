@@ -8,6 +8,7 @@
 
 # Alpha v0.1.0
 - ui revamp 
+- fix alert messages, not specific enough (higher lower)
 - timer in between reactions -> rendering next button redundant V
 -> remove next button V
 

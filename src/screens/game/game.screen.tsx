@@ -74,12 +74,12 @@ const calcAlertProps = (reaction: IReaction | null): AlertProps => {
           break;
         case GuessStatus.IS_TOO_HIGH:
           props.color = "red";
-          props.title = "Wrong. Take another guess.";
+          props.title = "Too high. Take another guess.";
           props.description = "Hint: too high";
           break;
         case GuessStatus.IS_TOO_LOW:
           props.color = "red";
-          props.title = "Wrong. Take another guess.";
+          props.title = "Too low. Take another guess.";
           props.description = "Hint: too low";
           break;
         case GuessStatus.IS_WAITING:
