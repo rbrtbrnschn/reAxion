@@ -1,3 +1,11 @@
+# Alpha v0.0.2
+- fix keyboard ressize issue V
+- center box on home screen
+- homescreen: fix mobile width of vp 
+- user input takes 3 characters max -> like arcade
+- promp for user name (3 chars) on gameover?
+- global scoreboard
+
 # Alpha v.0.0.1:
 
 # Completed:
