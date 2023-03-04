@@ -18,6 +18,7 @@ import { Screen } from "../../components/common";
 import { Countdown } from "../../components/countdown";
 import { GameInput } from "./game.input";
 import { V2Alert } from "../../components/v2/alert";
+import { useCountdown } from "../../hooks/useCountdown";
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}
@@ -135,6 +136,7 @@ export const GameScreen = () => {
   const isGameOver = useStoreState((state) => state.game.isGameOver);
   const reaction = reactionState.reaction;
 
+  const [showTimer, setShowTimer] = useState(true);
   const [guessInput, setGuessInput] = useState<string>("");
   const guessNumber = useMemo(() => {
     if (!guessInput) return 0;
@@ -155,6 +157,21 @@ export const GameScreen = () => {
   useInitializeRandomReaction(reaction, _reactionState);
   useHandleGameOverNavigation(isGameOver, navigate);
 
+  const { timer, reset } = useCountdown(3);
+
+  useEffect(() => {
+    if (timer === 0) {
+      setTimeout(() => {
+        setShowTimer(false);
+        runAnimation(reaction, _reactionState);
+      }, 1000);
+    }
+  }, [timer]);
+
+  useEffect(() => {
+    if (reaction?.isGuessed) handleGenerateNewReaction();
+  }, [reaction?.isGuessed]);
+
   if (!reaction) return <div>Loading...</div>;
 
   /* Animation */
@@ -169,22 +186,13 @@ export const GameScreen = () => {
   }
 
   /* Handlers */
-  function handleReady(e: React.MouseEvent<HTMLButtonElement>) {
-    const reactionNotOver =
-      reactionState.reaction?.reactionStatus !== ReactionStatus.IS_OVER;
-    const hasGuessed =
-      reactionState.reaction?.guessStatus !== GuessStatus.IS_WAITING;
-
-    if (reactionNotOver) {
-      runAnimation(reaction, _reactionState as any);
-      return;
-    } else if (!hasGuessed) {
-      return;
-    }
+  function handleGenerateNewReaction() {
     const newReaction = new ReactionBuilder().buildWithRandomDuration();
     _reactionState.setReaction({
       ...newReaction,
     });
+    reset();
+    setShowTimer(true);
   }
 
   function handleSubmitGuess(e?: React.MouseEvent<HTMLButtonElement>) {
@@ -206,16 +214,12 @@ export const GameScreen = () => {
     setGuessInput(e.currentTarget.value);
   }
 
-  function handleReturnToHome() {
-    navigate(routes[RouteNames.HOME_PAGE].path);
-  }
-
   return (
-    <Screen className={"flex flex-col p-4 "}>
+    <Screen className={"flex flex-col p-4 " + animationColor}>
       <V2Alert message={alertProps.title} />
       <Flex>
         <AnimationContent className="flex flex-col justify-center items-center">
-          <Countdown value={3} />
+          {showTimer && <Countdown value={timer} />}
         </AnimationContent>
         <GameInput
           onChange={handleChangeGuess}
@@ -231,4 +235,9 @@ const Flex = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+`;
+
+const Animation = styled.div`
+  height: 3rem;
+  width: 3rem;
 `;

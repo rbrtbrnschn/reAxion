@@ -2,7 +2,17 @@
 module.exports = {
   content: ["./src/**/*.{html,js,jsx,ts,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0%" },
+          "100%": { opacity: "100%" },
+        },
+      },
+      animation: {
+        fadeIn: "fadeIn .5s ease-in-out",
+      },
+    },
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {
@@ -15,4 +25,4 @@ module.exports = {
     prefix: "",
     darkTheme: "dark",
   },
-}
+};

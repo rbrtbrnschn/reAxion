@@ -7,9 +7,9 @@
 - promp for user name (3 chars) on gameover?
 
 # Alpha v0.1.0
-- ui revamp
-- timer in between reactions -> rendering next button redundant
--> remove next button
+- ui revamp 
+- timer in between reactions -> rendering next button redundant V
+-> remove next button V
 
 # Alpha v0.0.2
 - fix keyboard ressize issue V

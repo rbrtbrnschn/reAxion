@@ -14,9 +14,12 @@ const globalStoreModel: StoreModel = {
 };
 
 export const store = createStore<StoreModel>(
-  persist(globalStoreModel, {
-    storage: whenDebugging("sessionStorage", "localStorage"),
-  }),
+ // persist(
+    globalStoreModel, 
+    //{
+    //storage: whenDebugging("sessionStorage", "localStorage"),
+  //}
+  //),
   {
     name: "Global Store",
     injections,
