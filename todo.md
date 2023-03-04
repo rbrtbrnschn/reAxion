@@ -1,12 +1,21 @@
+# V1.0.0
+- global scoreboard with ws
+
+# Alpha v0.2.0
+- personal scoreboard
+- user input takes 3 characters max -> like arcade
+- promp for user name (3 chars) on gameover?
+
+# Alpha v0.1.0
+- ui revamp
+- timer in between reactions -> rendering next button redundant
+-> remove next button
+
 # Alpha v0.0.2
 - fix keyboard ressize issue V
 - center box on home screen V
 - homescreen: fix mobile width of vp V
-- timer in between reactions -> rendering next button redundant
--> remove next button
-- user input takes 3 characters max -> like arcade
-- promp for user name (3 chars) on gameover?
-- global scoreboard
+
 
 # Alpha v.0.0.1:
 
