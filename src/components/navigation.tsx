@@ -1,57 +1,120 @@
+import { useNavigate } from "react-router-dom";
+import { RouteNames } from "../enums/routes.enum";
+import { routes } from "../routes";
 
-import { useState } from "react";
-import LightningBolt from "../assets/img/lightning_bolt.png";
-
-export const NavComponent = () => {
-    const [show, setShow] = useState(false);
-
-    return (
-        <nav className="w-full">
-        <div className="container mx-auto px-6 flex items-center justify-between">
-          <div className="flex items-center" aria-label="Home" role="img">
-            <img
-              className="cursor-pointer w-8 sm:w-auto"
-              src={LightningBolt}
-              style={{ width: "54px", height: "54px" }}
-              alt="logo"
-            />
-            <p className="ml-2 lg:ml-4 text-base lg:text-2xl font-bold text-gray-800">
-              ReAxion
-            </p>
-          </div>
-          <div>
-            <button
-              onClick={() => setShow(!show)}
-              className="sm:block md:hidden lg:hidden text-gray-500 hover:text-gray-700 focus:text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500"
-            >
-              <img
-                className="h-8 w-8"
-                src="https://tuk-cdn.s3.amazonaws.com/can-uploader/center_aligned_with_image-svg4.svg"
-                alt="show"
-              />
-            </button>
-            <div
-              id="menu"
-              className={`md:block lg:block ${show ? "" : "hidden"}`}
-            >
-              <button
-                onClick={() => setShow(!show)}
-                className="block md:hidden lg:hidden text-gray-500 hover:text-gray-700 focus:text-gray-700 fixed focus:outline-none focus:ring-2 focus:ring-gray-500 bg-white md:bg-transparent z-30 top-0 mt-3"
+interface INavigationItem {
+  label: string;
+  path: string;
+  onClick?: () => void;
+}
+interface Props {
+  children: React.ReactNode | React.ReactNode[];
+  title: string;
+  navbarItems: INavigationItem[];
+  drawerItems: INavigationItem[];
+}
+export const Navigation = ({
+  title,
+  navbarItems,
+  drawerItems,
+  children,
+}: Props) => {
+  const navigate = useNavigate();
+  const resolveItems = ({ label, path }: INavigationItem, i: number) => (
+    <li key={`linkFor=${label}&to=${path}`}>
+      <a onClick={() => navigate(path)}>{label}</a>
+    </li>
+  );
+  const NavbarItems = navbarItems.map(resolveItems);
+  const DrawerItems = drawerItems.map(resolveItems);
+  return (
+    <div
+      className="drawer"
+      style={{
+        width: "100svw",
+        height: "100svh",
+      }}
+    >
+      <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
+      <div className="drawer-content flex flex-col">
+        {/* <!-- Navbar --> */}
+        <div className="w-full navbar bg-base-100">
+          <div className="flex-none lg:hidden">
+            <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <img
-                  className="h-8 w-8"
-                  src="https://tuk-cdn.s3.amazonaws.com/can-uploader/center_aligned_with_image-svg5.svg"
-                  alt="hide"
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h8m-8 6h16"
                 />
-              </button>
-              <ul className="flex text-3xl md:text-base items-center py-8 md:flex flex-col md:flex-row justify-center fixed md:relative top-0 bottom-0 left-0 right-0 bg-white md:bg-transparent  z-20">
-                <li className="text-gray-600 text-lg hover:text-gray-800 cursor-pointer md:ml-10 pt-10 md:pt-0">
-                  <a href="https://github.com/rbrtbrnschn/reaction">Github</a>
-                </li>
-              </ul>
-            </div>
+              </svg>
+            </label>
+          </div>
+          <div className="btn btn-ghost normal-case text-xl">{title}</div>
+          <div className="flex-none hidden lg:block">
+            <ul className="menu menu-horizontal">
+              {/* <!-- Navbar menu content here --> */}
+              {NavbarItems}
+            </ul>
           </div>
         </div>
-      </nav>
+        {/* <!-- Page content here --> */}
+        {children}
+      </div>
+      <div className="drawer-side">
+        <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
+        <ul className="menu p-4 w-80 bg-base-100">
+          {/* <!-- Sidebar content here --> */}
+          {DrawerItems}
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export function withNavigation<P extends {}>(
+  Component: React.FC<P>,
+  navigationProps?: Partial<Omit<Props, "children">>
+) {
+  return (props: P) => {
+    const defaultsNavigationProps: Omit<Props, "children"> = {
+      title: "ReAxion",
+      drawerItems: [
+        { label: "Home", path: routes[RouteNames.HOME_PAGE].path },
+        { label: "Game", path: routes[RouteNames.GAME_PAGE].path },
+        {
+          label: "Game Overview",
+          path: routes[RouteNames.RECENT_STATS_PAGE].path,
+        },
+        {
+          label: "Scoreboard",
+          path: routes[RouteNames.SCOREBOARD_PERSONAL].path,
+        },
+      ],
+      navbarItems: [
+        { label: "Home", path: routes[RouteNames.HOME_PAGE].path },
+        { label: "Game", path: routes[RouteNames.GAME_PAGE].path },
+        {
+          label: "Game Overview",
+          path: routes[RouteNames.RECENT_STATS_PAGE].path,
+        },
+        {
+          label: "Scoreboard",
+          path: routes[RouteNames.SCOREBOARD_PERSONAL].path,
+        },
+      ],
+    };
+    return (
+      <Navigation {...defaultsNavigationProps} {...navigationProps}>
+        <Component {...props} />
+      </Navigation>
     );
+  };
 }

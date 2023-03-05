@@ -1,20 +1,12 @@
-import { useStore } from "easy-peasy";
 import { useNavigate } from "react-router-dom";
-import { NavComponent } from "../../components/navigation";
-import { RouteNames } from "../../interfaces/route.interface";
-import { routes } from "../../routes";
-import { Screen } from "../../components/common";
-import { withNavigation } from "../../components/v2/navigation";
-import { Navbar } from "../../components/v2/navbar";
-import { Hero } from "../../components/v2/hero";
-import { Footer } from "../../components/v2/footer";
+
+import styled from "styled-components";
+import { Footer } from "../../components/footer";
+import { Hero } from "../../components/hero";
+import { Navbar } from "../../components/navbar";
 
 const MyHomeScreen = () => {
   const navigate = useNavigate();
-
-  const handleQuickPlay = (e: React.MouseEvent<HTMLButtonElement>) => {
-    navigate(routes[RouteNames.GAME_PAGE].path);
-  };
 
   return (
     <Screen className="flex flex-col">
@@ -26,3 +18,8 @@ const MyHomeScreen = () => {
 };
 
 export const HomeScreen = MyHomeScreen;
+
+const Screen = styled.div`
+  width: 100svw;
+  height: 100svh;
+`;

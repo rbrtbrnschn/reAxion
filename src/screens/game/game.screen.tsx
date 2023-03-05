@@ -1,26 +1,21 @@
+import classNames from "classnames";
 import { RecursiveActions } from "easy-peasy";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { NavigateFunction, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { Alert, AlertProps } from "../../components/alert";
-import { AnimationContent } from "../../components/animation";
+import { Alert } from "../../components/alert";
+import { Countdown } from "../../components/countdown";
+import { withNavigation } from "../../components/navigation";
+import { GuessStatus } from "../../enums/guess.enum";
+import { ReactionStatus } from "../../enums/reaction.enum";
+import { useCountdown } from "../../hooks/useCountdown";
 import { ColorsNames } from "../../interfaces/colors.interface";
-import { GuessStatus } from "../../interfaces/guess.interface";
-import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
-import { RouteNames } from "../../interfaces/route.interface";
-import { routes } from "../../routes";
+import { IReaction } from "../../interfaces/reaction.interface";
 import { useStoreActions, useStoreState } from "../../store";
 import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
-import { Screen } from "../../components/common";
-import { Countdown } from "../../components/countdown";
 import { GameInput } from "./game.input";
-import { V2Alert } from "../../components/v2/alert";
-import { useCountdown } from "../../hooks/useCountdown";
-import classNames from "classnames";
 import { GameoverModal } from "./gameover.modal";
-import { withNavigation } from "../../components/v2/navigation";
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}
@@ -45,6 +40,7 @@ const calcColor = (reaction: IReaction | null): string => {
   return color;
 };
 
+type AlertProps = { color: string; title: string; description: string };
 /**
  * Calculates `color`, `title`, `description` for `<Alert />` component based on `reaction`
  * @param reaction {IReaction | null}
@@ -148,7 +144,10 @@ const MyGameScreen = () => {
 
   const reactionState = useStoreState((state) => state.reaction);
   const _reactionState = useStoreActions((actions) => actions.reaction);
-  const isGameOver = useStoreState((state) => state.game.isGameOver);
+  const gameState = useStoreState((state) => state.game);
+  const _gameState = useStoreActions((actions) => actions.game);
+
+  const isGameOver = gameState.currentGameIsOver;
   const reaction = reactionState.reaction;
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -174,6 +173,10 @@ const MyGameScreen = () => {
   useToggleTimer();
   useAutomaticlyGenerateNewReactionOnSuccessfullGuess();
   useFocusInput();
+
+  useEffect(() => {
+    if (isGameOver) return _gameState.reset();
+  }, []);
 
   if (!reaction) return <div>Loading...</div>;
 
@@ -219,7 +222,7 @@ const MyGameScreen = () => {
 
   return (
     <div className={"flex flex-col p-4 h-full"}>
-      <V2Alert message={alertProps.title} />
+      <Alert message={alertProps.title} />
       <Flex>
         <AnimationContent className="flex flex-col justify-center items-center">
           <Animation
@@ -260,6 +263,10 @@ const Animation = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const AnimationContent = styled.div`
+  flex-grow: 1;
 `;
 
 export const GameScreen = withNavigation(MyGameScreen);

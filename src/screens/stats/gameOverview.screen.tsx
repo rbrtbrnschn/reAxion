@@ -1,22 +1,21 @@
 import { FilterActionTypes, StateMapper } from "easy-peasy";
 import { useEffect, useState } from "react";
 import { NavigateFunction, useNavigate } from "react-router-dom";
-import { NavComponent } from "../../components/navigation";
-import { Table } from "../../components/table";
+import { withNavigation } from "../../components/navigation";
+import { Stat1 } from "../../components/stats/stat1";
+import { RouteNames } from "../../enums/routes.enum";
+import { IGame } from "../../interfaces/game.interface";
 import { IReactionStatistic } from "../../interfaces/reaction.interface";
-import { RouteNames } from "../../interfaces/route.interface";
 import { routes } from "../../routes";
 import { useStoreActions, useStoreState } from "../../store";
 import { GameModel } from "../../store/models/game.model";
-import { Screen } from "../../components/common";
-import { withNavigation } from "../../components/v2/navigation";
-import { Stat1 } from "../../components/v2/stats/stat1";
 
-const MyStatsScreen = () => {
+const MyGameOverviewScreen = () => {
   const gameState = useStoreState((state) => state.game);
   const _gameState = useStoreActions((state) => state.game);
   const reactionState = useStoreState((state) => state.reaction);
   const [showStatistics, setShowStatistics] = useState(false);
+  const game = gameState.history[0];
 
   function handleStatistics(): IReactionStatistic[] {
     const newHistory = reactionState.history
@@ -31,18 +30,13 @@ const MyStatsScreen = () => {
   const navigate = useNavigate();
   const handleTryAgain = (e: React.MouseEvent<HTMLButtonElement>) => {
     navigate(routes[RouteNames.GAME_PAGE].path);
-    _gameState.handleGameOver();
-  };
-  const handleViewStatistics = (e: React.MouseEvent<HTMLButtonElement>) => {
-    setShowStatistics((a) => !a);
   };
 
-  useRedirectToGamePage(gameState, navigate);
-
+  //useRedirectToGamePage(game, navigate);
   return (
     <div className="h-full px-2 flex flex-col gap-4">
       <div></div>
-      <Stat1 title="Score" number={gameState.score.toString()} label="" />
+      <Stat1 title="Score" number={game?.score.toString() || "0"} label="" />
       <button className="btn btn-primary" onClick={handleTryAgain}>
         Try Again
       </button>
@@ -127,14 +121,14 @@ const MyStatsScreen = () => {
  * @param navigate {NavigateFunction} - ReturnType of useNavigate()
  */
 function useRedirectToGamePage(
-  state: StateMapper<FilterActionTypes<GameModel>>,
+  game: IGame | null | undefined,
   navigate: NavigateFunction
 ) {
   useEffect(() => {
-    if (!state.isGameOver) navigate(routes[RouteNames.GAME_PAGE].path);
+    if (!game) navigate(routes[RouteNames.GAME_PAGE].path);
   }, []);
 }
 
-export const StatsScreen = withNavigation(MyStatsScreen, {
+export const GameOverviewScreen = withNavigation(MyGameOverviewScreen, {
   title: "Game Overview",
 });

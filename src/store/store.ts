@@ -1,16 +1,16 @@
 import { createStore, createTypedHooks, persist } from "easy-peasy";
 import { whenDebugging } from "../utils/whenDebugging";
 import { injections } from "./injections";
-import { GameModel, gameModel } from "./models/game.model";
-import { ReactionModel, reactionModel } from "./models/reaction.model";
+import { GameModel, gameModel, gameModelV2, GameModelV2 } from "./models/game.model";
+import { ReactionModel, reactionModel, reactionModelV2 } from "./models/reaction.model";
 
 export interface StoreModel {
   reaction: ReactionModel;
-  game: GameModel;
+  game: GameModelV2;
 }
 const globalStoreModel: StoreModel = {
-  reaction: reactionModel,
-  game: gameModel,
+  reaction: reactionModelV2,
+  game: gameModelV2,
 };
 
 export const store = createStore<StoreModel>(
