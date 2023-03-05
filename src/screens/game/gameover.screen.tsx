@@ -9,8 +9,10 @@ import { routes } from "../../routes";
 import { useStoreActions, useStoreState } from "../../store";
 import { GameModel } from "../../store/models/game.model";
 import { Screen } from "../../components/common";
+import { withNavigation } from "../../components/v2/navigation";
+import { Stat1 } from "../../components/v2/stats/stat1";
 
-export const GameOverScreen = () => {
+const MyGameOverScreen = () => {
   const gameState = useStoreState((state) => state.game);
   const _gameState = useStoreActions((state) => state.game);
   const reactionState = useStoreState((state) => state.reaction);
@@ -38,10 +40,13 @@ export const GameOverScreen = () => {
   useRedirectToGamePage(gameState, navigate);
 
   return (
-    <Screen className="py-12">
-      {/* Code block starts */}
-      <NavComponent />
-      <div>
+    <div className="h-full px-2 flex flex-col gap-4">
+      <div></div>
+      <Stat1 title="Score" number={gameState.score.toString()} label="" />
+      <button className="btn btn-primary" onClick={handleTryAgain}>
+        Try Again
+      </button>
+      {/* <div>
         <div className="w-full px-6">
           <div className="mt-8 relative rounded-lg bg-indigo-700 container mx-auto flex flex-col items-center pt-12 sm:pt-24 pb-24 sm:pb-32 md:pb-48 lg:pb-56 xl:pb-64">
             <img
@@ -58,7 +63,16 @@ export const GameOverScreen = () => {
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-center text-white font-bold leading-tight">
                 Game Over
               </h1>
-              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center text-white font-bold leading-tight">Final Score: <span className={gameState.score > 15 ? "text-green-400" : "text-yellow-400"}>{gameState.score}</span></h2>
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-center text-white font-bold leading-tight">
+                Final Score:{" "}
+                <span
+                  className={
+                    gameState.score > 15 ? "text-green-400" : "text-yellow-400"
+                  }
+                >
+                  {gameState.score}
+                </span>
+              </h2>
             </div>
             <div className="flex justify-center items-center mb-10 sm:mb-20">
               <button
@@ -102,9 +116,8 @@ export const GameOverScreen = () => {
             </div>
           </div>
         </div>
-      </div>
-      {/* Code block ends */}
-    </Screen>
+      </div> */}
+    </div>
   );
 };
 
@@ -121,3 +134,7 @@ function useRedirectToGamePage(
     if (!state.isGameOver) navigate(routes[RouteNames.GAME_PAGE].path);
   }, []);
 }
+
+export const GameOverScreen = withNavigation(MyGameOverScreen, {
+  title: "Stats",
+});

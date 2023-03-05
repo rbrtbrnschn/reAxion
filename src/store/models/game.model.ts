@@ -1,7 +1,15 @@
 import { action, Action, computed, Computed, thunk, Thunk } from "easy-peasy";
 import { GameDifficulty } from "../../interfaces/difficulty.interface";
+import { IReaction } from "../../interfaces/reaction.interface";
 import { Injections } from "../injections";
 import { StoreModel } from "../store";
+
+interface IGame {
+  score: number;
+  name: string;
+  difficulty: GameDifficulty;
+  reactions: IReaction[];
+}
 
 export const gameDifficulties: Record<
   GameDifficulty,
@@ -22,13 +30,17 @@ export const gameDifficulties: Record<
 };
 
 export interface GameModel {
+  //game: IGame | null;
   score: number;
   difficulty: GameDifficulty;
   failedAttempts: number;
+  //name: string;
+  //history: IGame[];
   deviation: Computed<GameModel, number, StoreModel>;
   isGameOver: Computed<GameModel, boolean, StoreModel>;
 
   /* Setters */
+  //setName: Action<GameModel, string>;
   setScore: Action<GameModel, number>;
   setDifficulty: Action<GameModel, GameDifficulty>;
   setFailedAttempts: Action<GameModel, number>;

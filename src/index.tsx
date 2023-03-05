@@ -19,6 +19,7 @@ root.render(
       <BrowserRouter>
         <Routes>
           {Object.entries(routes).map(([key, route]) => (
+            /*@ts-ignore*/
             <Route {...route} key={"route-" + key} />
           ))}
         </Routes>

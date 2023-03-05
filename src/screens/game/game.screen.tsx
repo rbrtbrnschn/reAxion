@@ -13,12 +13,14 @@ import { useStoreActions, useStoreState } from "../../store";
 import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
-import { Form } from "./game.form";
 import { Screen } from "../../components/common";
 import { Countdown } from "../../components/countdown";
 import { GameInput } from "./game.input";
 import { V2Alert } from "../../components/v2/alert";
 import { useCountdown } from "../../hooks/useCountdown";
+import classNames from "classnames";
+import { GameoverModal } from "./gameover.modal";
+import { withNavigation } from "../../components/v2/navigation";
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}
@@ -116,26 +118,12 @@ function useInitializeRandomReaction(
   }, [actions, reaction]);
 }
 
-/**
- * Navigates user to <GameOverScreen /> if state.game.isGameOver
- * @param isGameOver {Boolean}
- * @param navigate {NavigateFunction}
- */
-function useHandleGameOverNavigation(
-  isGameOver: boolean,
-  navigate: NavigateFunction
-) {
-  useEffect(() => {
-    if (isGameOver) navigate(routes[RouteNames.GAME_OVER_PAGE].path);
-  }, [isGameOver, navigate]);
-}
-
-export const GameScreen = () => {
+const MyGameScreen = () => {
   function useToggleTimer() {
     useEffect(() => {
       if (timer === 0) {
+        setShowTimer(false);
         setTimeout(() => {
-          setShowTimer(false);
           runAnimation(reaction, _reactionState);
         }, 1000);
       }
@@ -181,9 +169,7 @@ export const GameScreen = () => {
   );
 
   /* Initialize */
-  const navigate = useNavigate();
   useInitializeRandomReaction(reaction, _reactionState);
-  useHandleGameOverNavigation(isGameOver, navigate);
   const { timer, reset } = useCountdown(3);
   useToggleTimer();
   useAutomaticlyGenerateNewReactionOnSuccessfullGuess();
@@ -232,12 +218,23 @@ export const GameScreen = () => {
   }
 
   return (
-    <Screen className={"flex flex-col p-4 "}>
+    <div className={"flex flex-col p-4 h-full"}>
       <V2Alert message={alertProps.title} />
       <Flex>
         <AnimationContent className="flex flex-col justify-center items-center">
-          {showTimer && <Countdown value={timer} />}
-          <Animation className={animationColor} />
+          <Animation
+            className={classNames({
+              "mask mask-hexagon": true,
+              [animationColor]: animationColor,
+              "animate-hueRotate":
+                reaction.reactionStatus === ReactionStatus.HAS_NOT_STARTED,
+            })}
+          >
+            <Countdown
+              value={timer}
+              style={{ visibility: showTimer ? "visible" : "hidden" }}
+            />
+          </Animation>
         </AnimationContent>
         <GameInput
           onChange={handleChangeGuess}
@@ -246,7 +243,8 @@ export const GameScreen = () => {
           ref={inputRef}
         />
       </Flex>
-    </Screen>
+      <GameoverModal isOpen={isGameOver} />
+    </div>
   );
 };
 
@@ -257,6 +255,11 @@ const Flex = styled.div`
 `;
 
 const Animation = styled.div`
-  height: 3rem;
-  width: 3rem;
+  height: 11rem;
+  width: 11rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
+
+export const GameScreen = withNavigation(MyGameScreen);

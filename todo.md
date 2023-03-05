@@ -1,12 +1,17 @@
 # V1.0.0
 - global scoreboard with ws
 
-# Alpha v0.2.0
-- personal scoreboard
-- user input takes 3 characters max -> like arcade
-- promp for user name (3 chars) on gameover?
 
 # Alpha v0.1.0
+- refactor naming `game-over` screen to `CurrentGameStats` Screen
+- game model revamped im abbild von ReactionModel
+- reset on navigate to `/stats` instead of `/game-over`
+- statsProcessingService
+- Stats Page
+- 
+- personal scoreboard
+- user input takes 3 characters max -> like arcade V
+- promp for user name (3 chars) on gameover? V
 - ui revamp 
 - fix alert messages, not specific enough (higher lower) V
 - timer in between reactions -> rendering next button redundant V
