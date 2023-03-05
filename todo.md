@@ -3,7 +3,7 @@
 
 
 # Alpha v0.1.0
-- refactor naming `game-over` screen to `CurrentGameStats` Screen
+- refactor naming `game-over` screen to `CurrentGameStats` Screen V
 - game model revamped im abbild von ReactionModel
 - reset on navigate to `/stats` instead of `/game-over`
 - statsProcessingService

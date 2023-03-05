@@ -12,7 +12,7 @@ import { Screen } from "../../components/common";
 import { withNavigation } from "../../components/v2/navigation";
 import { Stat1 } from "../../components/v2/stats/stat1";
 
-const MyGameOverScreen = () => {
+const MyStatsScreen = () => {
   const gameState = useStoreState((state) => state.game);
   const _gameState = useStoreActions((state) => state.game);
   const reactionState = useStoreState((state) => state.reaction);
@@ -135,6 +135,6 @@ function useRedirectToGamePage(
   }, []);
 }
 
-export const GameOverScreen = withNavigation(MyGameOverScreen, {
-  title: "Stats",
+export const StatsScreen = withNavigation(MyStatsScreen, {
+  title: "Game Overview",
 });

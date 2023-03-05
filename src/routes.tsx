@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { App } from "./App";
 import { RouteNames } from "./interfaces/route.interface";
 import { GameScreen } from "./screens/game/game.screen";
-import { GameOverScreen } from "./screens/game/gameover.screen";
+import { StatsScreen } from "./screens/stats/stats.screen";
 import { HomeScreen } from "./screens/home/home.screen";
 
 export const routes: Record<
@@ -20,6 +20,6 @@ export const routes: Record<
   },
   [RouteNames.GAME_OVER_PAGE]: {
     path: "/game-over",
-    element: <GameOverScreen />,
+    element: <StatsScreen />,
   },
 };
