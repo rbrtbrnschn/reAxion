@@ -1,21 +1,21 @@
+import classNames from "classnames";
 import { RecursiveActions } from "easy-peasy";
-import { useEffect, useMemo, useState } from "react";
-import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
-import { Alert, AlertProps } from "../../components/alert";
-import { Animation } from "../../components/animation";
+import { Alert } from "../../components/alert";
+import { Countdown } from "../../components/countdown";
+import { withNavigation } from "../../components/navigation";
+import { GuessStatus } from "../../enums/guess.enum";
+import { ReactionStatus } from "../../enums/reaction.enum";
+import { useCountdown } from "../../hooks/useCountdown";
 import { ColorsNames } from "../../interfaces/colors.interface";
-import { GuessStatus } from "../../interfaces/guess.interface";
-import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
-import { RouteNames } from "../../interfaces/route.interface";
-import { routes } from "../../routes";
+import { IReaction } from "../../interfaces/reaction.interface";
 import { useStoreActions, useStoreState } from "../../store";
 import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
-import { Form } from "./game.form";
-import { Screen } from "../../components/common";
-
+import { GameInput } from "./game.input";
+import { GameoverModal } from "./gameover.modal";
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}
@@ -40,6 +40,7 @@ const calcColor = (reaction: IReaction | null): string => {
   return color;
 };
 
+type AlertProps = { color: string; title: string; description: string };
 /**
  * Calculates `color`, `title`, `description` for `<Alert />` component based on `reaction`
  * @param reaction {IReaction | null}
@@ -54,7 +55,7 @@ const calcAlertProps = (reaction: IReaction | null): AlertProps => {
   switch (reaction?.reactionStatus) {
     case ReactionStatus.HAS_NOT_STARTED:
       props.color = "red";
-      props.title = "Hit ready to start.";
+      props.title = "Get ready.";
       props.description = "";
       break;
     case ReactionStatus.IS_IN_PROGRESS:
@@ -71,12 +72,12 @@ const calcAlertProps = (reaction: IReaction | null): AlertProps => {
           break;
         case GuessStatus.IS_TOO_HIGH:
           props.color = "red";
-          props.title = "Wrong. Take another guess.";
+          props.title = "Too high. Take another guess.";
           props.description = "Hint: too high";
           break;
         case GuessStatus.IS_TOO_LOW:
           props.color = "red";
-          props.title = "Wrong. Take another guess.";
+          props.title = "Too low. Take another guess.";
           props.description = "Hint: too low";
           break;
         case GuessStatus.IS_WAITING:
@@ -113,26 +114,44 @@ function useInitializeRandomReaction(
   }, [actions, reaction]);
 }
 
-/**
- * Navigates user to <GameOverScreen /> if state.game.isGameOver
- * @param isGameOver {Boolean}
- * @param navigate {NavigateFunction}
- */
-function useHandleGameOverNavigation(
-  isGameOver: boolean,
-  navigate: NavigateFunction
-) {
-  useEffect(() => {
-    if (isGameOver) navigate(routes[RouteNames.GAME_OVER_PAGE].path);
-  }, [isGameOver, navigate]);
-}
+const MyGameScreen = () => {
+  function useToggleTimer() {
+    useEffect(() => {
+      if (timer === 0) {
+        setShowTimer(false);
+        setTimeout(() => {
+          runAnimation(reaction, _reactionState);
+        }, 1000);
+      }
+    }, [timer]);
+  }
 
-export const GameScreen = () => {
+  function useAutomaticlyGenerateNewReactionOnSuccessfullGuess() {
+    useEffect(() => {
+      if (reaction?.isGuessed) handleGenerateNewReaction();
+    }, [reaction?.isGuessed]);
+  }
+
+  function useFocusInput() {
+    useEffect(() => {
+      if (
+        reaction?.reactionStatus === ReactionStatus.IS_OVER &&
+        reaction.guessStatus === GuessStatus.IS_WAITING
+      )
+        inputRef.current?.focus();
+    }, [reaction]);
+  }
+
   const reactionState = useStoreState((state) => state.reaction);
   const _reactionState = useStoreActions((actions) => actions.reaction);
-  const isGameOver = useStoreState((state) => state.game.isGameOver);
-  const reaction = reactionState.reaction;
+  const gameState = useStoreState((state) => state.game);
+  const _gameState = useStoreActions((actions) => actions.game);
 
+  const isGameOver = gameState.currentGameIsOver;
+  const reaction = reactionState.reaction;
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [showTimer, setShowTimer] = useState(true);
   const [guessInput, setGuessInput] = useState<string>("");
   const guessNumber = useMemo(() => {
     if (!guessInput) return 0;
@@ -149,9 +168,15 @@ export const GameScreen = () => {
   );
 
   /* Initialize */
-  const navigate = useNavigate();
   useInitializeRandomReaction(reaction, _reactionState);
-  useHandleGameOverNavigation(isGameOver, navigate);
+  const { timer, reset } = useCountdown(3);
+  useToggleTimer();
+  useAutomaticlyGenerateNewReactionOnSuccessfullGuess();
+  useFocusInput();
+
+  useEffect(() => {
+    if (isGameOver) return _gameState.reset();
+  }, []);
 
   if (!reaction) return <div>Loading...</div>;
 
@@ -167,22 +192,13 @@ export const GameScreen = () => {
   }
 
   /* Handlers */
-  function handleReady(e: React.MouseEvent<HTMLButtonElement>) {
-    const reactionNotOver =
-      reactionState.reaction?.reactionStatus !== ReactionStatus.IS_OVER;
-    const hasGuessed =
-      reactionState.reaction?.guessStatus !== GuessStatus.IS_WAITING;
-
-    if (reactionNotOver) {
-      runAnimation(reaction, _reactionState as any);
-      return;
-    } else if (!hasGuessed) {
-      return;
-    }
+  function handleGenerateNewReaction() {
     const newReaction = new ReactionBuilder().buildWithRandomDuration();
     _reactionState.setReaction({
       ...newReaction,
     });
+    reset();
+    setShowTimer(true);
   }
 
   function handleSubmitGuess(e?: React.MouseEvent<HTMLButtonElement>) {
@@ -204,41 +220,53 @@ export const GameScreen = () => {
     setGuessInput(e.currentTarget.value);
   }
 
-  function handleReturnToHome() {
-    navigate(routes[RouteNames.HOME_PAGE].path);
-  }
-  
   return (
-    <ScreenWithFlexColumn id="game-screen">
-      <div className="absolute w-max top-10 left-10">
-        <button onClick={handleReturnToHome} className="text-[3rem] text-transparent text-shadow-white hover:text-shadow-dark hover:opacity-40">🔙</button>
-      </div>
-      <div className="absolute top-10 left-1/2 -translate-x-[50%] w-3/5">
-        <Alert {...alertProps} />
-      </div>
+    <div className={"flex flex-col p-4 h-full"}>
+      <Alert message={alertProps.title} />
       <Flex>
-        <Animation color={animationColor} id="animation" />
-        <Form
-          onClick={{
-            button1: handleSubmitGuess,
-            button2: handleReady,
-          }}
+        <AnimationContent className="flex flex-col justify-center items-center">
+          <Animation
+            className={classNames({
+              "mask mask-hexagon": true,
+              [animationColor]: animationColor,
+              "animate-hueRotate":
+                reaction.reactionStatus === ReactionStatus.HAS_NOT_STARTED,
+            })}
+          >
+            <Countdown
+              value={timer}
+              style={{ visibility: showTimer ? "visible" : "hidden" }}
+            />
+          </Animation>
+        </AnimationContent>
+        <GameInput
           onChange={handleChangeGuess}
-          value={guessInput as any}
-          buttonText={reaction.isGuessed ? "Next" : "Ready"}
+          value={guessInput}
+          onClick={handleSubmitGuess}
+          ref={inputRef}
         />
       </Flex>
-    </ScreenWithFlexColumn>
+      <GameoverModal isOpen={isGameOver} />
+    </div>
   );
 };
 
-
-const ScreenWithFlexColumn = styled(Screen)`
-display: flex;
-flex-direction: column;
-`
 const Flex = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
 `;
+
+const Animation = styled.div`
+  height: 11rem;
+  width: 11rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const AnimationContent = styled.div`
+  flex-grow: 1;
+`;
+
+export const GameScreen = withNavigation(MyGameScreen);

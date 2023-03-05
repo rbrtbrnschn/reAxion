@@ -1,6 +1,7 @@
 import { action, Action, thunk, Thunk, ThunkOn, thunkOn } from "easy-peasy";
-import { GuessStatus } from "../../interfaces/guess.interface";
-import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
+import { GuessStatus } from "../../enums/guess.enum";
+import { ReactionStatus } from "../../enums/reaction.enum";
+import { IReaction } from "../../interfaces/reaction.interface";
 import { Injections } from "../injections";
 import { StoreModel } from "../store";
 
@@ -72,6 +73,7 @@ export const reactionModel: ReactionModel = {
     (actions) => actions.addGuess,
     (actions, target, helpers) => {
       const state = helpers.getState();
+      //@ts-ignore
       const { isGameOver } = helpers.getStoreState().game;
       const guess = target.payload;
 
@@ -80,6 +82,7 @@ export const reactionModel: ReactionModel = {
         throw new Error("added Guess to non-existant state.reaction");
 
       const difference = Math.abs(guess - state.reaction.duration);
+      //@ts-ignore
       const deviation = helpers.getStoreState().game.deviation;
 
       const isCorrect = difference <= deviation;
@@ -89,13 +92,109 @@ export const reactionModel: ReactionModel = {
         state.reaction.guessStatus = GuessStatus.IS_RIGHT;
         state.reaction.isGuessed = true;
         actions.copyToHistory();
+      //@ts-ignore
         helpers.getStoreActions().game.incrementScore();
         return;
       }
       if (isTooHigh) state.reaction.guessStatus = GuessStatus.IS_TOO_HIGH;
       else state.reaction.guessStatus = GuessStatus.IS_TOO_LOW;
-
+      
+      //@ts-ignore
       helpers.getStoreActions().game.incrementFailedAttempts();
+    }
+  ),
+  onSetReaction: thunkOn(
+    (actions) => actions.setReaction,
+    (_, target, { injections }) => {
+      if (target.payload) {
+        injections.loggerService.debug(
+          "New Reaction with duration of: " + target.payload?.duration + "ms"
+        );
+      } else {
+        injections.loggerService.debug("Set Reaction to null");
+      }
+    }
+  ),
+  onSetReactionStatus: thunkOn(
+    (actions) => actions.setReactionStatus,
+    (_, target, { injections }) => {
+      if (target.payload === ReactionStatus.IS_IN_PROGRESS)
+        injections.loggerService.debugTime("animation");
+      else if (target.payload === ReactionStatus.IS_OVER)
+        injections.loggerService.debugTimeEnd("animation");
+    }
+  ),
+};
+
+export const reactionModelV2: ReactionModel = {
+  reaction: null,
+  history: [],
+
+  /* Setters */
+  setReaction: action((state, reaction) => {
+    state.reaction = reaction;
+  }),
+  setHistory: action((state, history) => {
+    state.history = history;
+  }),
+  setGuesses: action((state, guesses) => {
+    if (!state.reaction) return;
+    state.reaction.guesses = guesses;
+  }),
+  setIsGuessed: action((state, isGuessed) => {
+    if (!state.reaction) return;
+    state.reaction.isGuessed = isGuessed;
+  }),
+  setGuessStatus: action((state, guessStatus) => {
+    if (!state.reaction) return;
+    state.reaction.guessStatus = guessStatus;
+  }),
+  setReactionStatus: action((state, reactionStatus) => {
+    if (!state.reaction) return;
+    state.reaction.reactionStatus = reactionStatus;
+  }),
+  addGuess: action((state, guess) => {
+    if (!state.reaction) return;
+    state.reaction.guesses.push(guess);
+  }),
+  copyToHistory: action((state) => {
+    if (!state.reaction) return;
+    state.history.push(state.reaction);
+  }),
+  handleGameOver: thunk((actions, _, { injections }) => {
+    actions.setReaction(null);
+    actions.setHistory([]);
+  }),
+
+  /* Listeners */
+  onAddGuess: thunkOn(
+    (actions) => actions.addGuess,
+    (actions, target, helpers) => {
+      const state = helpers.getState();
+      const { currentGameIsOver } = helpers.getStoreState().game;
+      const guess = target.payload;
+
+      if (currentGameIsOver) return helpers.fail("Game Over. Cannot add guess.");
+      if (!state.reaction)
+        throw new Error("added Guess to non-existant state.reaction");
+
+      const difference = Math.abs(guess - state.reaction.duration);
+      const deviation = helpers.getStoreState().game.currentDeviation;
+
+      const isCorrect = difference <= deviation;
+      const isTooHigh = guess > state.reaction.duration;
+
+      if (isCorrect) {
+        state.reaction.guessStatus = GuessStatus.IS_RIGHT;
+        state.reaction.isGuessed = true;
+        actions.copyToHistory();
+        helpers.getStoreActions().game.incrementCurrentScore();
+        return;
+      }
+      if (isTooHigh) state.reaction.guessStatus = GuessStatus.IS_TOO_HIGH;
+      else state.reaction.guessStatus = GuessStatus.IS_TOO_LOW;
+
+      helpers.getStoreActions().game.incrementCurrentFailedAttempts();
     }
   ),
   onSetReaction: thunkOn(

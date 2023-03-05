@@ -1,10 +1,5 @@
-import { GuessStatus } from "./guess.interface";
-
-export enum ReactionStatus {
-  HAS_NOT_STARTED,
-  IS_IN_PROGRESS,
-  IS_OVER,
-}
+import { GuessStatus } from "../enums/guess.enum";
+import { ReactionStatus } from "../enums/reaction.enum";
 
 export interface IReaction {
   duration: number;

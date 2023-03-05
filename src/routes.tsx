@@ -1,12 +1,13 @@
+import { ReactNode } from "react";
 import { App } from "./App";
-import { RouteNames } from "./interfaces/route.interface";
+import { RouteNames } from "./enums/routes.enum";
 import { GameScreen } from "./screens/game/game.screen";
-import { GameOverScreen } from "./screens/game/gameover.screen";
-import { HomeScreen } from "./screens/home/home.screen";
+import { PersonalScoreboardScreen } from "./screens/scoreboard/personalScoreboard.screen";
+import { GameOverviewScreen } from "./screens/stats/gameOverview.screen";
 
 export const routes: Record<
   RouteNames,
-  { path: string; element: React.ReactNode; index?: boolean }
+  { path: string; element: ReactNode; index?: true }
 > = {
   [RouteNames.HOME_PAGE]: {
     path: "/",
@@ -17,8 +18,16 @@ export const routes: Record<
     element: <GameScreen />,
     index: true,
   },
-  [RouteNames.GAME_OVER_PAGE]: {
-    path: "/game-over",
-    element: <GameOverScreen />,
+  [RouteNames.RECENT_STATS_PAGE]: {
+    path: "/stats/recent",
+    element: <GameOverviewScreen />,
+  },
+  [RouteNames.SCOREBOARD_PERSONAL]: {
+    path: "/scoreboard/personal",
+    element: <PersonalScoreboardScreen />,
+  },
+  [RouteNames.SCOREBOARD_GLOBAL]: {
+    path: "/scoreboard/global",
+    element: <div>WIP</div>,
   },
 };

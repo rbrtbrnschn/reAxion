@@ -1,15 +1,29 @@
+# V1.0.0
+- global scoreboard with ws
+- proper stats page
+- statsProcessingService
+
+# Alpha v0.1.0
+- refactor naming `game-over` screen to `CurrentGameStats` Screen V
+- game model revamped im abbild von ReactionModel V
+- reset on navigate to `/stats` instead of `/game-over` V
+- personal scoreboard V
+- user input takes 3 characters max -> like arcade V
+- promp for user name (3 chars) on gameover? V
+- ui revamp V
+- fix alert messages, not specific enough (higher lower) V
+- timer in between reactions -> rendering next button redundant V
+-> remove next button V
+- refactor game reset logic V
+- WIP Stats Page V
+
 # Alpha v0.0.2
 - fix keyboard ressize issue V
 - center box on home screen V
 - homescreen: fix mobile width of vp V
-- timer in between reactions -> rendering next button redundant
-- user input takes 3 characters max -> like arcade
-- promp for user name (3 chars) on gameover?
-- global scoreboard
+
 
 # Alpha v.0.0.1:
-
-# Completed:
 
 - highscore show session highscore & gameover screen V
 - game model & store V
@@ -35,7 +49,18 @@
 
 # Icebox:
 
-- multiplayer game 1v1, via websockets
+- animations loading, buffering, particles
+- other visual cues
+- audible cues
+- timer before start
+  -> automating next button
+  -> pause function
+- difficulty exponentioal growth ( take game.score as multiplier )
+- sound effects & music
+- bonus points on how quickly a time is guess correctly
+- user metric tracking
+
+- multiplayer game 1v1, via websockets, ws can provide live leaderboard
 - if input gets code.ENTER and guessStatus.IS_RIGHT => handleNext()
 - think about whole game flow from splash screen to routing
 - settings would have an option for automatic next
@@ -51,3 +76,6 @@
 - help
 - settings
 - history
+
+### Resources:
+https://github.com/bramus/viewport-resize-behavior/blob/main/explainer.md

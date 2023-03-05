@@ -1,5 +1,6 @@
-import { GuessStatus } from "../../interfaces/guess.interface";
-import { IReaction, ReactionStatus } from "../../interfaces/reaction.interface";
+import { GuessStatus } from "../../enums/guess.enum";
+import { ReactionStatus } from "../../enums/reaction.enum";
+import { IReaction } from "../../interfaces/reaction.interface";
 
 export class ReactionBuilder {
   buildByDuration({ duration }: Pick<IReaction, "duration">): IReaction {
