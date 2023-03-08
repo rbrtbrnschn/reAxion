@@ -2,16 +2,17 @@
 - fix release workflow
   - add env variable / secret to prod.env
 - global scoreboard with ws
-- proper stats page
-  - time played
-  - avarage time it took to guess right
-  - average deviation
-- statsProcessingService
 - add feedback section
 - renew notifs
 - user metric tracking
 - reset if gameover with score of 0 
 
+# Alpha v0.1.2 - Stats Supreme
+- proper stats page 
+- statsProcessingService V
+  - time played V
+  - average deviation V
+  - avarage time it took to guess right V
 
 # Alpha v0.1.1
 - settings page V
