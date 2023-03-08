@@ -251,7 +251,7 @@ const MyGameScreen = () => {
           }
         />
       </Flex>
-      <GameoverModal isOpen={isGameOver && gameState.game?.score !== 0} />
+      <GameoverModal isOpen={isGameOver} />
     </div>
   );
 };

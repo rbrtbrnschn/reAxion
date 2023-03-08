@@ -1,13 +1,13 @@
 import { action, Action, computed, Computed, thunk, Thunk, ThunkOn, thunkOn } from "easy-peasy";
 import { GameDifficulty } from "../../enums/difficulty.enum";
-import { IGame } from "../../interfaces/game.interface";
+import { IGame, IGameDifficulty } from "../../interfaces/game.interface";
 import { IReaction } from "../../interfaces/reaction.interface";
 import { Injections } from "../injections";
 import { StoreModel } from "../store";
 
 export const gameDifficulties: Record<
   GameDifficulty,
-  { deviation: number; maxFailedAttempts: number, name: string, isNotPlayable?: true }
+  IGameDifficulty
 > = {
   [GameDifficulty.EASY]: {
     deviation: 500,

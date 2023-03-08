@@ -40,7 +40,7 @@ const MyPersonalScoreboardScreen = () => {
               return (
                 <tr key={"game-" + (index + 1)}>
                   <th>{index + 1}</th>
-                  <td>{game.name || "???"}</td>
+                  <td>{game.name.toUpperCase() || "???"}</td>
                   <td>{game.score}</td>
                   <td>{gameToAverageDeviation(game).toFixed(2)}ms</td>
                   <td>{gameDifficulties[game.difficulty].name}</td>

@@ -7,6 +7,14 @@ export interface IReaction {
   isGuessed: boolean;
   guessStatus: GuessStatus;
   reactionStatus: ReactionStatus;
+  startedAt?: number;
+  completedAt?: number;
+  _id: string;
+}
+
+export interface IFinishedReaction extends IReaction {
+  startedAt: number;
+  completedAt: number;
 }
 
 export interface IReactionStatistic extends IReaction {
