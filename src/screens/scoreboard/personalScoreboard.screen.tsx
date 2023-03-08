@@ -3,6 +3,7 @@ import { withNavigation } from "../../components/navigation";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { IGame } from "../../interfaces/game.interface";
 import { useStoreState } from "../../store";
+import { gameDifficulties } from "../../store/models/game.model";
 import { gameToAverageDeviation } from "../../utils/scoreboard/gamesToAverageDeviation";
 
 const MyPersonalScoreboardScreen = () => {
@@ -30,6 +31,7 @@ const MyPersonalScoreboardScreen = () => {
               <th>Name</th>
               <th>Score</th>
               <th>Deviation (avg.)</th>
+              <th>Difficulty</th>
             </tr>
           </thead>
           <tbody>
@@ -41,6 +43,7 @@ const MyPersonalScoreboardScreen = () => {
                   <td>{game.name || "???"}</td>
                   <td>{game.score}</td>
                   <td>{gameToAverageDeviation(game).toFixed(2)}ms</td>
+                  <td>{gameDifficulties[game.difficulty].name}</td>
                 </tr>
               );
             })}
