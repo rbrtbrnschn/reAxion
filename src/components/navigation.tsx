@@ -95,8 +95,9 @@ export function withNavigation<P extends {}>(
         },
         {
           label: "Scoreboard",
-          path: routes[RouteNames.SCOREBOARD_PERSONAL].path,
+          path: routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path,
         },
+        { label: "Settings", path: routes[RouteNames.SETTINGS_PAGE].path },
       ],
       navbarItems: [
         { label: "Home", path: routes[RouteNames.HOME_PAGE].path },
@@ -107,8 +108,9 @@ export function withNavigation<P extends {}>(
         },
         {
           label: "Scoreboard",
-          path: routes[RouteNames.SCOREBOARD_PERSONAL].path,
+          path: routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path,
         },
+        { label: "Settings", path: routes[RouteNames.SETTINGS_PAGE].path },
       ],
     };
     return (

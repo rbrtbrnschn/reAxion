@@ -7,23 +7,29 @@ import { StoreModel } from "../store";
 
 export const gameDifficulties: Record<
   GameDifficulty,
-  { deviation: number; maxFailedAttempts: number }
+  { deviation: number; maxFailedAttempts: number, name: string, isNotPlayable?: true }
 > = {
   [GameDifficulty.EASY]: {
     deviation: 500,
     maxFailedAttempts: 5,
+    name: "Easy",
   },
   [GameDifficulty.MEDIUM]: {
     deviation: 300,
     maxFailedAttempts: 3,
+    name: "Medium"
   },
   [GameDifficulty.HARD]: {
     deviation: 100,
     maxFailedAttempts: 1,
+    name: "Hard"
   },
   [GameDifficulty.NOT_SELECTED]: {
     deviation: 0,
     maxFailedAttempts: 0,
+    name: "Not Selected",
+    isNotPlayable: true
+
   },
 };
 

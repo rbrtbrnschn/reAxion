@@ -3,6 +3,7 @@ import { App } from "./App";
 import { RouteNames } from "./enums/routes.enum";
 import { GameScreen } from "./screens/game/game.screen";
 import { PersonalScoreboardScreen } from "./screens/scoreboard/personalScoreboard.screen";
+import { SettingsScreen } from "./screens/settings/settings.screen";
 import { GameOverviewScreen } from "./screens/stats/gameOverview.screen";
 
 export const routes: Record<
@@ -22,12 +23,16 @@ export const routes: Record<
     path: "/stats/recent",
     element: <GameOverviewScreen />,
   },
-  [RouteNames.SCOREBOARD_PERSONAL]: {
+  [RouteNames.SCOREBOARD_PERSONAL_PAGE]: {
     path: "/scoreboard/personal",
     element: <PersonalScoreboardScreen />,
   },
-  [RouteNames.SCOREBOARD_GLOBAL]: {
+  [RouteNames.SCOREBOARD_GLOBAL_PAGE]: {
     path: "/scoreboard/global",
     element: <div>WIP</div>,
+  },
+  [RouteNames.SETTINGS_PAGE]: {
+    path: "/settings",
+    element: <SettingsScreen />,
   },
 };
