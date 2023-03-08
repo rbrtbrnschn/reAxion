@@ -16,6 +16,8 @@ export interface ReactionModel {
   setIsGuessed: Action<ReactionModel, boolean>;
   setGuessStatus: Action<ReactionModel, GuessStatus>;
   setReactionStatus: Action<ReactionModel, ReactionStatus>;
+  setStartedAt: Action<ReactionModel>;
+  setCompletedAt: Action<ReactionModel>;
 
   /* Helpers */
   addGuess: Action<ReactionModel, number>;
@@ -28,103 +30,6 @@ export interface ReactionModel {
   onSetReactionStatus: ThunkOn<ReactionModel, Injections, StoreModel>;
 }
 
-export const reactionModel: ReactionModel = {
-  reaction: null,
-  history: [],
-
-  /* Setters */
-  setReaction: action((state, reaction) => {
-    state.reaction = reaction;
-  }),
-  setHistory: action((state, history) => {
-    state.history = history;
-  }),
-  setGuesses: action((state, guesses) => {
-    if (!state.reaction) return;
-    state.reaction.guesses = guesses;
-  }),
-  setIsGuessed: action((state, isGuessed) => {
-    if (!state.reaction) return;
-    state.reaction.isGuessed = isGuessed;
-  }),
-  setGuessStatus: action((state, guessStatus) => {
-    if (!state.reaction) return;
-    state.reaction.guessStatus = guessStatus;
-  }),
-  setReactionStatus: action((state, reactionStatus) => {
-    if (!state.reaction) return;
-    state.reaction.reactionStatus = reactionStatus;
-  }),
-  addGuess: action((state, guess) => {
-    if (!state.reaction) return;
-    state.reaction.guesses.push(guess);
-  }),
-  copyToHistory: action((state) => {
-    if (!state.reaction) return;
-    state.history.push(state.reaction);
-  }),
-  handleGameOver: thunk((actions, _, { injections }) => {
-    actions.setReaction(null);
-    actions.setHistory([]);
-  }),
-
-  /* Listeners */
-  onAddGuess: thunkOn(
-    (actions) => actions.addGuess,
-    (actions, target, helpers) => {
-      const state = helpers.getState();
-      //@ts-ignore
-      const { isGameOver } = helpers.getStoreState().game;
-      const guess = target.payload;
-
-      if (isGameOver) return helpers.fail("Game Over. Cannot add guess.");
-      if (!state.reaction)
-        throw new Error("added Guess to non-existant state.reaction");
-
-      const difference = Math.abs(guess - state.reaction.duration);
-      //@ts-ignore
-      const deviation = helpers.getStoreState().game.deviation;
-
-      const isCorrect = difference <= deviation;
-      const isTooHigh = guess > state.reaction.duration;
-
-      if (isCorrect) {
-        state.reaction.guessStatus = GuessStatus.IS_RIGHT;
-        state.reaction.isGuessed = true;
-        actions.copyToHistory();
-      //@ts-ignore
-        helpers.getStoreActions().game.incrementScore();
-        return;
-      }
-      if (isTooHigh) state.reaction.guessStatus = GuessStatus.IS_TOO_HIGH;
-      else state.reaction.guessStatus = GuessStatus.IS_TOO_LOW;
-      
-      //@ts-ignore
-      helpers.getStoreActions().game.incrementFailedAttempts();
-    }
-  ),
-  onSetReaction: thunkOn(
-    (actions) => actions.setReaction,
-    (_, target, { injections }) => {
-      if (target.payload) {
-        injections.loggerService.debug(
-          "New Reaction with duration of: " + target.payload?.duration + "ms"
-        );
-      } else {
-        injections.loggerService.debug("Set Reaction to null");
-      }
-    }
-  ),
-  onSetReactionStatus: thunkOn(
-    (actions) => actions.setReactionStatus,
-    (_, target, { injections }) => {
-      if (target.payload === ReactionStatus.IS_IN_PROGRESS)
-        injections.loggerService.debugTime("animation");
-      else if (target.payload === ReactionStatus.IS_OVER)
-        injections.loggerService.debugTimeEnd("animation");
-    }
-  ),
-};
 
 export const reactionModelV2: ReactionModel = {
   reaction: null,
@@ -153,6 +58,15 @@ export const reactionModelV2: ReactionModel = {
     if (!state.reaction) return;
     state.reaction.reactionStatus = reactionStatus;
   }),
+  setStartedAt: action((state) => {
+    if (!state.reaction) return;
+    state.reaction.startedAt = Date.now();
+  }),
+  setCompletedAt: action((state) => {
+    if (!state.reaction) return;
+    state.reaction.completedAt = Date.now();
+  }),
+  
   addGuess: action((state, guess) => {
     if (!state.reaction) return;
     state.reaction.guesses.push(guess);
@@ -185,6 +99,7 @@ export const reactionModelV2: ReactionModel = {
       const isTooHigh = guess > state.reaction.duration;
 
       if (isCorrect) {
+        state.reaction.completedAt = Date.now();
         state.reaction.guessStatus = GuessStatus.IS_RIGHT;
         state.reaction.isGuessed = true;
         actions.copyToHistory();
@@ -211,11 +126,13 @@ export const reactionModelV2: ReactionModel = {
   ),
   onSetReactionStatus: thunkOn(
     (actions) => actions.setReactionStatus,
-    (_, target, { injections }) => {
+    (actions, target, { injections }) => {
       if (target.payload === ReactionStatus.IS_IN_PROGRESS)
         injections.loggerService.debugTime("animation");
-      else if (target.payload === ReactionStatus.IS_OVER)
+      else if (target.payload === ReactionStatus.IS_OVER){
         injections.loggerService.debugTimeEnd("animation");
+        actions.setStartedAt();
+      }
     }
   ),
 };
