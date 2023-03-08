@@ -1,7 +1,26 @@
 # V1.0.0
+- fix release workflow
+  - add env variable / secret to prod.env
 - global scoreboard with ws
 - proper stats page
+  - time played
+  - avarage time it took to guess right
+  - average deviation
 - statsProcessingService
+- add feedback section
+- renew notifs
+- user metric tracking
+- reset if gameover with score of 0 
+
+
+# Alpha v0.1.1
+- settings page V
+  - choose game mode V
+  - show which gamemode is selected V
+- fix scoreboard mean deviation .123231123ms issue V
+- make it instructions more clear on when it starts V
+  - patch landing page hero text V
+- show lives somehow V
 
 # Alpha v0.1.0
 - refactor naming `game-over` screen to `CurrentGameStats` Screen V

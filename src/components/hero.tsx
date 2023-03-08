@@ -15,8 +15,9 @@ export const Hero = ({ ...props }: Props) => {
         <div className="max-w-md">
           <h1 className="text-5xl font-bold">Know your milliseconds</h1>
           <p className="py-6">
-            Milliseconds from red to green. Wager your best guesses. Keep going
-            untill your lives run out. Get good.
+            "Ready, set, go! Fiery orange to calming green, can you guess the
+            time? Just wait for the countdown, watch the colors change, and make
+            your best guess!" ~ ChatGpt
           </p>
 
           <button

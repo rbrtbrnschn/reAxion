@@ -11,6 +11,7 @@ import { useCountdown } from "../../hooks/useCountdown";
 import { ColorsNames } from "../../interfaces/colors.interface";
 import { IReaction } from "../../interfaces/reaction.interface";
 import { useStoreActions, useStoreState } from "../../store";
+import { gameDifficulties } from "../../store/models/game.model";
 import { ReactionModel } from "../../store/models/reaction.model";
 import { ReactionBuilder } from "../../utils/reaction/Reaction.builder";
 import { whenDebugging } from "../../utils/whenDebugging";
@@ -244,9 +245,13 @@ const MyGameScreen = () => {
           value={guessInput}
           onClick={handleSubmitGuess}
           ref={inputRef}
+          lifes={
+            gameDifficulties[gameState.currentGameDifficulty]
+              .maxFailedAttempts - gameState.currentFailedAttempts
+          }
         />
       </Flex>
-      <GameoverModal isOpen={isGameOver} />
+      <GameoverModal isOpen={isGameOver && gameState.game?.score !== 0} />
     </div>
   );
 };
