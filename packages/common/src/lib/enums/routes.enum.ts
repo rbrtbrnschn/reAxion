@@ -1,0 +1,9 @@
+export enum RouteNames {
+    HOME_PAGE,
+    GAME_PAGE,
+    RECENT_STATS_PAGE,
+    SCOREBOARD_PERSONAL_PAGE,
+    SCOREBOARD_GLOBAL_PAGE,
+    SETTINGS_PAGE
+  }
+  
