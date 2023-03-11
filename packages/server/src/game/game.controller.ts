@@ -15,7 +15,7 @@ export class GameController {
   constructor(private gameService: GameService) {}
   @Get('/')
   getAll() {
-    return this.gameService.getAll();
+    return this.gameService.findAll();
   }
 
   @Post('/')
