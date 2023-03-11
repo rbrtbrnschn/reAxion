@@ -97,6 +97,10 @@ export function withNavigation<P extends {}>(
           label: 'Scoreboard',
           path: routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path,
         },
+        {
+          label: 'Scoreboard Global',
+          path: routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path,
+        },
         { label: 'Settings', path: routes[RouteNames.SETTINGS_PAGE].path },
       ],
       navbarItems: [
@@ -109,6 +113,10 @@ export function withNavigation<P extends {}>(
         {
           label: 'Scoreboard',
           path: routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path,
+        },
+        {
+          label: 'Scoreboard Global',
+          path: routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path,
         },
         { label: 'Settings', path: routes[RouteNames.SETTINGS_PAGE].path },
       ],

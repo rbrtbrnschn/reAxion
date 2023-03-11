@@ -93,6 +93,7 @@ export const gameModelV2: GameModelV2 = {
     state.game = game;
   }),
   setHistory: action((state, history) => {
+    const { mutate } = saveGameMutation();
     state.history = history;
   }),
   setGameDifficulty: action((state, difficulty) => {

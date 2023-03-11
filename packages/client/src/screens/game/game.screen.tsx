@@ -15,6 +15,7 @@ import { ReactionBuilder } from '../../utils/reaction/Reaction.builder';
 import { whenDebugging } from '../../utils/whenDebugging';
 import { GameInput } from './game.input';
 import { GameoverModal } from './gameover.modal';
+
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}

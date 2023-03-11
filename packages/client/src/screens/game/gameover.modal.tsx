@@ -9,6 +9,7 @@ interface Props {
   isOpen: boolean;
   close?: () => void;
 }
+
 export const GameoverModal = ({ isOpen, close }: Props) => {
   const game = useStoreState((state) => state.game);
   const _game = useStoreActions((actions) => actions.game);

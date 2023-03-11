@@ -2,6 +2,7 @@ import { RouteNames } from '@reaxion/common';
 import { ReactNode } from 'react';
 import { GameScreen } from './screens/game/game.screen';
 import { HomeScreen } from './screens/home/home.screen';
+import { GlobalScoreboardScreen } from './screens/scoreboard/globalScoreboard.screen';
 import { PersonalScoreboardScreen } from './screens/scoreboard/personalScoreboard.screen';
 import { SettingsScreen } from './screens/settings/settings.screen';
 import { GameOverviewScreen } from './screens/stats/gameOverview.screen';
@@ -29,7 +30,7 @@ export const routes: Record<
   },
   [RouteNames.SCOREBOARD_GLOBAL_PAGE]: {
     path: '/scoreboard/global',
-    element: <div>WIP</div>,
+    element: <GlobalScoreboardScreen />,
   },
   [RouteNames.SETTINGS_PAGE]: {
     path: '/settings',
