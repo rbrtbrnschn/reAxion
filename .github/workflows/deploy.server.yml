@@ -1,0 +1,17 @@
+jobs:
+  build:
+    runs-on: Ubuntu-20.04
+    steps:
+      - uses: TimDaub/hetzner-cloud-deploy-server-action@v2
+        with:
+          server-name: "gh-actions-server"
+          server-image: "ubuntu-22.04"
+          server-type: "ccx11"
+          ssh-key-name: "runner@deploy"
+          hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
+          delete-server: false
+          startup-timeout: 40000
+      - uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_SECRET_KEY }}
+      - run: mkdir -p ~/.ssh/ && ssh-keyscan -H $SERVER_IPV4 >> ~/.ssh/known_hosts
