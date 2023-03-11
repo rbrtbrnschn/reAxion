@@ -21,3 +21,5 @@ jobs:
       - run: mkdir -p ~/.ssh/ && ssh-keyscan -H $SERVER_IPV4 >> ~/.ssh/known_hosts
       - run: ssh reaxion@$SERVER_IPV4 touch github_was_here
       - run: ssh reaxion@$SERVER_IPV4 ls
+
+      
