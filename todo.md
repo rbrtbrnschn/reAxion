@@ -1,3 +1,13 @@
+# RIGHT NOW
+- fix gamemodel VV
+- patch gameService to use mongoose V
+- patch gameController to use mongoose V
+- frontent add axios.post to easypeasy listener V
+- fix stats VV
+- deploy 
+  - env vars in frontend to allow backend communication
+
+
 - give games a uuid to see local games highlighted on the global leaderboard
 - add version to game in case we change interfaces / shemas or game difficulties
   to help with filtering

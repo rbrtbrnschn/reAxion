@@ -1,5 +1,6 @@
 import { IGame } from '@reaxion/common/interfaces';
 import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { useState } from 'react';
 import { withNavigation } from '../../components/navigation';
 import { gameDifficulties } from '../../store/models/game.model';
@@ -9,9 +10,9 @@ function useGames() {
   return useQuery({
     queryKey: ['game'],
     queryFn: async (): Promise<IGame[]> => {
-      const response = await fetch('/api/game');
-      const data = await response.json();
-      return data;
+  console.log("using:",process.env.REACT_APP_API_URL)
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/game`);
+      return response.data;
     },
   });
 }
@@ -44,6 +45,7 @@ const MyGlobalScoreboardScreen = () => {
           <tbody>
             {/* row 1 */}
             {data?.map((game, index) => {
+              console.warn("global",gameToAverageDeviation(game),game.reactions)
               return (
                 <tr key={'game-' + (index + 1)}>
                   <th>{index + 1}</th>

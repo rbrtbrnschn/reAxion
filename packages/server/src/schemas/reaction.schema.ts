@@ -19,10 +19,10 @@ export class Reaction implements IReaction {
   @Prop({ default: 0 })
   failedAttempts: number;
 
-  @Prop({ default: GuessStatus.IS_WAITING })
+  @Prop({ default: GuessStatus.IS_WAITING, type: Number, enum: GuessStatus })
   guessStatus: GuessStatus;
 
-  @Prop({ default: ReactionStatus.HAS_NOT_STARTED })
+  @Prop({ default: ReactionStatus.HAS_NOT_STARTED, type: Number, enum: ReactionStatus })
   reactionStatus: ReactionStatus;
 
   @Prop({ default: uuid4() })
