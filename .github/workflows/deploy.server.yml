@@ -1,25 +1,32 @@
+name: deploy server
 on:
   push:
     branches:
       - main
 jobs:
   build:
-    runs-on: Ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: TimDaub/hetzner-cloud-deploy-server-action@v2
-        with:
-          server-name: "gh-actions-server"
-          server-image: "ubuntu-22.04"
-          server-type: "ccx11"
-          ssh-key-name: "runner@deploy"
-          hcloud-token: ${{ secrets.HCLOUD_TOKEN }}
-          delete-server: false
-          startup-timeout: 40000
-      - uses: webfactory/ssh-agent@v0.4.1
-        with:
-          ssh-private-key: ${{ secrets.DEPLOY_SECRET_KEY }}
-      - run: mkdir -p ~/.ssh/ && ssh-keyscan -H $SERVER_IPV4 >> ~/.ssh/known_hosts
-      - run: ssh reaxion@$SERVER_IPV4 touch github_was_here
-      - run: ssh reaxion@$SERVER_IPV4 ls
-
-      
+    - uses: actions/checkout@v3
+    - name: Install Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16.x'
+    - name: Install npm dependencies
+      run: npm install
+    - name: Run build task
+      run: npm run build --if-present
+    - name: Deploy to Server
+      uses: easingthemes/ssh-deploy@main
+      env:
+          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+          ARGS: "-rlgoDzvc -i --delete"
+          SOURCE: "dist/"
+          REMOTE_HOST: ${{ secrets.SERVER_REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.SERVER_REMOTE_USER }}
+          EXCLUDE: "/dist/, /node_modules/"
+          SCRIPT_AFTER: |
+            whoami
+            ls -al
+            touch runner_was_here
+            echo $RSYNC_STDOUT
