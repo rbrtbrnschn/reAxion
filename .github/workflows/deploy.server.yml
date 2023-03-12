@@ -1,32 +1,18 @@
-name: deploy server
+name: Deploy testing
 on:
   push:
     branches:
       - main
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Node.js
-      uses: actions/setup-node@v3
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@master
       with:
-        node-version: '16.x'
-    - name: Install npm dependencies
-      run: npm install
-    - name: Run build task
-      run: npm run build --if-present
-    - name: Deploy to Server
-      uses: easingthemes/ssh-deploy@main
-      env:
-          SSH_PRIVATE_KEY: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
-          ARGS: "-rlgoDzvc -i --delete"
-          SOURCE: "dist/"
-          REMOTE_HOST: ${{ secrets.SERVER_REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.SERVER_REMOTE_USER }}
-          EXCLUDE: "/dist/, /node_modules/"
-          SCRIPT_AFTER: |
-            whoami
-            ls -al
-            touch runner_was_here
-            echo $RSYNC_STDOUT
+        host: ${{ secrets.SSH_REMOTE_HOST }}
+        username: ${{ secrets.SERVER_REMOTE_USER }}
+        key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+        script: |
+          touch runner_was_her
