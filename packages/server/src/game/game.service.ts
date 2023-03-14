@@ -8,7 +8,7 @@ import { Game, GameDocument } from '../schemas/game.schema';
 export class GameService {
   constructor(@InjectModel(Game.name) private gameModel: Model<GameDocument>) {}
 
-  async getAll(): Promise<Game[]> {
+  async findAll(): Promise<Game[]> {
     return this.gameModel.find().exec();
   }
   async addSingle(game: IGame): Promise<Game> {

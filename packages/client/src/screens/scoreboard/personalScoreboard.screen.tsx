@@ -37,6 +37,7 @@ const MyPersonalScoreboardScreen = () => {
           <tbody>
             {/* row 1 */}
             {data.map((game, index) => {
+              console.warn("personal",gameToAverageDeviation(game),game.reactions)
               return (
                 <tr key={'game-' + (index + 1)}>
                   <th>{index + 1}</th>
