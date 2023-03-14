@@ -13046,6 +13046,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"inversify@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "inversify@npm:6.0.1"
+  checksum: 5baad79555cacd3378faa9cb07ad51a703415695af3d05f29fc853996b4ea79fc3536ccf06ccc11a96f5b6e69cac18ceab27b8d42975453c9a44de1c11bb3e9b
+  languageName: node
+  linkType: hard
+
 "ip@npm:^2.0.0":
   version: 2.0.0
   resolution: "ip@npm:2.0.0"
@@ -18992,6 +18999,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:4.6.0"
     heroicons-react: "npm:^1.4.1"
     html-webpack-plugin: "npm:^5.5.0"
+    inversify: "npm:^6.0.1"
     jest: "npm:^29.4.1"
     jest-environment-jsdom: "npm:^29.4.1"
     jest-environment-node: "npm:^29.4.1"
