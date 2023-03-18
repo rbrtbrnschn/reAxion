@@ -1,6 +1,6 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common/enums';
 import { IReaction } from '@reaxion/common/interfaces';
-import uuid4 from 'uuid4';
+import { v4 as uuid4 } from 'uuid';
 
 export class ReactionBuilder {
   buildByDuration({ duration }: Pick<IReaction, 'duration'>): IReaction {

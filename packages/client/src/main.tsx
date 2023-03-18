@@ -1,4 +1,3 @@
-import { StrictMode } from 'react';
 import * as ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import './main.css';
@@ -13,13 +12,13 @@ const root = ReactDOM.createRoot(
 );
 const queryClient = new QueryClient();
 root.render(
-  <StrictMode>
-    <StoreProvider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </StoreProvider>
-  </StrictMode>
+  // <StrictMode>
+  <StoreProvider store={store}>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </QueryClientProvider>
+  </StoreProvider>
+  // </StrictMode>
 );

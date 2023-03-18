@@ -60,3 +60,17 @@ export function isCompleteReactionResponse(
     response.id === getResponseId(GameManagerEvent.DISPATCH_COMPLETE_REACTION)
   );
 }
+export function isGenerateNewWithRandomDurationResponse(
+  response: GameManagerResponse<unknown>
+): response is EmptyGameManagerResponse {
+  return (
+    response.id ===
+    getResponseId(GameManagerEvent.DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION)
+  );
+}
+
+export function isFailGameResponse(
+  response: GameManagerResponse<unknown>
+): response is EmptyGameManagerResponse {
+  return response.id === getResponseId(GameManagerEvent.DISPATCH_FAIL_GAME);
+}

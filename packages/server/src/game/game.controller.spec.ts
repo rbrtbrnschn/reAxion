@@ -1,8 +1,8 @@
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameDifficulty, GuessStatus, ReactionStatus } from '@reaxion/common';
-import uuid4 from 'uuid4';
-import { Game, GameSchema } from '../schemas/game.schema';
+import { v4 as uuid4 } from 'uuid';
+import { Game } from '../schemas/game.schema';
 import { GameController } from './game.controller';
 import { GameService } from './game.service';
 
@@ -21,17 +21,20 @@ describe('GameController', () => {
       guessStatus: GuessStatus.IS_TOO_LOW,
       isGuessed: false,
       reactionStatus: ReactionStatus.IS_OVER,
-      startedAt: Date.now() - 3000
+      startedAt: Date.now() - 3000,
     },
   ];
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [GameController],
-      providers: [GameService,{
-        provide: getModelToken(Game.name),
-        useValue: gameModel,
-      },],
+      providers: [
+        GameService,
+        {
+          provide: getModelToken(Game.name),
+          useValue: gameModel,
+        },
+      ],
     }).compile();
 
     controller = module.get<GameController>(GameController);

@@ -10,6 +10,7 @@ interface ObserverMap<T> {
 export class ObserverSubject<T = any> {
   protected observers: ObserverMap<T> = {};
   public subscribe(observer: Observer<T>) {
+    if (!observer.id) throw new NoObserverIdError();
     this.observers[observer.id] = observer;
   }
 
@@ -22,5 +23,11 @@ export class ObserverSubject<T = any> {
       const observer = this.observers[observerId];
       if (observer) observer.update(eventName, response);
     }
+  }
+}
+
+class NoObserverIdError extends Error {
+  constructor() {
+    super('No Observer Id Found.');
   }
 }

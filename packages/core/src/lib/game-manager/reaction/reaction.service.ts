@@ -1,5 +1,5 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
-import * as uuid4 from 'uuid4';
+import { v4 as uuid4 } from 'uuid';
 import { UndefinedReactionError } from '../errors';
 import { ISettings } from '../settings/settings.interface';
 import { Reaction } from './reaction';

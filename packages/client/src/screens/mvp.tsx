@@ -4,19 +4,26 @@ import {
   Game,
   GameManager,
   GameManagerResponse,
+  isCompleteReactionResponse,
+  isFailGameResponse,
   isReactionEndResponse,
   isReactionStartResponse,
   isStartingSequenceResponse,
   Observer,
   Reaction,
 } from '@reaxion/core';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 const gameManager = new GameManager();
 export const Mvp = () => {
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'logger',
     update(eventName, response) {
       console.log(eventName);
+
+      if (isCompleteReactionResponse(response)) {
+        gameManager.dispatchGenerateNewWithRandomDuration();
+        gameManager.dispatchStartingSequence();
+      }
     },
   };
   useEffect(() => {
@@ -47,27 +54,29 @@ export const Mvp = () => {
       <Count />
       <Animation />
       <Input />
+      <GameOverModal />
     </div>
   );
 };
 
 const Count = () => {
-  const [count, setCount] = useState(3);
+  const [count, setCount] = useState(0);
   const countObserver: Observer<GameManagerResponse<unknown>> = {
     id: 'countObserver',
     update(eventName, response) {
-      if (!isStartingSequenceResponse(response)) return;
-
-      const timeout = setTimeout(() => {
-        setCount(() => 2);
-        setTimeout(() => {
-          setCount(() => 1);
+      if (isStartingSequenceResponse(response)) {
+        setCount(() => 3);
+        const timeout = setTimeout(() => {
+          setCount(() => 2);
           setTimeout(() => {
-            setCount(() => 0);
-            gameManager.dispatchReactionStart();
+            setCount(() => 1);
+            setTimeout(() => {
+              setCount(() => 0);
+              gameManager.dispatchReactionStart();
+            }, 1000);
           }, 1000);
         }, 1000);
-      }, 1000);
+      }
     },
   };
   useEffect(() => {
@@ -89,7 +98,9 @@ const Animation = () => {
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'animationObserver',
     update(eventName, response) {
-      if (isReactionStartResponse(response)) {
+      if (isStartingSequenceResponse(response)) {
+        setColor('bg-error');
+      } else if (isReactionStartResponse(response)) {
         setColor('bg-warning');
         setTimeout(() => {
           gameManager.dispatchReactionEnd();
@@ -113,6 +124,32 @@ const Animation = () => {
 };
 
 const Input = () => {
+  const [isDisabled, setIsDisabled] = useState(true);
+  const ref = useRef<HTMLInputElement>(null);
+  const observer: Observer<GameManagerResponse<unknown>> = {
+    id: 'adsasd',
+    update(eventName, response) {
+      if (isFailGameResponse(response)) {
+        setIsDisabled(true);
+      } else if (isStartingSequenceResponse(response)) {
+        setIsDisabled(true);
+      } else if (isReactionEndResponse(response)) {
+        setIsDisabled(false);
+      }
+    },
+  };
+
+  useEffect(() => {
+    gameManager.subscribe(observer);
+    return () => {
+      gameManager.unsubscribe(observer);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isDisabled) ref.current?.focus();
+  }, [isDisabled]);
+
   const [value, setValue] = useState('');
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setValue(e.currentTarget.value);
@@ -127,7 +164,60 @@ const Input = () => {
   };
   return (
     <form onSubmit={onSubmit}>
-      <input className="input bg-slate-100" value={value} onChange={onChange} />
+      <input
+        ref={ref}
+        disabled={isDisabled}
+        className={`input bg-slate-100 ${isDisabled && 'input-disabled'}`}
+        value={value}
+        onChange={onChange}
+      />
     </form>
+  );
+};
+
+const GameOverModal = () => {
+  const [isShowing, setIsShowing] = useState(false);
+  const observer: Observer<GameManagerResponse<unknown>> = {
+    id: 'asdasd',
+    update(eventName, response) {
+      if (isFailGameResponse(response)) {
+        setIsShowing(true);
+      } else if (isStartingSequenceResponse(response)) {
+        setIsShowing(false);
+      }
+    },
+  };
+
+  useEffect(() => {
+    gameManager.subscribe(observer);
+    return () => {
+      gameManager.unsubscribe(observer);
+    };
+  }, []);
+
+  const onClick = () => {
+    gameManager.dispatchResetGame();
+    gameManager.setCurrentReaction(
+      new Reaction(
+        'asd',
+        1500,
+        [],
+        false,
+        GuessStatus.IS_WAITING,
+        ReactionStatus.HAS_NOT_STARTED
+      )
+    );
+    gameManager.dispatchStartingSequence();
+  };
+  return isShowing ? (
+    <div className="prose">
+      <h1>Game over{gameManager.getCurrentGame().getScore()}</h1>
+      <h3>Start a new?</h3>
+      <button className="btn" onClick={onClick}>
+        Click Here!
+      </button>
+    </div>
+  ) : (
+    <div></div>
   );
 };

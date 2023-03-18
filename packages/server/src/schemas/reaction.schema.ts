@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { GuessStatus, IReaction, ReactionStatus } from '@reaxion/common';
 import { HydratedDocument } from 'mongoose';
-import uuid4 from 'uuid4';
+import { v4 as uuid4 } from 'uuid';
 
 export type ReactionDocument = HydratedDocument<Reaction>;
 
@@ -22,7 +22,11 @@ export class Reaction implements IReaction {
   @Prop({ default: GuessStatus.IS_WAITING, type: Number, enum: GuessStatus })
   guessStatus: GuessStatus;
 
-  @Prop({ default: ReactionStatus.HAS_NOT_STARTED, type: Number, enum: ReactionStatus })
+  @Prop({
+    default: ReactionStatus.HAS_NOT_STARTED,
+    type: Number,
+    enum: ReactionStatus,
+  })
   reactionStatus: ReactionStatus;
 
   @Prop({ default: uuid4() })

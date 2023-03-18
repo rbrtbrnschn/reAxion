@@ -22,7 +22,9 @@ export function HasEvent(events: string[]): EventDecorator {
     descriptor.value = function (this: GameManager, ...args: any[]) {
       const whitelist = [...events];
       if (!whitelist.includes(this.getCurrentEvent()))
-        throw new InvalidPermissionError(this.getCurrentEvent());
+        throw new InvalidPermissionError(
+          `${this.getCurrentEvent()}-${whitelist}`
+        );
 
       return originalMethod.apply(this, args);
     };

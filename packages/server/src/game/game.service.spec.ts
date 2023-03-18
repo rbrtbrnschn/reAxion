@@ -1,10 +1,10 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { GameDifficulty, GuessStatus, ReactionStatus } from '@reaxion/common';
-import uuid4 from 'uuid4';
+import { ModuleMocker } from 'jest-mock';
+import { v4 as uuid4 } from 'uuid';
 import { Game } from '../schemas/game.schema';
 import { GameService } from './game.service';
-import { MockFunctionMetadata, ModuleMocker } from "jest-mock";
 
 const moduleMocker = new ModuleMocker(global);
 
@@ -23,7 +23,7 @@ describe('GameService', () => {
       guessStatus: GuessStatus.IS_TOO_LOW,
       isGuessed: false,
       reactionStatus: ReactionStatus.IS_OVER,
-      startedAt: Date.now() - 3000
+      startedAt: Date.now() - 3000,
     },
   ];
 
@@ -36,8 +36,7 @@ describe('GameService', () => {
           useValue: gameModel,
         },
       ],
-    })
-    .compile();
+    }).compile();
 
     service = module.get<GameService>(GameService);
   });
@@ -46,14 +45,16 @@ describe('GameService', () => {
     expect(service).toBeDefined();
   });
 
-  it("should find all games", async () => {
-    jest.spyOn(service, 'findAll').mockImplementation(() => Promise.resolve([gameModel]));
-    
+  it('should find all games', async () => {
+    jest
+      .spyOn(service, 'findAll')
+      .mockImplementation(() => Promise.resolve([gameModel]));
+
     try {
       const tbd = await service.findAll();
-      expect(tbd).toBe([gameModel])
-    } catch(e){
-      expect(e).toBeDefined()
+      expect(tbd).toBe([gameModel]);
+    } catch (e) {
+      expect(e).toBeDefined();
     }
-  })
+  });
 });
