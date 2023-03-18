@@ -1,8 +1,8 @@
-import { GameManagerEvent } from './game-manager/game-manager';
+import { GameManagerEvent } from '../game-manager/game-manager';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
-} from './game-manager/util/response.util';
+} from '../game-manager/util/response.util';
 import { Observer, ObserverSubject } from './observer';
 
 describe('observer', () => {

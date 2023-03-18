@@ -2,6 +2,7 @@ import { RouteNames } from '@reaxion/common';
 import { ReactNode } from 'react';
 import { GameScreen } from './screens/game/game.screen';
 import { HomeScreen } from './screens/home/home.screen';
+import { Mvp } from './screens/mvp';
 import { GlobalScoreboardScreen } from './screens/scoreboard/globalScoreboard.screen';
 import { PersonalScoreboardScreen } from './screens/scoreboard/personalScoreboard.screen';
 import { SettingsScreen } from './screens/settings/settings.screen';
@@ -35,5 +36,9 @@ export const routes: Record<
   [RouteNames.SETTINGS_PAGE]: {
     path: '/settings',
     element: <SettingsScreen />,
+  },
+  [RouteNames.MVP_PAGE]: {
+    path: '/mvp',
+    element: <Mvp />,
   },
 };

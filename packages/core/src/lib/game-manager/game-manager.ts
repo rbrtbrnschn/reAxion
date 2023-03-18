@@ -255,9 +255,26 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 export class AddGuessResponsePayload<
   T = { status: AddGuessStatus }
 > extends GameManagerResponsePayload<T> {
-  public readonly id = 'ADD_GUESS_RESPONSE_PAYLOAD';
+  public readonly id = 'ADD_GUESS_RESPONSE';
   constructor(data: T) {
     super(data);
   }
 }
+export class ReactionStartResponsePayload<
+  T extends undefined
+> extends GameManagerResponsePayload<T> {
+  public readonly id = 'REACTION_START_RESPONSE';
+  constructor(data: T) {
+    super(data);
+  }
+}
+export class ReactionEndResponsePayload<
+  T extends undefined
+> extends GameManagerResponsePayload<T> {
+  public readonly id = 'REACTION_END_RESPONSE';
+  constructor(data: T) {
+    super(data);
+  }
+}
+
 export type AddGuessStatus = 'GUESS_VALID' | 'GUESS_INVALID';
