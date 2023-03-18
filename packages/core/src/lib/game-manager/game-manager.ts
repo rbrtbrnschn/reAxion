@@ -176,7 +176,12 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
     );
   }
-  @HasEvent([GameManagerEvent.DISPATCH_REACTION_END])
+  @HasEvent([
+    GameManagerEvent.DISPATCH_REACTION_END,
+    GameManagerEvent.DISPATCH_ADD_GUESS,
+    GameManagerEvent.DISPATCH_FAIL_GAME,
+    GameManagerEvent.DISPATCH_FAIL_REACTION,
+  ])
   public dispatchAddGuess(guess: number) {
     if (this.getCurrentGame().isOver) return;
 
@@ -210,17 +215,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     );
   }
 
-  @HasEvent([GameManagerEvent.DISPATCH_ADD_GUESS])
-  public dispatchFailReaction() {
-    this.setCurrentEvent(GameManagerEvent.DISPATCH_FAIL_REACTION);
-    const currentReaction = this.getCurrentReaction();
-    currentReaction.setCompletedAt(Date.now());
-    this.notify(
-      this.getCurrentEvent(),
-      new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
-    );
-  }
-
   @HasEvent([GameManagerEvent.DISPATCH_COMPLETE_REACTION])
   public dispatchGenerateNewWithRandomDuration() {
     this.setCurrentEvent(
@@ -236,8 +230,9 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 
   @HasEvent([GameManagerEvent.DISPATCH_ADD_GUESS])
   public dispatchFailGame() {
-    this.setCurrentEvent(GameManagerEvent.DISPATCH_FAIL_GAME);
+    this.getCurrentReaction().setCompletedAt(Date.now());
     this.getCurrentGame().setIsOver();
+    this.setCurrentEvent(GameManagerEvent.DISPATCH_FAIL_GAME);
 
     this.notify(
       this.getCurrentEvent(),

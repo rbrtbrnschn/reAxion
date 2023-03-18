@@ -25,7 +25,7 @@ export class UndefinedReactionError extends Error {
   }
 }
 export class InvalidPermissionError extends Error {
-  constructor() {
-    super('Invalid Permissions.');
+  constructor(tbd: any) {
+    super('Invalid Permissions. ' + tbd);
   }
 }

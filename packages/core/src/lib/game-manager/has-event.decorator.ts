@@ -1,4 +1,5 @@
 import { InvalidPermissionError } from './errors';
+import { GameManager } from './game-manager';
 
 /**
  * Function only fires if state.currentEvent is included in the whitelist.
@@ -18,15 +19,10 @@ export function HasEvent(events: string[]): EventDecorator {
     descriptor: PropertyDescriptor
   ) {
     const originalMethod = descriptor.value;
-    descriptor.value = function (...args: any[]) {
+    descriptor.value = function (this: GameManager, ...args: any[]) {
       const whitelist = [...events];
-      if (
-        //@ts-ignore
-        !this.getCurrentGame()
-          .getEvents()
-          .some((e: string) => whitelist.includes(e))
-      )
-        throw new InvalidPermissionError();
+      if (!whitelist.includes(this.getCurrentEvent()))
+        throw new InvalidPermissionError(this.getCurrentEvent());
 
       return originalMethod.apply(this, args);
     };
