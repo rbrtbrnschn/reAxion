@@ -1,7 +1,8 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
+import { Whitelist } from '../has-event.decorator';
 import { GameMediator, MediatorSubject } from '../mediator.class';
+import { ReactionService } from '../reaction.service';
 import { Event } from './decorators/event.decorator';
-import { Whitelist } from './decorators/whitelist.decorator';
 import { AddGuessResponseStatus } from './enums';
 import { ReactionEvent } from './enums/event.enum';
 import { GameEvent } from './enums/game.enum';
@@ -10,7 +11,6 @@ import { AddGuessResponse } from './models/add-guess-response.class';
 import { CommenceCountdownResponse } from './models/commence-countdown-response.class';
 import { StartAnimationResponse } from './models/start-response.class';
 import { StopAnimationResponse } from './models/stop-response.class';
-import { ReactionService } from './services/reaction.service';
 
 const defaultState: IReactionState = {
   guesses: [],
@@ -23,6 +23,7 @@ const defaultState: IReactionState = {
 };
 
 export class Reaction extends MediatorSubject {
+  public key = 'REACTION';
   constructor(
     protected mediator: GameMediator,
     private state: IReactionState = defaultState
@@ -32,15 +33,7 @@ export class Reaction extends MediatorSubject {
     this.dispatchAddGuess = this.dispatchAddGuess.bind(this);
   }
 
-  onNotification(eventName: string, payload: any): void {
-    // TODO rewrite after game.ts is rewritten
-    if (eventName === GameEvent.SET_FAILED_ATTEMPTS) {
-      const isGameOver = payload?.failedAttempts === payload?.maxFailedAttempts;
-      if (isGameOver) {
-        this.dispatchFailed();
-      }
-    }
-  }
+  onNotification(eventName: string, payload: any): void {}
 
   private reactionService = new ReactionService(this.state);
 
@@ -81,9 +74,6 @@ export class Reaction extends MediatorSubject {
   set duration(duration: number) {
     this.state.duration = duration;
   }
-  set id(_id: string) {
-    this.state._id = _id;
-  }
   set guessStatus(guessStatus: GuessStatus) {
     this.state.guessStatus = guessStatus;
   }
@@ -98,6 +88,9 @@ export class Reaction extends MediatorSubject {
   }
   set completedAt(completedAt: number) {
     this.state.completedAt = completedAt;
+  }
+  set id(id: string) {
+    this.state._id = id;
   }
   /* Setters */
 
@@ -131,16 +124,19 @@ export class Reaction extends MediatorSubject {
   ])
   @Event(ReactionEvent.EVENT_ADD_GUESS)
   public dispatchAddGuess(guess: number) {
-    // const gameState = this.mediator.getGameState().currentEvent;
-    this.state.guesses = [...this._guesses, guess];
+    this.state.guesses.push(guess);
 
-    // game, set failedAttemptsAccordingToResponseStatus
+    const guessedSuccessfully = this.reactionService.guessIsRight(guess);
+    const { failedAttempts, maxFailedAttempts } = this.mediator.getGameState();
     const payload = new AddGuessResponse(this.state, {
-      status: this.reactionService.guessIsRight(guess)
+      status: guessedSuccessfully
         ? AddGuessResponseStatus.GUESSED_SUCCESSFULLY
         : AddGuessResponseStatus.GUSSED_UNSUCCESSFULLY,
     });
     this.notify(this.state.currentEvent, payload);
+
+    if (guessedSuccessfully) return this.dispatchComplete();
+    if (failedAttempts + 1 >= maxFailedAttempts) return this.dispatchFailed();
   }
 
   @Whitelist([ReactionEvent.EVENT_ADD_GUESS])
@@ -158,6 +154,11 @@ export class Reaction extends MediatorSubject {
   public dispatchFailed() {
     // TODO
     // gameover and axios.post
+  }
+
+  @Event(ReactionEvent.EVENT_RESET)
+  public dispatchReset() {
+    // set state to defaults
   }
   /* Dispatchers / Events */
 }

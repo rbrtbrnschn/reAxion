@@ -9,7 +9,7 @@ type EventDecorator = (
   descriptor: PropertyDescriptor
 ) => PropertyDescriptor;
 
-export function Whitelist(events: string[]): EventDecorator {
+export function HasEvent(events: string[]): EventDecorator {
   return function (
     target: any,
     propertyKey: string,
@@ -18,8 +18,13 @@ export function Whitelist(events: string[]): EventDecorator {
     const originalMethod = descriptor.value;
     descriptor.value = function (...args: any[]) {
       const whitelist = [...events];
-      //@ts-ignore
-      if (!whitelist.includes(this.state.currentEvent)) return;
+      if (
+        //@ts-ignore
+        !this.getCurrentGame()
+          .getEvents()
+          .some((e: string) => whitelist.includes(e))
+      )
+        return;
       return originalMethod.apply(this, args);
     };
     return descriptor;

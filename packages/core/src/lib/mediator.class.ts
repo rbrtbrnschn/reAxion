@@ -1,43 +1,53 @@
-import { Game, GameState } from './game';
+import { Game, GameState } from './game.subject';
 import { ObserverSubject } from './observer';
 
 export interface Mediator {
   notify(sender: MediatorSubject, event: string, payload: any): void;
   register(subject: MediatorSubject, events: string[]): void;
-  getSubject(subject: MediatorSubject): MediatorSubject | null;
+  getSubject(subjectId: string): MediatorSubject | undefined;
 }
 export interface GameMediator extends Mediator {
   getGameState(): GameState;
 }
 
 export class ConcreteMediator implements GameMediator {
-  private subjects: Map<MediatorSubject, string[]> = new Map();
+  private subjects: Map<
+    string,
+    { subject: MediatorSubject; events: string[] }
+  > = new Map();
 
   register(subject: MediatorSubject, events: string[]) {
-    this.subjects.set(subject, events);
+    this.subjects.set(subject.key, { subject, events });
     subject.setMediator(this);
   }
 
   notify(sender: MediatorSubject, event: string, payload: any) {
-    this.subjects.forEach((events: string[], subject: MediatorSubject) => {
+    this.subjects.forEach(({ subject, events }) => {
       if (subject !== sender && events.includes(event)) {
         subject.onNotification(event, payload);
       }
     });
   }
 
-  getSubject(subject: MediatorSubject): MediatorSubject | null {
-    return this.subjects.has(subject) ? subject : null;
+  getSubject(subjectId: string): MediatorSubject | undefined {
+    return this.subjects.get(subjectId)?.subject;
   }
 
   getGameState() {
-    const game = this.getSubject(new Game(this)) as Game;
+    const game = this.getSubject('GAME' as any) as Game;
     if (!game) throw new Error('MediatorSubject not found.');
     return game.getState;
+    return {
+      currentEvent: '',
+      duration: 1,
+      failedAttempts: 1,
+      maxFailedAttempts: 2,
+    } as GameState;
   }
 }
 
 export abstract class MediatorSubject extends ObserverSubject {
+  public key = 'MEDIATOR_SUBJECT';
   constructor() {
     super();
   }
