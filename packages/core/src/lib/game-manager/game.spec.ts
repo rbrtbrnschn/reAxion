@@ -2,22 +2,24 @@ import { GuessStatus, ReactionStatus } from '@reaxion/common';
 import { Observer } from '../observer';
 import {
   AddGuessResponsePayload,
-  EasyDifficulty,
-  EmptyResponse,
-  Game,
-  GameSubject,
-  GameSubjectEvent,
-  IDifficulty,
-  IGameState,
-  ISettings,
-  Reaction,
-  Response,
-  Settings,
-} from './game.subject';
-import { ReactionService } from './services/reaction.service';
-import { isAddGuessResponse } from './util/response.util';
+  GameManager,
+  GameManagerEvent,
+  IGameManagerState,
+} from './game-manager';
+import { Game } from './game/game';
+import { GameService } from './game/game.service';
+import { Reaction } from './reaction/reaction';
+import { ReactionService } from './reaction/reaction.service';
+import { EasyDifficulty } from './settings/difficulty';
+import { Settings } from './settings/settings';
+import { IDifficulty, ISettings } from './settings/settings.interface';
+import {
+  EmptyGameManagerResponse,
+  GameManagerResponse,
+  isAddGuessResponse,
+} from './util/response.util';
 describe('game', () => {
-  let gameSubject: GameSubject;
+  let gameSubject: GameManager;
   let reaction: Reaction;
   let settings: ISettings;
   const difficulty: IDifficulty = new EasyDifficulty();
@@ -25,11 +27,11 @@ describe('game', () => {
 
   beforeEach(() => {
     settings = new Settings(difficulty);
-    const gameState: Partial<IGameState> = {
+    const gameState: Partial<IGameManagerState> = {
       games: [],
       settings,
     };
-    gameSubject = new GameSubject(gameState);
+    gameSubject = new GameManager(gameState);
     game = new Game(difficulty, 0, 0, 'asdd', [], []);
     gameSubject.setCurrentGame(game);
     reaction = new Reaction(
@@ -58,12 +60,12 @@ describe('game', () => {
     it('should dispatch starting sequence', () => {
       gameSubject.dispatchStartingSequence();
       expect(gameSubject.getCurrentEvent()).toEqual(
-        GameSubjectEvent.DISPATCH_STARTING_SEQUENCE
+        GameManagerEvent.DISPATCH_STARTING_SEQUENCE
       );
     });
 
     it('observer should update', () => {
-      const observer: Observer<Response<any>> = {
+      const observer: Observer<GameManagerResponse<any>> = {
         id: 'asd',
         update: jest.fn(),
       };
@@ -74,27 +76,32 @@ describe('game', () => {
     });
 
     it('should add guess to current Reaction', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
 
-      const validGuessObserverEvents: GameSubjectEvent[] = [];
-      const observerInvalidGuess: Observer<Response<any>> = {
+      const validGuessObserverEvents: GameManagerEvent[] = [];
+      const observerInvalidGuess: Observer<GameManagerResponse<any>> = {
         id: 'dasd',
         update: (
           eventName,
-          response: EmptyResponse | Response<AddGuessResponsePayload>
+          response:
+            | EmptyGameManagerResponse
+            | GameManagerResponse<AddGuessResponsePayload>
         ) => {
           if (isAddGuessResponse(response)) {
-            expect(eventName).toEqual(GameSubjectEvent.DISPATCH_ADD_GUESS);
+            expect(eventName).toEqual(GameManagerEvent.DISPATCH_ADD_GUESS);
             expect(response.payload.data.status === 'GUESS_INVALID').toEqual(
               true
             );
           }
         },
       };
-      const observerValidGuess: Observer<Response<any>> = {
+      const observerValidGuess: Observer<GameManagerResponse<any>> = {
         id: 'asdd',
-        update: (eventName, payload: Response<AddGuessResponsePayload>) => {
-          validGuessObserverEvents.push(eventName as GameSubjectEvent);
+        update: (
+          eventName,
+          payload: GameManagerResponse<AddGuessResponsePayload>
+        ) => {
+          validGuessObserverEvents.push(eventName as GameManagerEvent);
           if (payload.payload) {
             expect(payload.payload.data.status === 'GUESS_VALID').toEqual(true);
           }
@@ -111,14 +118,14 @@ describe('game', () => {
 
       expect(
         validGuessObserverEvents.includes(
-          GameSubjectEvent.DISPATCH_COMPLETE_REACTION
+          GameManagerEvent.DISPATCH_COMPLETE_REACTION
         ) === true
       ).toEqual(true);
       expect(gameSubject.getCurrentReaction().guesses.length).toEqual(2);
     });
 
     it('should complete current reaction', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_ADD_GUESS);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_ADD_GUESS);
 
       gameSubject.setCurrentReaction(reaction);
       gameSubject.dispatchCompleteReaction();
@@ -128,7 +135,7 @@ describe('game', () => {
     });
 
     it('should fail current reaction', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_ADD_GUESS);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_ADD_GUESS);
 
       gameSubject.setCurrentReaction(reaction);
       gameSubject.dispatchFailReaction();
@@ -138,7 +145,7 @@ describe('game', () => {
     });
 
     it('should generate and set new reaction with random duration', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_COMPLETE_REACTION);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_COMPLETE_REACTION);
       gameSubject.setCurrentReaction(reaction);
       expect(gameSubject.getCurrentReaction().duration).toEqual(
         reaction.duration
@@ -151,7 +158,7 @@ describe('game', () => {
     });
 
     it('should be game over', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_ADD_GUESS);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_ADD_GUESS);
       gameSubject.setCurrentReaction(reaction);
       gameSubject.dispatchFailReaction();
       gameSubject.dispatchFailGame();
@@ -161,13 +168,13 @@ describe('game', () => {
       expect(gameSubject.getCurrentGame().getIsOver()).toEqual(true);
     });
     it('should fail game automatically', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
       gameSubject.setCurrentReaction(reaction);
-      const events: GameSubjectEvent[] = [];
-      const failedGameObserver: Observer<Response<any>> = {
+      const events: GameManagerEvent[] = [];
+      const failedGameObserver: Observer<GameManagerResponse<any>> = {
         id: 'failedGameObserver',
         update: (eventName, payload) => {
-          events.push(eventName as GameSubjectEvent);
+          events.push(eventName as GameManagerEvent);
         },
       };
       gameSubject.subscribe(failedGameObserver);
@@ -182,14 +189,14 @@ describe('game', () => {
       expect(gameSubject.getCurrentGame().getFailedAttempts()).toEqual(
         gameSubject.getCurrentGame().difficulty.maxFailedAttempts
       );
-      expect(events.includes(GameSubjectEvent.DISPATCH_FAIL_GAME)).toEqual(
+      expect(events.includes(GameManagerEvent.DISPATCH_FAIL_GAME)).toEqual(
         true
       );
       gameSubject.unsubscribe(failedGameObserver);
     });
 
     it('should not add guess after game is over', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
       gameSubject.setCurrentReaction(reaction);
       Array.from({ length: 10 }).map((_, i) => gameSubject.dispatchAddGuess(i));
 
@@ -199,27 +206,29 @@ describe('game', () => {
     });
 
     it('should complete game if guess correctly', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_REACTION_END);
-      const events: GameSubjectEvent[] = [];
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      const events: GameManagerEvent[] = [];
 
       gameSubject.setCurrentReaction(reaction);
-      const completeReactionOnValidGuessObserver: Observer<Response<any>> = {
+      const completeReactionOnValidGuessObserver: Observer<
+        GameManagerResponse<any>
+      > = {
         id: 'completeReactionOnValidGuessObserver',
         update(eventName, payload) {
-          events.push(eventName as GameSubjectEvent);
+          events.push(eventName as GameManagerEvent);
         },
       };
       gameSubject.subscribe(completeReactionOnValidGuessObserver);
       gameSubject.dispatchAddGuess(reaction.duration);
 
       expect(
-        events.includes(GameSubjectEvent.DISPATCH_COMPLETE_REACTION) === true
+        events.includes(GameManagerEvent.DISPATCH_COMPLETE_REACTION) === true
       ).toEqual(true);
       gameSubject.unsubscribe(completeReactionOnValidGuessObserver);
     });
 
     it('should update score on complete reaction', () => {
-      gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
 
       gameSubject.setCurrentReaction(reaction);
       gameSubject.dispatchAddGuess(reaction.duration);
@@ -227,11 +236,48 @@ describe('game', () => {
       expect(gameSubject.getCurrentGame().getScore()).toBeGreaterThanOrEqual(1);
     });
 
-    // 1. refactor
-    // 2. frontend mvp
+    // 0. gameService
+    // 1. frontend mvp
 
-    // 3.may need to write converters or storage engine (TAKE A LOOK INTO AFTER FRONTEND WORKS)
+    // 2.may need to write converters or storage engine (TAKE A LOOK INTO AFTER FRONTEND WORKS)
     // -> game class and reaction class may need to take ids/keys to allow for this
+
+    // should generate and set new current reaction upon valid guess
+    it('should generate and set new current reaction upon valid guess', () => {
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentReaction(reaction);
+      gameSubject.dispatchAddGuess(2000);
+      expect(gameSubject.getCurrentReaction()._id).toBe(reaction._id);
+      gameSubject.dispatchAddGuess(reaction.duration);
+      gameSubject.dispatchGenerateNewWithRandomDuration();
+
+      expect(gameSubject.getCurrentReaction()._id !== reaction._id).toEqual(
+        true
+      );
+      expect(
+        gameSubject.getCurrentGame().reactions[0].completedAt
+      ).toBeGreaterThan(1);
+      expect(gameSubject.getCurrentGame().reactions[0].isGuessed).toEqual(true);
+    });
+
+    it('should reset game', () => {
+      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentReaction(reaction);
+      Array.from({
+        length: gameSubject.getSettings().difficulty.maxFailedAttempts,
+      }).forEach(() =>
+        gameSubject.dispatchAddGuess(
+          gameSubject.getCurrentReaction().duration +
+            gameSubject.getCurrentGame().difficulty.deviation +
+            1
+        )
+      );
+
+      expect(gameSubject.getCurrentGame().reactions.length).toEqual(1);
+      gameSubject.dispatchResetGame();
+      expect(gameSubject.getCurrentGame()._id !== game._id).toEqual(true);
+      expect(gameSubject.getCurrentGame().reactions.length).toEqual(0);
+    });
   });
 
   describe('reaction service', () => {
@@ -283,6 +329,18 @@ describe('game', () => {
 
       expect(easyIsTrue).toEqual(true);
       expect(mediumIsTrue).toEqual(true);
+    });
+  });
+
+  describe('gameService', () => {
+    it('should create new game', () => {
+      const service = new GameService(settings);
+      const newGame = service.createNewGame();
+
+      expect(newGame._id !== game._id).toEqual(true);
+      expect(newGame.isOver).toEqual(false);
+      expect(newGame.reactions).toStrictEqual([]);
+      expect(newGame.events).toStrictEqual([]);
     });
   });
 });

@@ -1,17 +1,21 @@
-import { EmptyResponse, GameSubjectEvent, Response } from './game/game.subject';
+import { GameManagerEvent } from './game-manager/game-manager';
+import {
+  EmptyGameManagerResponse,
+  GameManagerResponse,
+} from './game-manager/util/response.util';
 import { Observer, ObserverSubject } from './observer';
 
 describe('observer', () => {
   it('should observe', () => {
-    const observer: Observer<Response<unknown>> = {
+    const observer: Observer<GameManagerResponse<unknown>> = {
       id: 'as',
       update: jest.fn(),
     };
-    const subject = new ObserverSubject<Response<unknown>>();
+    const subject = new ObserverSubject<GameManagerResponse<unknown>>();
     subject.subscribe(observer);
     subject.notify(
       'tbd',
-      new EmptyResponse(
+      new EmptyGameManagerResponse(
         {
           events: [],
           games: [],
@@ -24,7 +28,7 @@ describe('observer', () => {
             },
           },
         },
-        GameSubjectEvent.DISPATCH_ADD_GUESS
+        GameManagerEvent.DISPATCH_ADD_GUESS
       )
     );
     subject.unsubscribe(observer);

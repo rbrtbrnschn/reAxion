@@ -1,3 +1,5 @@
+import { InvalidPermissionError } from './errors';
+
 /**
  * Function only fires if state.currentEvent is included in the whitelist.
  * @param events {string[]}
@@ -24,7 +26,8 @@ export function HasEvent(events: string[]): EventDecorator {
           .getEvents()
           .some((e: string) => whitelist.includes(e))
       )
-        return;
+        throw new InvalidPermissionError();
+
       return originalMethod.apply(this, args);
     };
     return descriptor;
