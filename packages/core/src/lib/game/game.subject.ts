@@ -1,7 +1,8 @@
 import { GuessStatus, IReaction, ReactionStatus } from '@reaxion/common';
-import { HasEvent } from './has-event.decorator';
-import { Observer, ObserverSubject } from './observer';
-import { ReactionService } from './reaction.service';
+import { Observer, ObserverSubject } from '../observer';
+import { HasEvent } from './decorators/has-event.decorator';
+import { ReactionService } from './services/reaction.service';
+import { isAddGuessResponse } from './util/response.util';
 export enum GameSubjectEvent {
   DISPATCH_STARTING_SEQUENCE = 'DISPATCH_STARTING_SEQUENCE',
 
@@ -176,7 +177,8 @@ export interface IGameState {
   events: GameSubjectEvent[];
 }
 
-export class GameSubject extends ObserverSubject {
+type MyResponseType = Response<unknown>;
+export class GameSubject extends ObserverSubject<MyResponseType> {
   private readonly reactionService: ReactionService;
   private state: IGameState = {
     games: [],
@@ -191,11 +193,13 @@ export class GameSubject extends ObserverSubject {
     this.reactionService = new ReactionService(this.state.settings);
 
     /* Rethink Architecture -> leave this open to concrete implementation */
-    const addGuessObserver: Observer = {
+    const addGuessObserver: Observer<MyResponseType> = {
       id: 'addGuessObserver',
-      update: (eventName, payload: Response<AddGuessResponsePayload>) => {
+      update: (eventName, response: Response<any>) => {
         if (eventName !== GameSubjectEvent.DISPATCH_ADD_GUESS) return;
-        if (payload.payload.data.status === 'GUESS_VALID') {
+        if (!isAddGuessResponse(response)) return;
+
+        if (response.payload.data.status === 'GUESS_VALID') {
           this.dispatchCompleteReaction();
 
           return;
@@ -280,7 +284,7 @@ export class GameSubject extends ObserverSubject {
     this.setCurrentEvent(GameSubjectEvent.DISPATCH_STARTING_SEQUENCE);
     this.notify(
       this.getCurrentEvent(),
-      new EmptyResponse(this.getState(), this.getCurrentEvent())
+      new Response(this.getState(), this.getCurrentEvent(), undefined)
     );
   }
 

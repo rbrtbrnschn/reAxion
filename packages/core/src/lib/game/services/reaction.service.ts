@@ -1,6 +1,6 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
 import * as uuid4 from 'uuid4';
-import { ISettings, Reaction, UndefinedReactionError } from './game.subject';
+import { ISettings, Reaction, UndefinedReactionError } from '../game.subject';
 export class ReactionService {
   public reaction: Reaction | undefined;
   constructor(protected settings: ISettings) {}

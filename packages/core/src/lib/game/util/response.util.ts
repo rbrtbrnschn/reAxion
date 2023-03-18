@@ -1,4 +1,4 @@
-import { AddGuessResponsePayload, Response } from '../../game.subject';
+import { AddGuessResponsePayload, Response } from '../game.subject';
 
 export function isAddGuessResponse(
   response: any

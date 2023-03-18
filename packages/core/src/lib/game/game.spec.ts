@@ -1,4 +1,5 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
+import { Observer } from '../observer';
 import {
   AddGuessResponsePayload,
   EasyDifficulty,
@@ -13,9 +14,8 @@ import {
   Response,
   Settings,
 } from './game.subject';
-import { Observer } from './observer';
-import { ReactionService } from './reaction.service';
-import { isAddGuessResponse } from './reaction/utils/response.util';
+import { ReactionService } from './services/reaction.service';
+import { isAddGuessResponse } from './util/response.util';
 describe('game', () => {
   let gameSubject: GameSubject;
   let reaction: Reaction;
@@ -63,7 +63,7 @@ describe('game', () => {
     });
 
     it('observer should update', () => {
-      const observer: Observer = {
+      const observer: Observer<Response<any>> = {
         id: 'asd',
         update: jest.fn(),
       };
@@ -77,8 +77,8 @@ describe('game', () => {
       gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_REACTION_END);
 
       const validGuessObserverEvents: GameSubjectEvent[] = [];
-      const observerInvalidGuess: Observer = {
-        id: 'dad',
+      const observerInvalidGuess: Observer<Response<any>> = {
+        id: 'dasd',
         update: (
           eventName,
           response: EmptyResponse | Response<AddGuessResponsePayload>
@@ -91,7 +91,7 @@ describe('game', () => {
           }
         },
       };
-      const observerValidGuess: Observer = {
+      const observerValidGuess: Observer<Response<any>> = {
         id: 'asdd',
         update: (eventName, payload: Response<AddGuessResponsePayload>) => {
           validGuessObserverEvents.push(eventName as GameSubjectEvent);
@@ -164,7 +164,7 @@ describe('game', () => {
       gameSubject.setCurrentEvent(GameSubjectEvent.DISPATCH_REACTION_END);
       gameSubject.setCurrentReaction(reaction);
       const events: GameSubjectEvent[] = [];
-      const failedGameObserver: Observer = {
+      const failedGameObserver: Observer<Response<any>> = {
         id: 'failedGameObserver',
         update: (eventName, payload) => {
           events.push(eventName as GameSubjectEvent);
@@ -203,7 +203,7 @@ describe('game', () => {
       const events: GameSubjectEvent[] = [];
 
       gameSubject.setCurrentReaction(reaction);
-      const completeReactionOnValidGuessObserver: Observer = {
+      const completeReactionOnValidGuessObserver: Observer<Response<any>> = {
         id: 'completeReactionOnValidGuessObserver',
         update(eventName, payload) {
           events.push(eventName as GameSubjectEvent);
