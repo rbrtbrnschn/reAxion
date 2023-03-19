@@ -15,6 +15,7 @@ import {
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuid4 } from 'uuid';
+import { Countdown } from '../components/countdown';
 const gameManager = new GameManager();
 export const Mvp = () => {
   const observer: Observer<GameManagerResponse<unknown>> = {
@@ -87,7 +88,7 @@ const Count = () => {
       gameManager.unsubscribe(countObserver);
     };
   }, []);
-  return <div>{count > 0 && count}</div>;
+  return <div>{count > 0 && <Countdown value={count} />}</div>;
 };
 
 const Animation = () => {

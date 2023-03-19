@@ -47,7 +47,7 @@ type AlertProps = { color: string; title: string; description: string };
  * @returns {AlertProps}  props for `<Alert />` component
  */
 const calcAlertProps = (reaction: IReaction | null): AlertProps => {
-  let props: AlertProps = {
+  const props: AlertProps = {
     color: 'red',
     title: '',
     description: '',

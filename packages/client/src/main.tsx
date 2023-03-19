@@ -5,6 +5,7 @@ import './main.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StoreProvider } from 'easy-peasy';
 import App from './app/app';
+import { GameManagerProvider } from './contexts/game-manager.context';
 import { store } from './store';
 
 const root = ReactDOM.createRoot(
@@ -13,12 +14,14 @@ const root = ReactDOM.createRoot(
 const queryClient = new QueryClient();
 root.render(
   // <StrictMode>
-  <StoreProvider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </QueryClientProvider>
-  </StoreProvider>
+  <GameManagerProvider>
+    <StoreProvider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </StoreProvider>
+  </GameManagerProvider>
   // </StrictMode>
 );

@@ -6,4 +6,5 @@ export enum RouteNames {
   SCOREBOARD_GLOBAL_PAGE,
   SETTINGS_PAGE,
   MVP_PAGE,
+  GAME_PAGE_V2,
 }

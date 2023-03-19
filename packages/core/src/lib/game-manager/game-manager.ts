@@ -192,9 +192,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       new AddGuessResponsePayload({
         status: this.reactionService
           .withReaction(this.getCurrentReaction())
-          .guessIsRight(guess)
-          ? 'GUESS_VALID'
-          : 'GUESS_INVALID',
+          .calculateGuessDeviationStatus(guess),
       })
     );
     this.notify(this.getCurrentEvent(), response);
@@ -268,11 +266,11 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   }
 }
 
-export class AddGuessResponsePayload<
-  T = { status: AddGuessStatus }
-> extends GameManagerResponsePayload<T> {
+export class AddGuessResponsePayload extends GameManagerResponsePayload<{
+  status: AddGuessStatus;
+}> {
   public readonly id = 'ADD_GUESS_RESPONSE';
-  constructor(data: T) {
+  constructor(data: { status: AddGuessStatus }) {
     super(data);
   }
 }
@@ -293,4 +291,7 @@ export class ReactionEndResponsePayload<
   }
 }
 
-export type AddGuessStatus = 'GUESS_VALID' | 'GUESS_INVALID';
+export type AddGuessStatus =
+  | 'GUESS_VALID'
+  | 'GUESS_INVALID_HIGH'
+  | 'GUESS_INVALID_LOW';
