@@ -21,7 +21,6 @@ function useGameOverviewGame() {
   return useQuery({
     queryKey: ['gameOverview'],
     queryFn: async (): Promise<IGame | undefined> => {
-      console.log('using:', process.env.REACT_APP_API_URL);
       const response = await axios.get(
         `${
           process.env.REACT_APP_API_URL || ''
@@ -51,7 +50,6 @@ const MyGameOverviewScreen = () => {
   function parseSecond(number: number) {
     return (number / 1000).toFixed(2) + 's';
   }
-  console.log('game:', game);
   return (
     <div className="h-full px-2 flex flex-col gap-4">
       <div className="prose">

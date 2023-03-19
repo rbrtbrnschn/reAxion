@@ -77,7 +77,6 @@ const MySettingsScreen = () => {
                   <button
                     className="btn w-full"
                     onClick={() => {
-                      console.log(difficulty);
                       gameManager.setSettings({ difficulty: difficulty });
                     }}
                   >

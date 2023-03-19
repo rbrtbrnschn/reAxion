@@ -15,7 +15,6 @@ function useGames() {
   return useQuery({
     queryKey: ['personalGame'],
     queryFn: async (): Promise<IGame[]> => {
-      console.log('using:', process.env.REACT_APP_API_URL);
       const response = await axios.get(
         `${
           process.env.REACT_APP_API_URL || ''
@@ -47,6 +46,9 @@ const MyPersonalScoreboardScreen = () => {
                 <a onClick={() => setSortBy(diff.id)}>{diff.name}</a>
               </li>
             ))}
+            <li>
+              <a onClick={() => setSortBy(undefined)}>All</a>
+            </li>
           </ul>
         </div>
       </div>
@@ -72,11 +74,6 @@ const MyPersonalScoreboardScreen = () => {
               })
               .sort((a, b) => b.score - a.score)
               .map((game, index) => {
-                console.warn(
-                  'personal',
-                  gameToAverageDeviation(game),
-                  game.reactions
-                );
                 return (
                   <tr key={'game-' + (index + 1)}>
                     <th>{index + 1}</th>
