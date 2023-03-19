@@ -1,10 +1,15 @@
-import { GameDifficulty } from "../enums/difficulty.enum";
-import { IReaction } from "./reaction.interface";
-export interface IGameDifficulty { deviation: number; maxFailedAttempts: number, name: string, isNotPlayable?: true }
+import { IReaction } from './reaction.interface';
+import { IDifficulty } from './settings.interface';
+export interface IGameDifficulty {
+  deviation: number;
+  maxFailedAttempts: number;
+  name: string;
+  isNotPlayable?: true;
+}
 export interface IGame {
-    score: number;
-    difficulty: GameDifficulty;
-    name: string;
-    failedAttempts: number;
-    reactions: IReaction[];
-  }
+  score: number;
+  difficulty: IDifficulty;
+  failedAttempts: number;
+  reactions: IReaction[];
+  name?: string;
+}

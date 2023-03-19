@@ -1,4 +1,4 @@
-import { IDifficulty, ISettings } from './settings.interface';
+import { IDifficulty, ISettings } from '@reaxion/common/interfaces';
 
 export class Settings implements ISettings {
   constructor(public difficulty: IDifficulty) {}

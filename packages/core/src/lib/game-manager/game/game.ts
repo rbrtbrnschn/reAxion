@@ -1,3 +1,4 @@
+import { IDifficulty, IGame } from '@reaxion/common';
 import {
   NoCurrentReactionError,
   NoPreviousReactionError,
@@ -5,18 +6,18 @@ import {
 } from '../errors';
 import { GameManagerEvent } from '../game-manager';
 import { Reaction } from '../reaction/reaction';
-import { IDifficulty } from '../settings/settings.interface';
 
-export class Game {
+export class Game implements IGame {
   public readonly key = 'GAME_CLASS';
   public isOver: boolean;
   constructor(
     public readonly difficulty: IDifficulty,
-    private failedAttempts: number,
-    private score: number,
-    public readonly _id: string,
+    public failedAttempts: number,
+    public score: number,
+    public readonly id: string,
     public reactions: Reaction[],
-    public events: GameManagerEvent[]
+    public events: GameManagerEvent[],
+    public name?: string
   ) {
     this.isOver = false;
   }
@@ -63,10 +64,24 @@ export class Game {
   public setIsOver() {
     this.isOver = true;
   }
+  public setName(name: string) {
+    if (!name) throw new NoNameError();
+    this.name = name;
+    return this;
+  }
+  public getName() {
+    return this.name;
+  }
   public getEvents() {
     return this.events;
   }
   public setEvents(events: GameManagerEvent[]) {
     this.events = events;
+  }
+}
+
+class NoNameError extends Error {
+  constructor() {
+    super('No Name Found.');
   }
 }

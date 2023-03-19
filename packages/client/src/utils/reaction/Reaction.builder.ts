@@ -10,7 +10,7 @@ export class ReactionBuilder {
       guessStatus: GuessStatus.IS_WAITING,
       reactionStatus: ReactionStatus.HAS_NOT_STARTED,
       isGuessed: false,
-      _id: uuid4(),
+      id: uuid4(),
     };
   }
   buildWithRandomDuration(resolveDuration?: () => number) {

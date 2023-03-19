@@ -12,7 +12,9 @@ import {
   Observer,
   Reaction,
 } from '@reaxion/core';
-import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useRef, useState } from 'react';
+import { v4 as uuid4 } from 'uuid';
 const gameManager = new GameManager();
 export const Mvp = () => {
   const observer: Observer<GameManagerResponse<unknown>> = {
@@ -28,11 +30,11 @@ export const Mvp = () => {
   };
   useEffect(() => {
     gameManager.setCurrentGame(
-      new Game(new EasyDifficulty(), 0, 0, 'asdsad', [], [])
+      new Game(new EasyDifficulty(), 0, 0, uuid4(), [], [])
     );
     gameManager.setCurrentReaction(
       new Reaction(
-        'asd',
+        uuid4(),
         1000,
         [],
         false,
@@ -177,6 +179,7 @@ const Input = () => {
 
 const GameOverModal = () => {
   const [isShowing, setIsShowing] = useState(false);
+  const [input, setInput] = useState('');
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'asdasd',
     update(eventName, response) {
@@ -196,24 +199,22 @@ const GameOverModal = () => {
   }, []);
 
   const onClick = () => {
+    gameManager.dispatchSetName(input);
+    axios.post('/api/game', gameManager.getCurrentGame());
     gameManager.dispatchResetGame();
-    gameManager.setCurrentReaction(
-      new Reaction(
-        'asd',
-        1500,
-        [],
-        false,
-        GuessStatus.IS_WAITING,
-        ReactionStatus.HAS_NOT_STARTED
-      )
-    );
+    gameManager.dispatchGenerateNewWithRandomDuration();
     gameManager.dispatchStartingSequence();
+  };
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.currentTarget.value.length > 3) return;
+    setInput(e.currentTarget.value);
   };
   return isShowing ? (
     <div className="prose">
       <h1>Game over{gameManager.getCurrentGame().getScore()}</h1>
+      <input value={input} className="input bg-slate-200" onChange={onChange} />
       <h3>Start a new?</h3>
-      <button className="btn" onClick={onClick}>
+      <button className="btn" onClick={onClick} disabled={input.length !== 3}>
         Click Here!
       </button>
     </div>

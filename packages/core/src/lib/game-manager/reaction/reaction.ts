@@ -3,7 +3,7 @@ import { GuessStatus, IReaction, ReactionStatus } from '@reaxion/common';
 export class Reaction implements IReaction {
   public readonly key = 'REACTION_CLASS';
   constructor(
-    public readonly _id: string,
+    public readonly id: string,
     public readonly duration: number,
     public guesses: number[],
     public isGuessed: boolean,

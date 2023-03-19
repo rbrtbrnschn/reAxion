@@ -1,7 +1,7 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
+import { ISettings } from '@reaxion/common/interfaces';
 import { v4 as uuid4 } from 'uuid';
 import { UndefinedReactionError } from '../errors';
-import { ISettings } from '../settings/settings.interface';
 import { Reaction } from './reaction';
 export class ReactionService {
   public reaction: Reaction | undefined;

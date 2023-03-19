@@ -1,5 +1,5 @@
+import { ISettings } from '@reaxion/common/interfaces';
 import { v4 as uuid4 } from 'uuid';
-import { ISettings } from '../settings/settings.interface';
 import { Game } from './game';
 export class GameService {
   constructor(protected settings: ISettings) {}

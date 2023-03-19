@@ -1,3 +1,4 @@
+import { ISettings } from '@reaxion/common/interfaces';
 import { Observer, ObserverSubject } from '../observer';
 import {
   NoCurrentGameError,
@@ -11,7 +12,6 @@ import { HasEvent } from './has-event.decorator';
 import { Reaction } from './reaction/reaction';
 import { ReactionService } from './reaction/reaction.service';
 import { EasyDifficulty } from './settings/difficulty';
-import { ISettings } from './settings/settings.interface';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -33,6 +33,7 @@ export enum GameManagerEvent {
   DISPATCH_COMPLETE_REACTION = 'DISPATCH_COMPLETE_REACTION',
   DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION = 'DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION',
   DISPATCH_FAIL_GAME = 'DISPATCH_FAIL_GAME',
+  DISPATCH_SET_NAME = 'DISPATCH_SET_NAME',
   DISPATCH_RESET_GAME = 'DISPATCH_RESET_GAME',
 }
 
@@ -213,7 +214,10 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     );
   }
 
-  @HasEvent([GameManagerEvent.DISPATCH_COMPLETE_REACTION])
+  @HasEvent([
+    GameManagerEvent.DISPATCH_RESET_GAME,
+    GameManagerEvent.DISPATCH_COMPLETE_REACTION,
+  ])
   public dispatchGenerateNewWithRandomDuration() {
     this.setCurrentEvent(
       GameManagerEvent.DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION
@@ -238,10 +242,29 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     );
   }
 
-  @HasEvent([GameManagerEvent.DISPATCH_FAIL_GAME])
+  @HasEvent([
+    GameManagerEvent.DISPATCH_FAIL_GAME,
+    GameManagerEvent.DISPATCH_SET_NAME,
+  ])
   public dispatchResetGame() {
-    this.setCurrentEvent(GameManagerEvent.DISPATCH_RESET_GAME);
     this.setCurrentGame(this.gameService.createNewGame());
+    this.setCurrentEvent(GameManagerEvent.DISPATCH_RESET_GAME);
+    this.notify(
+      GameManagerEvent.DISPATCH_RESET_GAME,
+      new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
+    );
+  }
+
+  @HasEvent([GameManagerEvent.DISPATCH_FAIL_GAME])
+  public dispatchSetName(name: string) {
+    this.setCurrentEvent(GameManagerEvent.DISPATCH_SET_NAME);
+    if (!name) throw new Error('No Name Found.');
+
+    this.getCurrentGame().setName(name);
+    this.notify(
+      this.getCurrentEvent(),
+      new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
+    );
   }
 }
 

@@ -1,4 +1,4 @@
-import { IDifficulty } from './settings.interface';
+import { IDifficulty } from '@reaxion/common/interfaces';
 
 export class EasyDifficulty implements IDifficulty {
   public readonly id = 'EASY_DIFFICULTY';

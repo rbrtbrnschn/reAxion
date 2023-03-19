@@ -1,4 +1,5 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
+import { IDifficulty, ISettings } from '@reaxion/common/interfaces';
 import { Observer } from '../observer';
 import {
   AddGuessResponsePayload,
@@ -12,7 +13,6 @@ import { Reaction } from './reaction/reaction';
 import { ReactionService } from './reaction/reaction.service';
 import { EasyDifficulty } from './settings/difficulty';
 import { Settings } from './settings/settings';
-import { IDifficulty, ISettings } from './settings/settings.interface';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -49,11 +49,11 @@ describe('game', () => {
   describe('getters & setters', () => {
     it('should get & set currentReaction', () => {
       gameSubject.setCurrentReaction(reaction);
-      expect(gameSubject.getCurrentReaction()._id).toEqual(reaction._id);
+      expect(gameSubject.getCurrentReaction().id).toEqual(reaction.id);
     });
     it('should get & set currentGame', () => {
       gameSubject.setCurrentGame(game);
-      expect(gameSubject.getCurrentGame()._id).toEqual(game._id);
+      expect(gameSubject.getCurrentGame().id).toEqual(game.id);
     });
   });
 
@@ -253,13 +253,11 @@ describe('game', () => {
       gameSubject.setCurrentReaction(reaction);
       gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
       gameSubject.dispatchAddGuess(2000);
-      expect(gameSubject.getCurrentReaction()._id).toBe(reaction._id);
+      expect(gameSubject.getCurrentReaction().id).toBe(reaction.id);
       gameSubject.dispatchAddGuess(reaction.duration);
       gameSubject.dispatchGenerateNewWithRandomDuration();
 
-      expect(gameSubject.getCurrentReaction()._id !== reaction._id).toEqual(
-        true
-      );
+      expect(gameSubject.getCurrentReaction().id !== reaction.id).toEqual(true);
       expect(
         gameSubject.getCurrentGame().reactions[0].completedAt
       ).toBeGreaterThan(1);
@@ -281,7 +279,7 @@ describe('game', () => {
 
       expect(gameSubject.getCurrentGame().reactions.length).toEqual(1);
       gameSubject.dispatchResetGame();
-      expect(gameSubject.getCurrentGame()._id !== game._id).toEqual(true);
+      expect(gameSubject.getCurrentGame().id !== game.id).toEqual(true);
       expect(gameSubject.getCurrentGame().reactions.length).toEqual(0);
     });
   });
@@ -343,7 +341,7 @@ describe('game', () => {
       const service = new GameService(settings);
       const newGame = service.createNewGame();
 
-      expect(newGame._id !== game._id).toEqual(true);
+      expect(newGame.id !== game.id).toEqual(true);
       expect(newGame.isOver).toEqual(false);
       expect(newGame.reactions).toStrictEqual([]);
       expect(newGame.events).toStrictEqual([]);
@@ -392,10 +390,12 @@ describe('game', () => {
         GameManagerEvent.DISPATCH_FAIL_GAME
       );
       // gameover -> reset
+      gameSubject.dispatchSetName('pet');
       gameSubject.dispatchResetGame();
-      gameSubject.setCurrentReaction(
-        new ReactionService(settings).createReactionWithRandomDuration()
-      );
+      gameSubject.dispatchGenerateNewWithRandomDuration();
+      //gameSubject.setCurrentReaction(
+      //new ReactionService(settings).createReactionWithRandomDuration()
+      //);
       gameSubject.dispatchStartingSequence();
       gameSubject.dispatchReactionStart();
       gameSubject.dispatchReactionEnd();
@@ -415,23 +415,24 @@ describe('game', () => {
         - DISPATCH_ADD_GUESS
           - DISPATCH_COMPLETE_REACTION
             - DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION
+            
+            ------- Start a new -------
               - DISPATCH_STARTING_SEQUENCE
-                
-              ------- Start a new -------
-                - DISPATCH_REACTION_STAR`T
+                - DISPATCH_REACTION_START
                   - DISPATCH_REACTION_END
                     - DISPATCH_ADD_GUESS`
                       - DISPAtCH_COMPLETE_REACTION
                       - DISPATCH_FAIL_GAME
 
           - DISPATCH_FAIL_GAME
-            - DISPATCH_RESET_GAME
-              - setCurrentReaction
-                
-              ------- Start a new -------
-                - DISPATCH_STARTING_SEQUENCE
-                  - DISPATCH_REACTION_START
-                    - DISPATCH_REACTION_END
-                      - DISPATCH_ADD_GUESS
+            - DISPATCH_SET_NAME
+              - DISPATCH_RESET_GAME
+                - DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION
+                  
+                ------- Start a new -------
+                  - DISPATCH_STARTING_SEQUENCE
+                    - DISPATCH_REACTION_START
+                      - DISPATCH_REACTION_END
+                        - DISPATCH_ADD_GUESS
   */
 });

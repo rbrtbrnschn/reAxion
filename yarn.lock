@@ -5544,6 +5544,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/mongoose-paginate-v2@npm:^1.6.5":
+  version: 1.6.5
+  resolution: "@types/mongoose-paginate-v2@npm:1.6.5"
+  dependencies:
+    mongoose-paginate-v2: "npm:*"
+  checksum: f4681b184ad34b06af460e543e80f73f0b3b1e4c1689265139d921e9be5005171bf51ddcd6778ebb5f2137bd2f6b38e0ec23fc23a671b450dfa854f29812ab54
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:^2.5.7":
   version: 2.6.2
   resolution: "@types/node-fetch@npm:2.6.2"
@@ -16609,6 +16618,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mongoose-paginate-v2@npm:*, mongoose-paginate-v2@npm:^1.7.1":
+  version: 1.7.1
+  resolution: "mongoose-paginate-v2@npm:1.7.1"
+  checksum: f1a3474faef1685e9ddf65896b69e003035cc612b4633356ad149e2d5978fa95f414f47d5867f2be442b77df75e893f20b17b53f3a0889ff1e851bc27ef61f58
+  languageName: node
+  linkType: hard
+
 "mongoose@npm:^7.0.1":
   version: 7.0.2
   resolution: "mongoose@npm:7.0.2"
@@ -19393,6 +19409,7 @@ __metadata:
     "@tanstack/react-query": "npm:^4.26.1"
     "@testing-library/react": "npm:14.0.0"
     "@types/jest": "npm:^29.4.0"
+    "@types/mongoose-paginate-v2": "npm:^1.6.5"
     "@types/node": "npm:18.14.2"
     "@types/react": "npm:18.0.28"
     "@types/react-dom": "npm:18.0.11"
@@ -19429,6 +19446,7 @@ __metadata:
     jsdom: "npm:~20.0.3"
     mongoose: "npm:^7.0.1"
     mongoose-autopopulate: "npm:^1.0.0"
+    mongoose-paginate-v2: "npm:^1.7.1"
     nx: "npm:^15.8.6"
     postcss: "npm:8.4.21"
     prettier: "npm:^2.6.2"
