@@ -1,4 +1,5 @@
 import { IGame } from '@reaxion/common/interfaces';
+import { difficulties } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
@@ -21,7 +22,7 @@ function useGames() {
 
 const MyGlobalScoreboardScreen = () => {
   const [cookies] = useCookies(['userId']);
-  const [rangeStart, setRangeStart] = useState(0);
+  const [sortBy, setSortBy] = useState<string | undefined>();
   const { data } = useGames();
 
   // const fetchMoreData = async () => {
@@ -33,6 +34,23 @@ const MyGlobalScoreboardScreen = () => {
   // const [targetRef, isFetching] = useInfiniteScroll(fetchMoreData);
   return (
     <div className="h-full flex flex-col px-2">
+      <div className="flex" style={{ justifyContent: 'end' }}>
+        <div className="dropdown dropdown-bottom dropdown-end">
+          <label tabIndex={0} className="btn m-1">
+            Filter Difficulty
+          </label>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            {Object.values(difficulties).map((diff) => (
+              <li>
+                <a onClick={() => setSortBy(diff.id)}>{diff.name}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="table table-zebra w-full">
           {/* head */}
@@ -47,43 +65,49 @@ const MyGlobalScoreboardScreen = () => {
           </thead>
           <tbody>
             {/* row 1 */}
-            {data?.map((game, index) => {
-              console.warn(
-                'global',
-                gameToAverageDeviation(game),
-                game.reactions
-              );
-              return (
-                <tr
-                  key={'game-' + (index + 1)}
-                  className={
-                    game.userId === cookies.userId ? 'text-secondary' : ''
-                  }
-                >
-                  <th>
-                    <YouTooltip>{index + 1} </YouTooltip>
-                  </th>
-                  <td>
-                    <YouTooltip>
-                      {game?.name?.toUpperCase() || '???'}
-                    </YouTooltip>
-                  </td>
-                  <td>
-                    {' '}
-                    <YouTooltip>{game.score} </YouTooltip>
-                  </td>
-                  <td>
-                    {' '}
-                    <YouTooltip>
-                      {gameToAverageDeviation(game).toFixed(2)}ms
-                    </YouTooltip>
-                  </td>
-                  <td>
-                    <YouTooltip>{game.difficulty.name} </YouTooltip>
-                  </td>
-                </tr>
-              );
-            })}
+            {data
+              ?.filter((game) => {
+                if (!sortBy) return true;
+                return game.difficulty.id === sortBy;
+              })
+              .sort((a, b) => b.score - a.score)
+              .map((game, index) => {
+                console.warn(
+                  'global',
+                  gameToAverageDeviation(game),
+                  game.reactions
+                );
+                return (
+                  <tr
+                    key={'game-' + (index + 1)}
+                    className={
+                      game.userId === cookies.userId ? 'text-secondary' : ''
+                    }
+                  >
+                    <th>
+                      <YouTooltip>{index + 1} </YouTooltip>
+                    </th>
+                    <td>
+                      <YouTooltip>
+                        {game?.name?.toUpperCase() || '???'}
+                      </YouTooltip>
+                    </td>
+                    <td>
+                      {' '}
+                      <YouTooltip>{game.score} </YouTooltip>
+                    </td>
+                    <td>
+                      {' '}
+                      <YouTooltip>
+                        {gameToAverageDeviation(game).toFixed(2)}ms
+                      </YouTooltip>
+                    </td>
+                    <td>
+                      <YouTooltip>{game.difficulty.name} </YouTooltip>
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
         {/* {isFetching && <div>Loading...</div>}
