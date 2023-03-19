@@ -6,8 +6,7 @@ import {
   IReaction,
   ReactionStatus,
 } from '@reaxion/common';
-import mongoose, { HydratedDocument } from 'mongoose';
-import mongoosePaginate from 'mongoose-paginate-v2';
+import { HydratedDocument } from 'mongoose';
 
 export type GameDocument = HydratedDocument<Game>;
 
@@ -59,9 +58,3 @@ export class Game implements IGame {
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game);
-GameSchema.plugin(mongoosePaginate);
-
-export const gameModel = mongoose.model<
-  GameDocument,
-  mongoose.PaginateModel<GameDocument>
->('Game', GameSchema, 'game');
