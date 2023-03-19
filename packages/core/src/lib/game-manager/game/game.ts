@@ -11,6 +11,7 @@ export class Game implements IGame {
   public readonly key = 'GAME_CLASS';
   public isOver: boolean;
   constructor(
+    public readonly userId: string,
     public readonly difficulty: IDifficulty,
     public failedAttempts: number,
     public score: number,

@@ -11,6 +11,13 @@ export class GameService {
   async findAll(limit: number, offset: number): Promise<Game[]> {
     return this.gameModel.find().skip(offset).limit(limit).exec();
   }
+  async findAllByUser(
+    limit: number,
+    offset: number,
+    userId: string
+  ): Promise<Game[]> {
+    return this.gameModel.find({ userId }).skip(offset).limit(limit).exec();
+  }
   async addSingle(game: IGame): Promise<Game> {
     const createdGame = await this.gameModel.create(game);
     return createdGame.save();

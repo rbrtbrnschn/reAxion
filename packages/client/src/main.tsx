@@ -13,7 +13,6 @@ const root = ReactDOM.createRoot(
 );
 const queryClient = new QueryClient();
 root.render(
-  // <StrictMode>
   <GameManagerProvider>
     <StoreProvider store={store}>
       <QueryClientProvider client={queryClient}>
@@ -23,5 +22,4 @@ root.render(
       </QueryClientProvider>
     </StoreProvider>
   </GameManagerProvider>
-  // </StrictMode>
 );

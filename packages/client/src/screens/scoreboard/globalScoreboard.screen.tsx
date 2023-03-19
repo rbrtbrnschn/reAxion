@@ -3,15 +3,16 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
 import { withNavigation } from '../../components/navigation';
-import { gameDifficulties } from '../../store/models/game.model';
 import { gameToAverageDeviation } from '../../utils/scoreboard/gamesToAverageDeviation';
 
 function useGames() {
   return useQuery({
     queryKey: ['game'],
     queryFn: async (): Promise<IGame[]> => {
-  console.log("using:",process.env.REACT_APP_API_URL)
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/game`);
+      console.log('using:', process.env.REACT_APP_API_URL);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL || ''}/api/game`
+      );
       return response.data;
     },
   });
@@ -45,14 +46,18 @@ const MyGlobalScoreboardScreen = () => {
           <tbody>
             {/* row 1 */}
             {data?.map((game, index) => {
-              console.warn("global",gameToAverageDeviation(game),game.reactions)
+              console.warn(
+                'global',
+                gameToAverageDeviation(game),
+                game.reactions
+              );
               return (
                 <tr key={'game-' + (index + 1)}>
                   <th>{index + 1}</th>
-                  <td>{game.name.toUpperCase() || '???'}</td>
+                  <td>{game?.name?.toUpperCase() || '???'}</td>
                   <td>{game.score}</td>
                   <td>{gameToAverageDeviation(game).toFixed(2)}ms</td>
-                  <td>{gameDifficulties[game.difficulty].name}</td>
+                  <td>{game.difficulty.name}</td>
                 </tr>
               );
             })}

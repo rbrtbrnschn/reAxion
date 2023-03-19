@@ -32,8 +32,8 @@ describe('game', () => {
       games: [],
       settings,
     };
-    gameSubject = new GameManager(gameState);
-    game = new Game(difficulty, 0, 0, 'asdd', [], []);
+    gameSubject = new GameManager('addd', gameState);
+    game = new Game('asd', difficulty, 0, 0, 'asdd', [], []);
     gameSubject.setCurrentGame(game);
     reaction = new Reaction(
       'asd',
@@ -94,9 +94,9 @@ describe('game', () => {
         ) => {
           if (isAddGuessResponse(response)) {
             expect(eventName).toEqual(GameManagerEvent.DISPATCH_ADD_GUESS);
-            expect(response.payload.data.status === 'GUESS_INVALID').toEqual(
-              true
-            );
+            expect(
+              response.payload.data.status === 'GUESS_INVALID_HIGH'
+            ).toEqual(true);
           }
         },
       };
@@ -307,12 +307,7 @@ describe('game', () => {
     it('should create new reaction with random duration', () => {
       const easySettings: ISettings = { difficulty: new EasyDifficulty() };
       const mediumSettings: ISettings = {
-        difficulty: {
-          maxDuration: 1500,
-          deviation: 500,
-          id: 'asd',
-          maxFailedAttempts: 3,
-        },
+        difficulty: new EasyDifficulty(),
       };
 
       function generateRandomDurations(settings: ISettings, amount = 100) {
@@ -339,7 +334,7 @@ describe('game', () => {
   describe('gameService', () => {
     it('should create new game', () => {
       const service = new GameService(settings);
-      const newGame = service.createNewGame();
+      const newGame = service.createNewGame('as');
 
       expect(newGame.id !== game.id).toEqual(true);
       expect(newGame.isOver).toEqual(false);
@@ -351,6 +346,9 @@ describe('game', () => {
   describe('full game loop', () => {
     it('should not fail', () => {
       // reaction 1
+      gameSubject.setCurrentGame(
+        new Game('', new EasyDifficulty(), 0, 0, '', [], [])
+      );
       gameSubject.setCurrentReaction(reaction);
 
       const notYetAllowed = () => gameSubject.dispatchAddGuess(1);

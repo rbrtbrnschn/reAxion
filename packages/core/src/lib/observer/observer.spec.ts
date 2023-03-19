@@ -1,4 +1,5 @@
 import { GameManagerEvent } from '../game-manager/game-manager';
+import { EasyDifficulty } from '../game-manager/settings/difficulty';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -20,12 +21,7 @@ describe('observer', () => {
           events: [],
           games: [],
           settings: {
-            difficulty: {
-              deviation: 1,
-              id: 'a',
-              maxDuration: 12,
-              maxFailedAttempts: 1,
-            },
+            difficulty: new EasyDifficulty(),
           },
         },
         GameManagerEvent.DISPATCH_ADD_GUESS

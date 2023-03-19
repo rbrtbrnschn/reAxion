@@ -4,9 +4,9 @@ import { Game } from './game';
 export class GameService {
   constructor(protected settings: ISettings) {}
 
-  public createNewGame(): Game {
+  public createNewGame(userId: string): Game {
     const id = uuid4();
 
-    return new Game(this.settings.difficulty, 0, 0, id, [], []);
+    return new Game(userId, this.settings.difficulty, 0, 0, id, [], []);
   }
 }

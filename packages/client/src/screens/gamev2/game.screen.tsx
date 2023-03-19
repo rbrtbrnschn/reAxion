@@ -12,21 +12,38 @@ import {
 } from '@reaxion/core';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
 import styled from 'styled-components';
 import { v4 as uuid4 } from 'uuid';
 import { withNavigation } from '../../components/navigation';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
+import { loggerService } from '../../utils/loggerService/Logger.service';
 import { GameAlert } from './alert';
 import { GameCount } from './count';
 import { GameInput } from './game.input';
 import { GameOverModal } from './gameover.modal';
 const MyGameScreenV2 = () => {
   const { gameManager } = useGameManagerContext();
+  const [cookies] = useCookies(['userId']);
+  const loggerObserver: Observer<GameManagerResponse<unknown>> = {
+    id: 'loggerObserver',
+    update(eventName, response) {
+      if (isStartingSequenceResponse(response)) {
+        loggerService.debug(
+          `New Reaction with duration of ${
+            gameManager.getCurrentReaction().duration
+          }ms`
+        );
+      } else if (isReactionStartResponse(response)) {
+        loggerService.debugTime('animation');
+      } else if (isReactionEndResponse(response)) {
+        loggerService.debugTimeEnd('animation');
+      }
+    },
+  };
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'logger',
     update(eventName, response) {
-      console.log(eventName);
-
       if (isCompleteReactionResponse(response)) {
         gameManager.dispatchGenerateNewWithRandomDuration();
         gameManager.dispatchStartingSequence();
@@ -35,7 +52,7 @@ const MyGameScreenV2 = () => {
   };
   useEffect(() => {
     gameManager.setCurrentGame(
-      new Game(new EasyDifficulty(), 0, 0, uuid4(), [], [])
+      new Game(cookies.userId, new EasyDifficulty(), 0, 0, uuid4(), [], [])
     );
     gameManager.setCurrentReaction(
       new Reaction(
@@ -47,12 +64,13 @@ const MyGameScreenV2 = () => {
         ReactionStatus.HAS_NOT_STARTED
       )
     );
-    gameManager.subscribe(observer);
+    const observers = [observer, loggerObserver];
+    observers.forEach((o) => gameManager.subscribe(o));
 
     gameManager.dispatchStartingSequence();
 
     return () => {
-      gameManager.unsubscribe(observer);
+      observers.forEach((o) => gameManager.unsubscribe(o));
     };
   }, []);
   return (
@@ -79,7 +97,6 @@ const MvpAnimation: React.FC<any> = ({ children }) => {
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'animationObserver',
     update(eventName, response) {
-      console.log(eventName);
       if (isStartingSequenceResponse(response)) {
         setHasNotStarted(true);
         setColor('bg-red-500');

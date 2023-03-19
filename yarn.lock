@@ -5312,6 +5312,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/cookie@npm:^0.3.3":
+  version: 0.3.3
+  resolution: "@types/cookie@npm:0.3.3"
+  checksum: 69fa06cd6830b7368a0a5c8317fcb883ceb1339112fc436be948396c17a2a33d65d0b708f7d19d1331a76049ad2b849894b228a65d89e76904f01e3438134d29
+  languageName: node
+  linkType: hard
+
 "@types/eslint-scope@npm:^3.7.3":
   version: 3.7.4
   resolution: "@types/eslint-scope@npm:3.7.4"
@@ -5414,7 +5421,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/hoist-non-react-statics@npm:*":
+"@types/hoist-non-react-statics@npm:*, @types/hoist-non-react-statics@npm:^3.0.1":
   version: 3.3.1
   resolution: "@types/hoist-non-react-statics@npm:3.3.1"
   dependencies:
@@ -9075,6 +9082,13 @@ __metadata:
   version: 0.5.0
   resolution: "cookie@npm:0.5.0"
   checksum: 23bd6dd64f025869373c6f3c72a870b9bd0e0e6a0ffe734229c032d7aca51972ba584b39100c09141b18043e790862425aae4a60d7449fca565b21cdae0cb3c3
+  languageName: node
+  linkType: hard
+
+"cookie@npm:^0.4.0":
+  version: 0.4.2
+  resolution: "cookie@npm:0.4.2"
+  checksum: e2b0be16f59835785be50f5dfe076c26e81ab49c988a6290144444d0dfdf8192e82b0aa1857734b292567795e7af3f2c951d82e5036a2aacb15cd4a6681b5d49
   languageName: node
   linkType: hard
 
@@ -19078,6 +19092,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-cookie@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "react-cookie@npm:4.1.1"
+  dependencies:
+    "@types/hoist-non-react-statics": "npm:^3.0.1"
+    hoist-non-react-statics: "npm:^3.0.0"
+    universal-cookie: "npm:^4.0.0"
+  peerDependencies:
+    react: ">= 16.3.0"
+  checksum: ca25f2a62b577b48c2e2ee1979c1acd924c1d89b9751dc9e66816c019149e1147d903350986c67fb95a0a5c71e172355f39bde12a2c0a86c1eb0c5a97b02d6b4
+  languageName: node
+  linkType: hard
+
 "react-docgen-typescript@npm:^2.1.1":
   version: 2.2.2
   resolution: "react-docgen-typescript@npm:2.2.2"
@@ -19433,6 +19460,7 @@ __metadata:
     postcss: "npm:8.4.21"
     prettier: "npm:^2.6.2"
     react: "npm:18.2.0"
+    react-cookie: "npm:^4.1.1"
     react-dom: "npm:18.2.0"
     react-is: "npm:18.2.0"
     react-router-dom: "npm:6.8.1"
@@ -22501,6 +22529,16 @@ __metadata:
     unist-util-is: "npm:^4.0.0"
     unist-util-visit-parents: "npm:^3.0.0"
   checksum: 275db95a965d5e4edb800d5c3e6201e3871abc5e4b30fc44a295f477923703905c875ebb2a5758b6afa45101f5bdb2d296d312dd835bed753f1cf53479b0480a
+  languageName: node
+  linkType: hard
+
+"universal-cookie@npm:^4.0.0":
+  version: 4.0.4
+  resolution: "universal-cookie@npm:4.0.4"
+  dependencies:
+    "@types/cookie": "npm:^0.3.3"
+    cookie: "npm:^0.4.0"
+  checksum: 38102f3e97f0598e4d7afb65900e691aca6f14da3ac2dd20230231df4419a044d339ad34df0c6da7e57e86db52fa6f3fa0923e4d8d9de99ce38459caee5d57b1
   languageName: node
   linkType: hard
 

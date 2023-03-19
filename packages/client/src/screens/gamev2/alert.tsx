@@ -40,7 +40,7 @@ export const GameAlert = () => {
     };
   }, []);
 
-  if (!message) return;
+  if (!message) return <></>;
 
   return <Alert message={message} />;
 };

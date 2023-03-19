@@ -15,6 +15,9 @@ export class Game implements IGame {
   @Prop({ default: 0 })
   score: number;
 
+  @Prop({ required: true })
+  userId: string;
+
   @Prop({
     type: Object,
     raw: {

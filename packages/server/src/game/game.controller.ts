@@ -16,7 +16,8 @@ export class GameController {
   @Get('/')
   getAll(
     @Query('limit') limit: number,
-    @Query('offset') offset: number
+    @Query('offset') offset: number,
+    @Query('userId') userId: string
   ): Promise<Game[]> {
     if (!limit) limit = 10;
     if (!offset) offset = 0;
@@ -25,7 +26,9 @@ export class GameController {
     limit = limit > TEMPORARY_MAX ? TEMPORARY_MAX : limit;
     offset = offset || 0;
 
-    return this.gameService.findAll(limit, offset);
+    return !userId
+      ? this.gameService.findAll(limit, offset)
+      : this.gameService.findAllByUser(limit, offset, userId);
   }
 
   @Post('/')

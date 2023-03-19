@@ -7,7 +7,7 @@ export interface ILoggerService {
   debugTimeEnd(label: string): void;
 }
 class LoggerService implements ILoggerService {
-  isDebug = import.meta.env.REACT_APP_ENVIRONMENT === 'development';
+  isDebug = process.env.REACT_APP_ENVIRONMENT === 'development';
 
   log(...args: any) {
     console.info(...args);

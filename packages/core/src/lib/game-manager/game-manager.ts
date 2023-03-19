@@ -48,7 +48,10 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     },
     events: [],
   };
-  constructor(gameState?: Partial<IGameManagerState>) {
+  constructor(
+    private readonly userId: string,
+    gameState?: Partial<IGameManagerState>
+  ) {
     super();
     this.state = { ...this.state, ...gameState };
     this.reactionService = new ReactionService(this.state.settings);
@@ -245,7 +248,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     GameManagerEvent.DISPATCH_SET_NAME,
   ])
   public dispatchResetGame() {
-    this.setCurrentGame(this.gameService.createNewGame());
+    this.setCurrentGame(this.gameService.createNewGame(this.userId));
     this.setCurrentEvent(GameManagerEvent.DISPATCH_RESET_GAME);
     this.notify(
       GameManagerEvent.DISPATCH_RESET_GAME,
