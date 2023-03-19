@@ -1,6 +1,5 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
 import {
-  EasyDifficulty,
   Game,
   GameManagerResponse,
   isCompleteReactionResponse,
@@ -52,7 +51,15 @@ const MyGameScreenV2 = () => {
   };
   useEffect(() => {
     gameManager.setCurrentGame(
-      new Game(cookies.userId, new EasyDifficulty(), 0, 0, uuid4(), [], [])
+      new Game(
+        cookies.userId,
+        gameManager.getSettings().difficulty,
+        0,
+        0,
+        uuid4(),
+        [],
+        []
+      )
     );
     gameManager.setCurrentReaction(
       new Reaction(

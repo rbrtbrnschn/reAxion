@@ -13,7 +13,7 @@ function useGames() {
   const offset = 0;
   const limit = 50;
   return useQuery({
-    queryKey: ['game'],
+    queryKey: ['personalGame'],
     queryFn: async (): Promise<IGame[]> => {
       console.log('using:', process.env.REACT_APP_API_URL);
       const response = await axios.get(

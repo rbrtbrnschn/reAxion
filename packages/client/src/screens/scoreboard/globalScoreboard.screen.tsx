@@ -2,12 +2,13 @@ import { IGame } from '@reaxion/common/interfaces';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
+import { useCookies } from 'react-cookie';
 import { withNavigation } from '../../components/navigation';
 import { gameToAverageDeviation } from '../../utils/scoreboard/gamesToAverageDeviation';
 
 function useGames() {
   return useQuery({
-    queryKey: ['game'],
+    queryKey: ['globalGames'],
     queryFn: async (): Promise<IGame[]> => {
       console.log('using:', process.env.REACT_APP_API_URL);
       const response = await axios.get(
@@ -19,6 +20,7 @@ function useGames() {
 }
 
 const MyGlobalScoreboardScreen = () => {
+  const [cookies] = useCookies(['userId']);
   const [rangeStart, setRangeStart] = useState(0);
   const { data } = useGames();
 
@@ -52,12 +54,33 @@ const MyGlobalScoreboardScreen = () => {
                 game.reactions
               );
               return (
-                <tr key={'game-' + (index + 1)}>
-                  <th>{index + 1}</th>
-                  <td>{game?.name?.toUpperCase() || '???'}</td>
-                  <td>{game.score}</td>
-                  <td>{gameToAverageDeviation(game).toFixed(2)}ms</td>
-                  <td>{game.difficulty.name}</td>
+                <tr
+                  key={'game-' + (index + 1)}
+                  className={
+                    game.userId === cookies.userId ? 'text-secondary' : ''
+                  }
+                >
+                  <th>
+                    <YouTooltip>{index + 1} </YouTooltip>
+                  </th>
+                  <td>
+                    <YouTooltip>
+                      {game?.name?.toUpperCase() || '???'}
+                    </YouTooltip>
+                  </td>
+                  <td>
+                    {' '}
+                    <YouTooltip>{game.score} </YouTooltip>
+                  </td>
+                  <td>
+                    {' '}
+                    <YouTooltip>
+                      {gameToAverageDeviation(game).toFixed(2)}ms
+                    </YouTooltip>
+                  </td>
+                  <td>
+                    <YouTooltip>{game.difficulty.name} </YouTooltip>
+                  </td>
                 </tr>
               );
             })}
@@ -73,3 +96,11 @@ const MyGlobalScoreboardScreen = () => {
 export const GlobalScoreboardScreen = withNavigation(MyGlobalScoreboardScreen, {
   title: 'Global Scoreboard',
 });
+
+const YouTooltip: React.FC<any> = ({ children }) => {
+  return (
+    <span className="tooltip tooltip-secondary" data-tip="You">
+      {children}
+    </span>
+  );
+};

@@ -18,6 +18,10 @@ export class GameService {
   ): Promise<Game[]> {
     return this.gameModel.find({ userId }).skip(offset).limit(limit).exec();
   }
+
+  async findLastByUser(userId: string): Promise<IGame | undefined> {
+    return this.gameModel.findOne({ userId }).sort({ _id: -1 }).exec();
+  }
   async addSingle(game: IGame): Promise<Game> {
     const createdGame = await this.gameModel.create(game);
     return createdGame.save();

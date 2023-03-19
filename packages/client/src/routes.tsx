@@ -3,7 +3,6 @@ import { ReactNode } from 'react';
 import { GameScreen } from './screens/game/game.screen';
 import { GameScreenV2 } from './screens/gamev2/game.screen';
 import { HomeScreen } from './screens/home/home.screen';
-import { Mvp } from './screens/mvp';
 import { GlobalScoreboardScreen } from './screens/scoreboard/globalScoreboard.screen';
 import { PersonalScoreboardScreen } from './screens/scoreboard/personalScoreboard.screen';
 import { SettingsScreen } from './screens/settings/settings.screen';
@@ -19,7 +18,7 @@ export const routes: Record<
   },
   [RouteNames.GAME_PAGE]: {
     path: '/game',
-    element: <GameScreen />,
+    element: <GameScreenV2 />,
     index: true,
   },
   [RouteNames.RECENT_STATS_PAGE]: {
@@ -39,11 +38,11 @@ export const routes: Record<
     element: <SettingsScreen />,
   },
   [RouteNames.GAME_PAGE_V2]: {
-    path: '/v2',
-    element: <GameScreenV2 />,
+    path: '/old',
+    element: <GameScreen />,
   },
   [RouteNames.MVP_PAGE]: {
     path: '/mvp',
-    element: <Mvp />,
+    element: <div>TODO</div>,
   },
 };

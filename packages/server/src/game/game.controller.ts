@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   NotAcceptableException,
   Post,
@@ -29,6 +30,13 @@ export class GameController {
     return !userId
       ? this.gameService.findAll(limit, offset)
       : this.gameService.findAllByUser(limit, offset, userId);
+  }
+
+  @Get('/overview')
+  getOverview(@Query('userId') userId: string): Promise<IGame | undefined> {
+    if (!userId) throw new ForbiddenException();
+
+    return this.gameService.findLastByUser(userId);
   }
 
   @Post('/')

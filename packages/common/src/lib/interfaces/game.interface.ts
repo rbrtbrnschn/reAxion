@@ -12,4 +12,5 @@ export interface IGame {
   failedAttempts: number;
   reactions: IReaction[];
   name?: string;
+  userId: string;
 }

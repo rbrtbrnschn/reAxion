@@ -1,4 +1,4 @@
-import { GameManagerEvent } from '../game-manager/game-manager';
+import { GameManagerGameEvent } from '../game-manager/game-manager';
 import { EasyDifficulty } from '../game-manager/settings/difficulty';
 import {
   EmptyGameManagerResponse,
@@ -24,7 +24,7 @@ describe('observer', () => {
             difficulty: new EasyDifficulty(),
           },
         },
-        GameManagerEvent.DISPATCH_ADD_GUESS
+        GameManagerGameEvent.DISPATCH_ADD_GUESS
       )
     );
     subject.unsubscribe(observer);

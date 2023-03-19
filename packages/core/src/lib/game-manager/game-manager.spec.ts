@@ -4,7 +4,7 @@ import { Observer } from '../observer';
 import {
   AddGuessResponsePayload,
   GameManager,
-  GameManagerEvent,
+  GameManagerGameEvent,
   IGameManagerState,
 } from './game-manager';
 import { Game } from './game/game';
@@ -62,7 +62,7 @@ describe('game', () => {
       gameSubject.setCurrentReaction(reaction);
       gameSubject.dispatchStartingSequence();
       expect(gameSubject.getCurrentEvent()).toEqual(
-        GameManagerEvent.DISPATCH_STARTING_SEQUENCE
+        GameManagerGameEvent.DISPATCH_STARTING_SEQUENCE
       );
       expect(gameSubject.getCurrentGame().events.length).toEqual(1);
     });
@@ -81,9 +81,9 @@ describe('game', () => {
 
     it('should add guess to current Reaction', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
 
-      const validGuessObserverEvents: GameManagerEvent[] = [];
+      const validGuessObserverEvents: GameManagerGameEvent[] = [];
       const observerInvalidGuess: Observer<GameManagerResponse<any>> = {
         id: 'dasd',
         update: (
@@ -93,7 +93,7 @@ describe('game', () => {
             | GameManagerResponse<AddGuessResponsePayload>
         ) => {
           if (isAddGuessResponse(response)) {
-            expect(eventName).toEqual(GameManagerEvent.DISPATCH_ADD_GUESS);
+            expect(eventName).toEqual(GameManagerGameEvent.DISPATCH_ADD_GUESS);
             expect(
               response.payload.data.status === 'GUESS_INVALID_HIGH'
             ).toEqual(true);
@@ -106,7 +106,7 @@ describe('game', () => {
           eventName,
           payload: GameManagerResponse<AddGuessResponsePayload>
         ) => {
-          validGuessObserverEvents.push(eventName as GameManagerEvent);
+          validGuessObserverEvents.push(eventName as GameManagerGameEvent);
           if (payload.payload) {
             expect(payload.payload.data.status === 'GUESS_VALID').toEqual(true);
           }
@@ -123,7 +123,7 @@ describe('game', () => {
 
       expect(
         validGuessObserverEvents.includes(
-          GameManagerEvent.DISPATCH_COMPLETE_REACTION
+          GameManagerGameEvent.DISPATCH_COMPLETE_REACTION
         ) === true
       ).toEqual(true);
       expect(gameSubject.getCurrentReaction().guesses.length).toEqual(2);
@@ -131,7 +131,7 @@ describe('game', () => {
 
     it('should complete current reaction', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_ADD_GUESS);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_ADD_GUESS);
 
       gameSubject.setCurrentReaction(reaction);
       gameSubject.dispatchCompleteReaction();
@@ -142,7 +142,7 @@ describe('game', () => {
 
     it('should fail current reaction', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_ADD_GUESS);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_ADD_GUESS);
 
       gameSubject.setCurrentReaction(reaction);
       gameSubject.dispatchFailGame();
@@ -153,7 +153,9 @@ describe('game', () => {
 
     it('should generate and set new reaction with random duration', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_COMPLETE_REACTION);
+      gameSubject.setCurrentEvent(
+        GameManagerGameEvent.DISPATCH_COMPLETE_REACTION
+      );
       expect(gameSubject.getCurrentReaction().duration).toEqual(
         reaction.duration
       );
@@ -166,7 +168,7 @@ describe('game', () => {
 
     it('should be game over', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_ADD_GUESS);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_ADD_GUESS);
       gameSubject.dispatchFailGame();
 
       expect(gameSubject.getCurrentReaction().completedAt).toBeGreaterThan(1);
@@ -175,12 +177,12 @@ describe('game', () => {
     });
     it('should fail game automatically', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
-      const events: GameManagerEvent[] = [];
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
+      const events: GameManagerGameEvent[] = [];
       const failedGameObserver: Observer<GameManagerResponse<any>> = {
         id: 'failedGameObserver',
         update: (eventName, payload) => {
-          events.push(eventName as GameManagerEvent);
+          events.push(eventName as GameManagerGameEvent);
         },
       };
       gameSubject.subscribe(failedGameObserver);
@@ -195,7 +197,7 @@ describe('game', () => {
       expect(gameSubject.getCurrentGame().getFailedAttempts()).toEqual(
         gameSubject.getCurrentGame().difficulty.maxFailedAttempts
       );
-      expect(events.includes(GameManagerEvent.DISPATCH_FAIL_GAME)).toEqual(
+      expect(events.includes(GameManagerGameEvent.DISPATCH_FAIL_GAME)).toEqual(
         true
       );
       gameSubject.unsubscribe(failedGameObserver);
@@ -203,7 +205,7 @@ describe('game', () => {
 
     it('should not add guess after game is over', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
       Array.from({ length: 10 }).map((_, i) => gameSubject.dispatchAddGuess(i));
 
       expect(gameSubject.getCurrentGame().getFailedAttempts()).toEqual(
@@ -213,29 +215,30 @@ describe('game', () => {
 
     it('should complete game if guess correctly', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
-      const events: GameManagerEvent[] = [];
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
+      const events: GameManagerGameEvent[] = [];
 
       const completeReactionOnValidGuessObserver: Observer<
         GameManagerResponse<any>
       > = {
         id: 'completeReactionOnValidGuessObserver',
         update(eventName, payload) {
-          events.push(eventName as GameManagerEvent);
+          events.push(eventName as GameManagerGameEvent);
         },
       };
       gameSubject.subscribe(completeReactionOnValidGuessObserver);
       gameSubject.dispatchAddGuess(reaction.duration);
 
       expect(
-        events.includes(GameManagerEvent.DISPATCH_COMPLETE_REACTION) === true
+        events.includes(GameManagerGameEvent.DISPATCH_COMPLETE_REACTION) ===
+          true
       ).toEqual(true);
       gameSubject.unsubscribe(completeReactionOnValidGuessObserver);
     });
 
     it('should update score on complete reaction', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
 
       gameSubject.dispatchAddGuess(reaction.duration);
 
@@ -251,7 +254,7 @@ describe('game', () => {
     // should generate and set new current reaction upon valid guess
     it('should generate and set new current reaction upon valid guess', () => {
       gameSubject.setCurrentReaction(reaction);
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
       gameSubject.dispatchAddGuess(2000);
       expect(gameSubject.getCurrentReaction().id).toBe(reaction.id);
       gameSubject.dispatchAddGuess(reaction.duration);
@@ -265,7 +268,7 @@ describe('game', () => {
     });
 
     it('should reset game', () => {
-      gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
+      gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
       gameSubject.setCurrentReaction(reaction);
       Array.from({
         length: gameSubject.getSettings().difficulty.maxFailedAttempts,
@@ -385,7 +388,7 @@ describe('game', () => {
 
       expect(gameSubject.getCurrentGame().isOver).toEqual(true);
       expect(gameSubject.getCurrentEvent()).toEqual(
-        GameManagerEvent.DISPATCH_FAIL_GAME
+        GameManagerGameEvent.DISPATCH_FAIL_GAME
       );
       // gameover -> reset
       gameSubject.dispatchSetName('pet');

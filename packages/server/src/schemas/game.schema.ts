@@ -18,6 +18,9 @@ export class Game implements IGame {
   @Prop({ required: true })
   userId: string;
 
+  @Prop({ required: false, default: Date.now })
+  createdAt: Date;
+
   @Prop({
     type: Object,
     raw: {
