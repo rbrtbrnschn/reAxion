@@ -1,5 +1,5 @@
-import { GuessStatus } from "../enums/guess.enum";
-import { ReactionStatus } from "../enums/reaction.enum";
+import { GuessStatus } from '../enums/guess.enum';
+import { ReactionStatus } from '../enums/reaction.enum';
 
 export interface IReaction {
   duration: number;
@@ -9,7 +9,7 @@ export interface IReaction {
   reactionStatus: ReactionStatus;
   startedAt?: number;
   completedAt?: number;
-  _id: string;
+  id: string;
 }
 
 export interface IFinishedReaction extends IReaction {

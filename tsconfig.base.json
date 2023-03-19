@@ -19,7 +19,8 @@
       "@reaxion/common/enums": ["packages/common/src/lib/enums/index.ts"],
       "@reaxion/common/interfaces": [
         "packages/common/src/lib/interfaces/index.ts"
-      ]
+      ],
+      "@reaxion/core": ["packages/core/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

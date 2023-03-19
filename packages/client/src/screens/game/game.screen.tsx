@@ -15,6 +15,7 @@ import { ReactionBuilder } from '../../utils/reaction/Reaction.builder';
 import { whenDebugging } from '../../utils/whenDebugging';
 import { GameInput } from './game.input';
 import { GameoverModal } from './gameover.modal';
+
 /**
  * Calculates `background-color` from reaction.
  * @param reaction {IReaction | null}
@@ -46,7 +47,7 @@ type AlertProps = { color: string; title: string; description: string };
  * @returns {AlertProps}  props for `<Alert />` component
  */
 const calcAlertProps = (reaction: IReaction | null): AlertProps => {
-  let props: AlertProps = {
+  const props: AlertProps = {
     color: 'red',
     title: '',
     description: '',

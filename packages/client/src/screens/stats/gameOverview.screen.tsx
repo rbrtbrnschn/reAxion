@@ -1,22 +1,45 @@
 import { RouteNames } from '@reaxion/common/enums';
 import { IGame } from '@reaxion/common/interfaces';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 import { FilterActionTypes, StateMapper } from 'easy-peasy';
 import { useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { withNavigation } from '../../components/navigation';
 import { Stat1 } from '../../components/stats/stat1';
+import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { routes } from '../../routes';
-import { useStoreActions, useStoreState } from '../../store';
 import { GameModel } from '../../store/models/game.model';
 import { StatsProcessingService } from '../../utils/stats/statsProcessingService';
 
-const MyGameOverviewScreen = () => {
-  const gameState = useStoreState((state) => state.game);
-  const _gameState = useStoreActions((state) => state.game);
-  const reactionState = useStoreState((state) => state.reaction);
-  const game: IGame = gameState.game as IGame;
+function useGameOverviewGame() {
+  const [cookies] = useCookies(['userId']);
+  const userId = cookies.userId;
+  const offset = 0;
+  const limit = 50;
+  return useQuery({
+    queryKey: ['gameOverview'],
+    queryFn: async (): Promise<IGame | undefined> => {
+      const response = await axios.get(
+        `${
+          process.env.REACT_APP_API_URL || ''
+        }/api/game/overview?userId=${userId}`
+      );
+      return response.data;
+    },
+  });
+}
 
+const MyGameOverviewScreen = () => {
+  const { gameManager } = useGameManagerContext();
+  const { data: game, isLoading, isError } = useGameOverviewGame();
   const navigate = useNavigate();
+
+  if (isError) return <div>Error</div>;
+  if (isLoading) return <div>Loading...</div>;
+  if (!game) return navigate('/game');
+
   const handleTryAgain = (e: React.MouseEvent<HTMLButtonElement>) => {
     navigate(routes[RouteNames.GAME_PAGE].path);
   };
@@ -29,12 +52,14 @@ const MyGameOverviewScreen = () => {
   }
   return (
     <div className="h-full px-2 flex flex-col gap-4">
-      <div></div>
+      <div className="prose">
+        <h3>Name: {game.name?.toUpperCase()}</h3>
+        <p>Difficulty: {game.difficulty?.name}</p>
+      </div>
       <Stat1 title="Score" number={game?.score.toString() || '0'} label="" />
       <Stat1
         title="Average Deviation"
         number={
-          statsProcessor.getAverageDeviation() === 0 ||
           isNaN(statsProcessor.getAverageDeviation())
             ? 'Try to win first.'
             : parseMillisecond(statsProcessor.getAverageDeviation())
@@ -46,7 +71,7 @@ const MyGameOverviewScreen = () => {
         number={
           statsProcessor.getGameTime() === 0
             ? 'Try to win first.'
-            : parseMillisecond(statsProcessor.getGameTime())
+            : parseSecond(statsProcessor.getGameTime())
         }
         label=""
       />
@@ -80,6 +105,6 @@ function useRedirectToGamePage(
   }, []);
 }
 
-export const GameOverviewScreen = withNavigation(MyGameOverviewScreen, {
+export const GameOverviewScreen = withNavigation(MyGameOverviewScreen as any, {
   title: 'Game Overview',
 });

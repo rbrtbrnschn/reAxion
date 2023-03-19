@@ -1,7 +1,9 @@
 import { RouteNames } from '@reaxion/common';
 import { ReactNode } from 'react';
 import { GameScreen } from './screens/game/game.screen';
+import { GameScreenV2 } from './screens/gamev2/game.screen';
 import { HomeScreen } from './screens/home/home.screen';
+import { GlobalScoreboardScreen } from './screens/scoreboard/globalScoreboard.screen';
 import { PersonalScoreboardScreen } from './screens/scoreboard/personalScoreboard.screen';
 import { SettingsScreen } from './screens/settings/settings.screen';
 import { GameOverviewScreen } from './screens/stats/gameOverview.screen';
@@ -16,7 +18,7 @@ export const routes: Record<
   },
   [RouteNames.GAME_PAGE]: {
     path: '/game',
-    element: <GameScreen />,
+    element: <GameScreenV2 />,
     index: true,
   },
   [RouteNames.RECENT_STATS_PAGE]: {
@@ -29,10 +31,18 @@ export const routes: Record<
   },
   [RouteNames.SCOREBOARD_GLOBAL_PAGE]: {
     path: '/scoreboard/global',
-    element: <div>WIP</div>,
+    element: <GlobalScoreboardScreen />,
   },
   [RouteNames.SETTINGS_PAGE]: {
     path: '/settings',
     element: <SettingsScreen />,
+  },
+  [RouteNames.GAME_PAGE_V2]: {
+    path: '/old',
+    element: <GameScreen />,
+  },
+  [RouteNames.MVP_PAGE]: {
+    path: '/mvp',
+    element: <div>TODO</div>,
   },
 };

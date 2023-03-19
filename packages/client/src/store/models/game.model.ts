@@ -12,6 +12,7 @@ import {
 } from 'easy-peasy';
 import { Injections } from '../injections';
 import { StoreModel } from '../store';
+import axios from 'axios';
 
 export const gameDifficulties: Record<GameDifficulty, IGameDifficulty> = {
   [GameDifficulty.EASY]: {
@@ -75,6 +76,7 @@ export interface GameModelV2 {
   /* Listeners */
   onCopyToHistory: ThunkOn<GameModelV2, Injections, StoreModel>;
   onSetCurrentName: ThunkOn<GameModelV2, Injections, StoreModel>;
+  onSetHistory: ThunkOn<GameModelV2, Injections, StoreModel>;
 }
 
 const defaultGame: IGame = {
@@ -179,6 +181,7 @@ export const gameModelV2: GameModelV2 = {
     if (!state.game) return fail('No Current Game Found.');
 
     actions.setHistory([state.game, ...state.history]);
+    
   }),
   reset: thunk((actions, _, { getState, getStoreActions }) => {
     const state = getState();
@@ -210,10 +213,16 @@ export const gameModelV2: GameModelV2 = {
   ),
   onSetCurrentName: thunkOn(
     (actions) => actions.setCurrentName,
-    (actions, _, {}) => {
+    (actions, _) => {
       actions.copyToHistory();
     }
   ),
+  onSetHistory: thunkOn((actions)=>actions.setHistory,(actions, _,helpers)=>{
+    const game = helpers.getState().game;
+    if(!game) return;
+    console.warn('client-model:', [...game.reactions]);
+    axios.post(`${process.env.REACT_APP_API_URL}/api/game`, game);
+  })
 };
 
 export interface GameModel {
