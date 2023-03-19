@@ -42,7 +42,10 @@ export const GameOverModal = () => {
       return;
     }
     gameManager.dispatchSetName(input);
-    axios.post('/api/game', gameManager.getCurrentGame());
+    axios.post(
+      (process.env.REACT_APP_API_URL || '') + '/api/game',
+      gameManager.getCurrentGame()
+    );
     gameManager.dispatchResetGame();
     navigate(routes[RouteNames.RECENT_STATS_PAGE].path);
     //gameManager.dispatchGenerateNewWithRandomDuration();
