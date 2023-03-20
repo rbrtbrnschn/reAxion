@@ -1,5 +1,6 @@
 import { RouteNames } from '@reaxion/common/enums';
 import { IGame } from '@reaxion/common/interfaces';
+import { GameProcessingService } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { FilterActionTypes, StateMapper } from 'easy-peasy';
@@ -11,7 +12,6 @@ import { Stat1 } from '../../components/stats/stat1';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { routes } from '../../routes';
 import { GameModel } from '../../store/models/game.model';
-import { StatsProcessingService } from '../../utils/stats/statsProcessingService';
 
 function useGameOverviewGame() {
   const [cookies] = useCookies(['userId']);
@@ -43,7 +43,7 @@ const MyGameOverviewScreen = () => {
   const handleTryAgain = (e: React.MouseEvent<HTMLButtonElement>) => {
     navigate(routes[RouteNames.GAME_PAGE].path);
   };
-  const statsProcessor = new StatsProcessingService(game);
+  const statsProcessor = new GameProcessingService(game);
   function parseMillisecond(number: number) {
     return number.toFixed(2) + 'ms';
   }
