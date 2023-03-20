@@ -289,11 +289,7 @@ describe('game', () => {
 
   describe('reaction service', () => {
     it('should calculate guess correctly ', () => {
-      const easySettings: ISettings = { difficulty: new EasyDifficulty() };
-
-      const reactionService = new ReactionService(easySettings).withReaction(
-        reaction
-      );
+      const reactionService = new ReactionService(game).withReaction(reaction);
 
       expect(
         reactionService.guessIsRight(
@@ -394,9 +390,6 @@ describe('game', () => {
       gameSubject.dispatchSetName('pet');
       gameSubject.dispatchResetGame();
       gameSubject.dispatchGenerateNewWithRandomDuration();
-      //gameSubject.setCurrentReaction(
-      //new ReactionService(settings).createReactionWithRandomDuration()
-      //);
       gameSubject.dispatchStartingSequence();
       gameSubject.dispatchReactionStart();
       gameSubject.dispatchReactionEnd();
@@ -404,12 +397,7 @@ describe('game', () => {
     });
   });
 
-  // create myro or some form visual representation on how the life cycle works
-
   /*
-  TODO move events to reaction domain
-  
-  
   - DISPATCH_STARTING_SEQUENCE
     - DISPATCH_REACTION_START
       - DISPATCH_REACTION_END
