@@ -42,7 +42,8 @@ export class StatsProcessingService {
         );
       })
       .reduce((prev, curr) => curr + prev, 0);
-    const averageDeviation = totalDeviation / this.reactions.length;
+    const averageDeviation =
+      totalDeviation / this.reactions.filter((game) => game.isGuessed).length;
     return averageDeviation;
   }
 
