@@ -16,8 +16,6 @@ import { GameModel } from '../../store/models/game.model';
 function useGameOverviewGame() {
   const [cookies] = useCookies(['userId']);
   const userId = cookies.userId;
-  const offset = 0;
-  const limit = 50;
   return useQuery({
     queryKey: ['gameOverview'],
     queryFn: async (): Promise<IGame | undefined> => {

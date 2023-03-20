@@ -26,10 +26,13 @@ function useGames() {
 }
 
 const MyPersonalScoreboardScreen = () => {
-  const { data } = useGames();
+  const { data, isError, isLoading } = useGames();
   const [sortBy, setSortBy] = useState<string | undefined>();
 
   //const [targetRef, isFetching] = useInfiniteScroll(fetchMoreData);
+
+  if (isError) return <div>Error</div>;
+  if (isLoading) return <div>Loading...</div>;
   return (
     <div className="h-full flex flex-col px-2">
       <div className="flex" style={{ justifyContent: 'end' }}>

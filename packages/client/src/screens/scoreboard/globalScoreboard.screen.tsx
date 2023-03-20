@@ -22,7 +22,7 @@ function useGames() {
 const MyGlobalScoreboardScreen = () => {
   const [cookies] = useCookies(['userId']);
   const [sortBy, setSortBy] = useState<string | undefined>();
-  const { data } = useGames();
+  const { data, isError, isLoading } = useGames();
   const userHasWonGame = (game: IGame) => game.userId === cookies.userId;
 
   // const fetchMoreData = async () => {
@@ -32,6 +32,9 @@ const MyGlobalScoreboardScreen = () => {
   //   setData([...data, ...myDataSection]);
   // };
   // const [targetRef, isFetching] = useInfiniteScroll(fetchMoreData);
+
+  if (isError) return <div>Error</div>;
+  if (isLoading) return <div>Loading...</div>;
   return (
     <div className="h-full flex flex-col px-2">
       <div className="flex" style={{ justifyContent: 'end' }}>
