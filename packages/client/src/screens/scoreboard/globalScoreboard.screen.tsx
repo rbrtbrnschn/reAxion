@@ -23,6 +23,7 @@ const MyGlobalScoreboardScreen = () => {
   const [cookies] = useCookies(['userId']);
   const [sortBy, setSortBy] = useState<string | undefined>();
   const { data } = useGames();
+  const userHasWonGame = (game: IGame) => game.userId === cookies.userId;
 
   // const fetchMoreData = async () => {
   //   const myDataSection = games.slice(rangeStart, 10);
@@ -82,25 +83,43 @@ const MyGlobalScoreboardScreen = () => {
                     }
                   >
                     <th>
-                      <YouTooltip>{index + 1} </YouTooltip>
+                      {userHasWonGame(game) ? (
+                        <YouTooltip>{index + 1} </YouTooltip>
+                      ) : (
+                        index + 1
+                      )}
                     </th>
                     <td>
-                      <YouTooltip>
-                        {game?.name?.toUpperCase() || '???'}
-                      </YouTooltip>
+                      {userHasWonGame(game) ? (
+                        <YouTooltip>
+                          {game?.name?.toUpperCase() || '???'}
+                        </YouTooltip>
+                      ) : (
+                        game?.name?.toUpperCase() || '???'
+                      )}
                     </td>
                     <td>
-                      {' '}
-                      <YouTooltip>{game.score} </YouTooltip>
+                      {userHasWonGame(game) ? (
+                        <YouTooltip>{game.score} </YouTooltip>
+                      ) : (
+                        game.score
+                      )}
                     </td>
                     <td>
-                      {' '}
-                      <YouTooltip>
-                        {gameToAverageDeviation(game).toFixed(2)}ms
-                      </YouTooltip>
+                      {userHasWonGame(game) ? (
+                        <YouTooltip>
+                          {gameToAverageDeviation(game).toFixed(2)}ms
+                        </YouTooltip>
+                      ) : (
+                        gameToAverageDeviation(game).toFixed(2) + 'ms'
+                      )}
                     </td>
                     <td>
-                      <YouTooltip>{game.difficulty.name} </YouTooltip>
+                      {userHasWonGame(game) ? (
+                        <YouTooltip>{game.difficulty.name} </YouTooltip>
+                      ) : (
+                        game.difficulty.name
+                      )}
                     </td>
                   </tr>
                 );
