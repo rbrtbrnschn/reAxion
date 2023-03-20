@@ -20,10 +20,5 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            cd reAxion/
-            git checkout main
-            git pull origin main
-            yarn
-            nx build server
-            cd dist/packages/server/
-            pm2 restart main.js
+            /home/github/.volta/bin/pm2 restart 0
+            /home/github/.volta/bin/pm2 restart 3
