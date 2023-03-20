@@ -4,7 +4,7 @@ import {
   IGameDifficulty,
   IReaction,
 } from '@reaxion/common/interfaces';
-import { gameDifficulties } from '../../store/models/game.model';
+import { difficulties } from '@reaxion/core';
 
 export class StatsProcessingService {
   private reactions: IReaction[];
@@ -14,9 +14,9 @@ export class StatsProcessingService {
   private score: number;
   constructor(game: IGame) {
     this.reactions = game.reactions;
-    this.difficulty = gameDifficulties[game.difficulty];
+    this.difficulty = difficulties[game.difficulty.id];
     this.score = game.score;
-    this.name = game.name;
+    this.name = game.name || '';
     this.failedAttempts = game.failedAttempts;
   }
 
@@ -33,7 +33,7 @@ export class StatsProcessingService {
 
   getAverageDeviation() {
     const totalDeviation = this.reactions
-      .filter((reaction) => reaction?.isGuessed)
+      .filter((reaction) => reaction.isGuessed)
       .map((reaction) => {
         if (!reaction) return 0;
         if (!reaction?.guesses.length) return 0;

@@ -42,7 +42,6 @@ export enum GameManagerEvent {
 
 type MyResponseType = GameManagerResponse<unknown>;
 export class GameManager extends ObserverSubject<MyResponseType> {
-  private readonly reactionService: ReactionService;
   private readonly gameService: GameService;
   private state: IGameManagerState = {
     games: [],
@@ -57,7 +56,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   ) {
     super();
     this.state = { ...this.state, ...gameState };
-    this.reactionService = new ReactionService(this.state.settings);
     this.gameService = new GameService(this.state.settings);
 
     /* Rethink Architecture -> leave this open to concrete implementation */
@@ -204,7 +202,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       this.getState(),
       this.getCurrentEvent(),
       new AddGuessResponsePayload({
-        status: this.reactionService
+        status: new ReactionService(this.getCurrentGame())
           .withReaction(this.getCurrentReaction())
           .calculateGuessDeviationStatus(guess),
       })
@@ -234,7 +232,9 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     this.setCurrentEvent(
       GameManagerGameEvent.DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION
     );
-    const newReaction = this.reactionService.createReactionWithRandomDuration();
+    const newReaction = new ReactionService(
+      this.getCurrentGame()
+    ).createReactionWithRandomDuration();
     this.setCurrentReaction(newReaction);
     this.notify(
       this.getCurrentEvent(),

@@ -8,6 +8,9 @@ export interface ILoggerService {
 }
 class LoggerService implements ILoggerService {
   isDebug = process.env.REACT_APP_ENVIRONMENT === 'development';
+  constructor() {
+    console.log('isDebug:L', process.env.REACT_APP_ENVIRONMENT, this.isDebug);
+  }
 
   log(...args: any) {
     console.info(...args);

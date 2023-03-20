@@ -1,12 +1,12 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
-import { ISettings } from '@reaxion/common/interfaces';
 import { v4 as uuid4 } from 'uuid';
 import { UndefinedReactionError } from '../errors';
+import { Game } from '../game';
 import { AddGuessStatus } from '../game-manager';
 import { Reaction } from './reaction';
 export class ReactionService {
   public reaction: Reaction | undefined;
-  constructor(protected settings: ISettings) {}
+  constructor(protected game: Game) {}
 
   public withReaction(reaction: Reaction): ReactionService {
     this.reaction = reaction;
@@ -15,7 +15,7 @@ export class ReactionService {
   public guessIsRight(guess: number) {
     if (!this.reaction) throw new UndefinedReactionError();
     const delta = Math.abs(this.reaction.duration - guess);
-    return delta <= this.settings.difficulty.deviation;
+    return delta <= this.game.difficulty.deviation;
   }
   public calculateGuessDeviationStatus(guess: number): AddGuessStatus {
     if (!this.reaction) throw new UndefinedReactionError();
@@ -28,7 +28,7 @@ export class ReactionService {
 
   public createReactionWithRandomDuration() {
     const duration = Math.ceil(
-      Math.random() * this.settings.difficulty.maxDuration
+      Math.random() * this.game.difficulty.maxDuration
     );
     const id = uuid4();
 

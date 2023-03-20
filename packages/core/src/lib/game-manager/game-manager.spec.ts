@@ -314,7 +314,7 @@ describe('game', () => {
       };
 
       function generateRandomDurations(settings: ISettings, amount = 100) {
-        const service = new ReactionService(settings);
+        const service = new ReactionService(game);
         return Array.from({ length: amount }).map(
           () => service.createReactionWithRandomDuration().duration
         );
