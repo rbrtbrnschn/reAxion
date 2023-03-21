@@ -1,10 +1,11 @@
 import { ISettings } from '@reaxion/common';
-import { EasyDifficulty } from '@reaxion/core';
+import { EasyDifficulty, DefaultColoring } from '@reaxion/core';
 
 export const useSettings = () => {
   // get from SST
   const defaultSettings: ISettings = {
     difficulty: new EasyDifficulty(),
+    coloring: new DefaultColoring()
   };
 
   const getSettingsString = () => localStorage.getItem('settings') || '';
