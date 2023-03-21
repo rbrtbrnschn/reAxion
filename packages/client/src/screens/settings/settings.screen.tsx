@@ -140,16 +140,3 @@ const MySettingsScreen = () => {
 export const SettingsScreen = withNavigation(MySettingsScreen, {
   title: 'Settings',
 });
-
-export const ColorDivs = () => {
-  return (
-    <>
-      <div className='bg-pink-500'></div>
-      <div className='bg-yellow-500'></div>
-      <div className='bg-teal-500'></div>
-      <div className='bg-blue-500'></div>
-      <div className='bg-amber-500'></div>
-      <div className='bg-rose-500'></div>
-    </>
-  )
-}
