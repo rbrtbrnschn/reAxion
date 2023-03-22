@@ -1,11 +1,10 @@
 import { IGame } from '@reaxion/common/interfaces';
-import { difficulties } from '@reaxion/core';
+import { difficulties, GameProcessingService } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { withNavigation } from '../../components/navigation';
-import { gameToAverageDeviation } from '../../utils/scoreboard/gamesToAverageDeviation';
 
 function useGames() {
   return useQuery({
@@ -111,10 +110,15 @@ const MyGlobalScoreboardScreen = () => {
                     <td>
                       {userHasWonGame(game) ? (
                         <YouTooltip>
-                          {gameToAverageDeviation(game).toFixed(2)}ms
+                          {new GameProcessingService(game)
+                            .getAverageDeviation()
+                            .toFixed(2)}
+                          ms
                         </YouTooltip>
                       ) : (
-                        gameToAverageDeviation(game).toFixed(2) + 'ms'
+                        new GameProcessingService(game)
+                          .getAverageDeviation()
+                          .toFixed(2) + 'ms'
                       )}
                     </td>
                     <td>
