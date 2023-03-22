@@ -1,4 +1,3 @@
-import { GuessStatus, ReactionStatus } from '@reaxion/common';
 import {
   Game,
   GameManagerResponse,
@@ -7,7 +6,7 @@ import {
   isReactionStartResponse,
   isStartingSequenceResponse,
   Observer,
-  Reaction,
+  ReactionService,
 } from '@reaxion/core';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
@@ -50,27 +49,21 @@ const MyGameScreenV2 = () => {
     },
   };
   useEffect(() => {
-    gameManager.setCurrentGame(
-      new Game(
-        cookies.userId,
-        gameManager.getSettings().difficulty,
-        0,
-        0,
-        uuid4(),
-        [],
-        []
-      )
+    const game = new Game(
+      cookies.userId,
+      gameManager.getSettings().difficulty,
+      0,
+      0,
+      uuid4(),
+      [],
+      []
     );
-    gameManager.setCurrentReaction(
-      new Reaction(
-        uuid4(),
-        1000,
-        [],
-        false,
-        GuessStatus.IS_WAITING,
-        ReactionStatus.HAS_NOT_STARTED
-      )
-    );
+    const reaction = new ReactionService(
+      game
+    ).createReactionWithRandomDuration();
+
+    gameManager.setCurrentGame(game);
+    gameManager.setCurrentReaction(reaction);
     const observers = [observer, loggerObserver];
     observers.forEach((o) => gameManager.subscribe(o));
 
@@ -127,7 +120,7 @@ const MvpAnimation: React.FC<any> = ({ children }) => {
       gameManager.unsubscribe(observer);
     };
   }, []);
-  
+
   return (
     <Animation
       className={classNames({
