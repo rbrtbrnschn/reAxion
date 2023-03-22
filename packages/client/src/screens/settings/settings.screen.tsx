@@ -7,10 +7,16 @@ import {
   Observer,
 } from '@reaxion/core';
 import { useEffect, useState } from 'react';
+import { validate } from 'uuid';
 import { withNavigation } from '../../components/navigation';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { useSettings } from '../../hooks/useSettings';
 
+enum UserIdChangeStatus {
+  IS_OLD = 'IS_OLD',
+  IS_ERROR = 'IS_ERROR',
+  IS_VALID = 'IS_VALID',
+}
 const MySettingsScreen = () => {
   const { gameManager } = useGameManagerContext();
   const [settings, setSettings] = useSettings();
@@ -20,6 +26,22 @@ const MySettingsScreen = () => {
   const [activeColoring, setActiveColoring] = useState<IColor>(
     gameManager.getSettings().coloring
   );
+  const [userIdValue, setUserIdValue] = useState(settings.userId);
+  const [userIdError, setUserIdError] = useState<UserIdChangeStatus>(
+    UserIdChangeStatus.IS_OLD
+  );
+
+  const onChangeUserIdValue: React.ChangeEventHandler<HTMLInputElement> = (
+    e
+  ) => {
+    setUserIdValue(e.currentTarget.value);
+  };
+  const handleSubmitUserId = () => {
+    if (!validate(userIdValue) || userIdValue.length !== 36)
+      return setUserIdError(UserIdChangeStatus.IS_ERROR);
+    setSettings({ ...settings, userId: userIdValue });
+    setUserIdError(UserIdChangeStatus.IS_VALID);
+  };
   // events outside the game loop by adding events to gameManager
 
   const setSettingsObserver: Observer<GameManagerResponse<unknown>> = {
@@ -92,7 +114,7 @@ const MySettingsScreen = () => {
                       gameManager.setSettings({
                         difficulty: difficulty,
                         coloring: activeColoring,
-                        userId: settings,
+                        userId: settings.userId,
                       });
                     }}
                   >
@@ -149,6 +171,41 @@ const MySettingsScreen = () => {
           </tbody>
         </table>
       </div>
+      <div className="prose">
+        <h1>Change User Id</h1>
+        <h3>
+          Disclaimer: Use at your own risk. Games may no longer be shown to be
+          yours.
+        </h3>
+      </div>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSubmitUserId();
+        }}
+        className="w-full pb-5"
+      >
+        <div className="form-control">
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="Input your guess in ms..."
+              className={`input input-bordered w-full ${
+                userIdError === UserIdChangeStatus.IS_ERROR
+                  ? 'input-error'
+                  : userIdError === UserIdChangeStatus.IS_VALID
+                  ? 'input-success'
+                  : ''
+              }`}
+              onChange={onChangeUserIdValue}
+              value={userIdValue}
+            />
+            <button className="btn" type="submit">
+              Submit
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   );
 };

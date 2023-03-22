@@ -2,7 +2,10 @@ import { ISettings } from '@reaxion/common';
 import { DefaultColoring, EasyDifficulty } from '@reaxion/core';
 import { v4 as uuid4 } from 'uuid';
 
-export const useSettings = () => {
+export const useSettings = (): [
+  ISettings,
+  (newSettings: ISettings) => void
+] => {
   const setSettings = (settings: ISettings) => {
     localStorage.setItem('settings', JSON.stringify(settings));
   };
@@ -17,7 +20,7 @@ export const useSettings = () => {
   if (!getSettingsString()) {
     localStorage.setItem('settings', JSON.stringify(defaultSettings));
   }
-  const parsedSettings = JSON.parse(getSettingsString());
+  const parsedSettings: ISettings = JSON.parse(getSettingsString());
 
   const missingSettings = Object.entries(defaultSettings).reduce(
     (acc, [key, value]) => {
