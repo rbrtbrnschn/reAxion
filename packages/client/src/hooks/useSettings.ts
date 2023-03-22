@@ -16,8 +16,22 @@ export const useSettings = () => {
     localStorage.setItem('settings', JSON.stringify(defaultSettings));
   }
   const parsedSettings = JSON.parse(getSettingsString());
-  if (!(parsedSettings as ISettings).coloring)
-    setSettings({ ...parsedSettings, coloring: defaultSettings.coloring });
+
+  const missingSettings = Object.entries(defaultSettings).reduce(
+    (acc, [key, value]) => {
+      if (!(parsedSettings as Partial<ISettings>)[key as keyof ISettings]) {
+        return {
+          ...acc,
+          [key]: value,
+        };
+      }
+      return acc;
+    },
+    {} as Partial<ISettings>
+  );
+  console.log(parsedSettings, missingSettings);
+
+  if (missingSettings) setSettings({ ...parsedSettings, ...missingSettings });
 
   return [parsedSettings, setSettings];
 };
