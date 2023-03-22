@@ -11,6 +11,7 @@ import { GameService } from './game/game.service';
 import { HasEvent } from './has-event.decorator';
 import { Reaction } from './reaction/reaction';
 import { ReactionService } from './reaction/reaction.service';
+import { DefaultColoring } from './settings';
 import { EasyDifficulty } from './settings/difficulty';
 import {
   EmptyGameManagerResponse,
@@ -47,6 +48,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     games: [],
     settings: {
       difficulty: new EasyDifficulty(),
+      coloring: new DefaultColoring()
     },
     events: [],
   };

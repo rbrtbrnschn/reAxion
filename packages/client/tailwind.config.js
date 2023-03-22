@@ -14,4 +14,9 @@ module.exports = {
     extend: {},
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
+  safelist: [
+    {
+      pattern: /bg-(red|pink|rose|amber|orange|yellow|teal|green|blue)-(100|500|700)/
+    }
+  ]
 };

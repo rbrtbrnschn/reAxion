@@ -98,7 +98,8 @@ const MyGameScreenV2 = () => {
 
 const MvpAnimation: React.FC<any> = ({ children }) => {
   const { gameManager } = useGameManagerContext();
-  const [color, setColor] = useState('bg-red-500');
+  const [coloring] = useState(gameManager.getSettings().coloring);
+  const [color, setColor] = useState(coloring.countdown);
   const [hasNotStarted, setHasNotStarted] = useState(true);
 
   const observer: Observer<GameManagerResponse<unknown>> = {
@@ -106,16 +107,16 @@ const MvpAnimation: React.FC<any> = ({ children }) => {
     update(eventName, response) {
       if (isStartingSequenceResponse(response)) {
         setHasNotStarted(true);
-        setColor('bg-red-500');
+        setColor(coloring.countdown);
       } else if (isReactionStartResponse(response)) {
-        setColor('bg-orange-500');
+        setColor(coloring.waiting);
         setHasNotStarted(false);
         setTimeout(() => {
           gameManager.dispatchReactionEnd();
         }, gameManager.getCurrentReaction().duration);
       } else if (isReactionEndResponse(response)) {
         setHasNotStarted(false);
-        setColor('bg-green-500');
+        setColor(coloring.end);
       } else return;
     },
   };
@@ -126,7 +127,7 @@ const MvpAnimation: React.FC<any> = ({ children }) => {
       gameManager.unsubscribe(observer);
     };
   }, []);
-
+  
   return (
     <Animation
       className={classNames({
@@ -157,4 +158,5 @@ const Animation = styled.div`
 const AnimationContent = styled.div`
   flex-grow: 1;
 `;
+
 export const GameScreenV2 = withNavigation(MyGameScreenV2);
