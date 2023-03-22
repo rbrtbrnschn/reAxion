@@ -29,7 +29,6 @@ export const useSettings = () => {
     },
     {} as Partial<ISettings>
   );
-  console.log(parsedSettings, missingSettings);
 
   if (missingSettings) setSettings({ ...parsedSettings, ...missingSettings });
 
