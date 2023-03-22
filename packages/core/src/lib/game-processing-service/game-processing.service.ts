@@ -44,4 +44,4 @@ const toSum = (prev: number, curr: number) => prev + curr;
 const toReactionDuration = (r: IFinishedReaction) =>
   r.completedAt - r.startedAt;
 const toReactionDeviation = (r: IFinishedReaction) =>
-  Math.abs(r.duration - (r.guesses.pop() || 0));
+  Math.abs(r.duration - r.guesses[r.guesses.length - 1]);

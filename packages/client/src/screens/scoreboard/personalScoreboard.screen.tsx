@@ -1,11 +1,10 @@
 import { IGame } from '@reaxion/common/interfaces';
-import { difficulties } from '@reaxion/core';
+import { difficulties, GameProcessingService } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { withNavigation } from '../../components/navigation';
-import { gameToAverageDeviation } from '../../utils/scoreboard/gamesToAverageDeviation';
 
 function useGames() {
   const [cookies] = useCookies(['userId']);
@@ -82,7 +81,12 @@ const MyPersonalScoreboardScreen = () => {
                     <th>{index + 1}</th>
                     <td>{game?.name?.toUpperCase() || '???'}</td>
                     <td>{game.score}</td>
-                    <td>{gameToAverageDeviation(game).toFixed(2)}ms</td>
+                    <td>
+                      {new GameProcessingService(game)
+                        .getAverageDeviation()
+                        .toFixed(2)}
+                      ms
+                    </td>
                     <td>{game.difficulty.name}</td>
                   </tr>
                 );

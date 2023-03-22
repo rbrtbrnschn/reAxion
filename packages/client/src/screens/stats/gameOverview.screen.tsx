@@ -48,6 +48,7 @@ const MyGameOverviewScreen = () => {
   function parseSecond(number: number) {
     return (number / 1000).toFixed(2) + 's';
   }
+
   return (
     <div className="h-full px-2 flex flex-col gap-4">
       <div className="prose">

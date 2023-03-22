@@ -21,6 +21,18 @@ describe('game processing service', () => {
     const preciseAverageDeviation = (1000 - 950 + 100 - 100) / 2;
     expect(calculatedAverageDeviation).toEqual(preciseAverageDeviation);
   });
+  it('should getAverageDeviation for OTHER_MOCK_GAME', () => {
+    const game = OTHER_MOCK_GAME;
+    const service = new GameProcessingService(game);
+    const calculatedAverageDeviation = service.getAverageDeviation();
+    const preciseAverageDeviation = (1000 - 1000 + 441 - 430 + 80 - 50) / 3;
+    console.log(
+      preciseAverageDeviation,
+      (preciseAverageDeviation / 1000).toFixed(2) + 's',
+      preciseAverageDeviation.toFixed(2) + 'ms'
+    );
+    expect(calculatedAverageDeviation).toEqual(preciseAverageDeviation);
+  });
   it('should getAverageTimeForCorrectGuess', () => {
     const game = MOCK_GAMES[0] as unknown as IGame;
     const service = new GameProcessingService(game);
@@ -318,3 +330,66 @@ const MOCK_GAMES = [
     __v: 0,
   },
 ];
+
+const OTHER_MOCK_GAME = {
+  _id: '64199341b10ffd91f86bf778',
+  score: 3,
+  userId: '5d3950a7-c418-4b26-afc5-8f6d2805d884',
+  difficulty: {
+    id: 'EXTREME_DIFFICULTY',
+    deviation: 50,
+    maxFailedAttempts: 1,
+    maxDuration: 500,
+    name: 'Insane',
+  },
+  name: 'Bob',
+  failedAttempts: 1,
+  reactions: [
+    {
+      id: 'fbfd582f-6774-4c51-99f3-7231030fca27',
+      duration: 1000,
+      guesses: [1000],
+      isGuessed: true,
+      guessStatus: 3,
+      reactionStatus: 0,
+      startedAt: 1679397668559,
+      completedAt: 1679397671154,
+      key: 'REACTION_CLASS',
+    },
+    {
+      id: '85dd73b0-0388-4d2b-bf79-bcfc6198ff77',
+      duration: 441,
+      guesses: [430],
+      isGuessed: true,
+      guessStatus: 3,
+      reactionStatus: 0,
+      startedAt: 1679397675631,
+      completedAt: 1679397678299,
+      key: 'REACTION_CLASS',
+    },
+    {
+      id: '485b9b22-9e41-4276-9b7c-e60ec8d6dfda',
+      duration: 80,
+      guesses: [50],
+      isGuessed: true,
+      guessStatus: 3,
+      reactionStatus: 0,
+      startedAt: 1679397682396,
+      completedAt: 1679397684759,
+      key: 'REACTION_CLASS',
+    },
+    {
+      id: 'b95ef647-ec89-4a75-b071-e91a1f133281',
+      duration: 276,
+      guesses: [110],
+      isGuessed: false,
+      guessStatus: 3,
+      reactionStatus: 0,
+      startedAt: 1679397689071,
+      completedAt: 1679397691664,
+      key: 'REACTION_CLASS',
+    },
+  ],
+  createdAt: '2023-03-21T11:21:37.690Z',
+  __v: 0,
+};
