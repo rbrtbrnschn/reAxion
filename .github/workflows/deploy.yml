@@ -1,4 +1,4 @@
-name: Deploy to Remote Server via SSH
+name: Deploy to Client & Server via SSH
 
 on:
   push:
@@ -20,5 +20,6 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
+            MONGO_PORT=27017 MONGODB_ROOT_USERNAME=${{ secrets.MONGODB_ROOT_USERNAME }} MONGODB_ROOT_PASSWORD=${{ secrets.MONGODB_ROOT_PASSWORD }}  docker-compose up -d
             /home/github/.volta/bin/pm2 restart 0
             /home/github/.volta/bin/pm2 restart 3
