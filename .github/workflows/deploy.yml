@@ -20,7 +20,7 @@ jobs:
           password: ${{ secrets.PASSWORD }}
           port: ${{ secrets.PORT }}
           script: |
-            cd reaxion
+            cd reAxion
             MONGO_PORT=27017 MONGODB_ROOT_USERNAME=${{ secrets.MONGODB_ROOT_USERNAME }} MONGODB_ROOT_PASSWORD=${{ secrets.MONGODB_ROOT_PASSWORD }}  docker-compose up -d
             /home/github/.volta/bin/pm2 restart 0
             /home/github/.volta/bin/pm2 restart 3
