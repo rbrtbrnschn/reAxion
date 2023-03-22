@@ -1,5 +1,5 @@
 import { ISettings } from '@reaxion/common';
-import { DefaultColoring, EasyDifficulty } from '@reaxion/core';
+import { defaultSettings } from '@reaxion/core';
 import { useCookies } from 'react-cookie';
 import { v4 as uuid4 } from 'uuid';
 
@@ -11,20 +11,19 @@ export const useSettings = (): [
   const setSettings = (settings: ISettings) => {
     localStorage.setItem('settings', JSON.stringify(settings));
   };
-  // get from SST
-  const defaultSettings: ISettings = {
-    difficulty: new EasyDifficulty(),
-    coloring: new DefaultColoring(),
+  // strategy to incorperate setting old cookies as userId
+  const myDefaultSettings: ISettings = {
+    ...defaultSettings,
     userId: cookie.userId || uuid4(),
   };
 
   const getSettingsString = () => localStorage.getItem('settings') || '';
   if (!getSettingsString()) {
-    localStorage.setItem('settings', JSON.stringify(defaultSettings));
+    localStorage.setItem('settings', JSON.stringify(myDefaultSettings));
   }
   const parsedSettings: ISettings = JSON.parse(getSettingsString());
 
-  const missingSettings = Object.entries(defaultSettings).reduce(
+  const missingSettings = Object.entries(myDefaultSettings).reduce(
     (acc, [key, value]) => {
       if (!(parsedSettings as Partial<ISettings>)[key as keyof ISettings]) {
         return {

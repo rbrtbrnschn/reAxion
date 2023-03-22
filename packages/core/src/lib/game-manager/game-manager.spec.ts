@@ -1,6 +1,7 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
 import { ISettings } from '@reaxion/common/interfaces';
 import { Observer } from '../observer';
+import { EasyDifficulty } from '../settings-manager/modules/difficulty';
 import { SettingsManager } from '../settings-manager/settings-manager';
 import {
   AddGuessResponsePayload,
@@ -13,7 +14,6 @@ import { GameService } from './game/game.service';
 import { GameManagerMediator } from './mediator/mediator';
 import { Reaction } from './reaction/reaction';
 import { ReactionService } from './reaction/reaction.service';
-import { EasyDifficulty } from './settings/difficulty';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,

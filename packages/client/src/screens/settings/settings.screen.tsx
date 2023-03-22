@@ -2,9 +2,11 @@ import { IColor, IDifficulty } from '@reaxion/common';
 import {
   colorings,
   difficulties,
-  GameManagerResponse,
-  isSetSettingsResponse,
+  isSetColoringResponse,
+  isSetDifficultyResponse,
+  isSetUserIdResponse,
   Observer,
+  SettingsManagerResponse,
 } from '@reaxion/core';
 import { useEffect, useState } from 'react';
 import { validate } from 'uuid';
@@ -18,15 +20,17 @@ enum UserIdChangeStatus {
   IS_VALID = 'IS_VALID',
 }
 const MySettingsScreen = () => {
-  const { gameManager } = useGameManagerContext();
+  const { gameManager, settingsManager } = useGameManagerContext();
   const [settings, setSettings] = useSettings();
   const [activeDifficulty, setActiveDiffulty] = useState<IDifficulty>(
-    gameManager.getSettings().difficulty
+    gameManager.mediator.getDifficulty()
   );
   const [activeColoring, setActiveColoring] = useState<IColor>(
-    gameManager.getSettings().coloring
+    gameManager.mediator.getColoring()
   );
-  const [userIdValue, setUserIdValue] = useState(settings.userId);
+  const [userIdValue, setUserIdValue] = useState(
+    gameManager.mediator.getUserId()
+  );
   const [userIdError, setUserIdError] = useState<UserIdChangeStatus>(
     UserIdChangeStatus.IS_OLD
   );
@@ -39,18 +43,25 @@ const MySettingsScreen = () => {
   const handleSubmitUserId = () => {
     if (!validate(userIdValue) || userIdValue.length !== 36)
       return setUserIdError(UserIdChangeStatus.IS_ERROR);
+    settingsManager.setUserId(userIdValue);
     setSettings({ ...settings, userId: userIdValue });
     setUserIdError(UserIdChangeStatus.IS_VALID);
   };
-  // events outside the game loop by adding events to gameManager
 
-  const setSettingsObserver: Observer<GameManagerResponse<unknown>> = {
+  const setSettingsObserver: Observer<SettingsManagerResponse<unknown>> = {
     id: 'setSettingsObserver',
     update(eventName, response) {
-      if (isSetSettingsResponse(response)) {
-        setActiveDiffulty(response.state.settings.difficulty);
-        setActiveColoring(response.state.settings.coloring);
-        setSettings(response.state.settings);
+      if (isSetColoringResponse(response)) {
+        setActiveColoring(response.state.coloring);
+        setSettings(response.state);
+      }
+      if (isSetDifficultyResponse(response)) {
+        setActiveDiffulty(response.state.difficulty);
+        setSettings(response.state);
+      }
+      if (isSetUserIdResponse(response)) {
+        setUserIdValue(response.state.userId);
+        setSettings(response.state);
       }
     },
   };
@@ -70,10 +81,10 @@ const MySettingsScreen = () => {
     );
 
   useEffect(() => {
-    gameManager.subscribe(setSettingsObserver);
+    settingsManager.subscribe(setSettingsObserver);
 
     return () => {
-      gameManager.unsubscribe(setSettingsObserver);
+      settingsManager.unsubscribe(setSettingsObserver);
     };
   }, []);
 
@@ -111,11 +122,7 @@ const MySettingsScreen = () => {
                   <button
                     className="btn w-full"
                     onClick={() => {
-                      gameManager.setSettings({
-                        difficulty: difficulty,
-                        coloring: activeColoring,
-                        userId: settings.userId,
-                      });
+                      settingsManager.setDifficulty(difficulty);
                     }}
                   >
                     Select
@@ -156,11 +163,7 @@ const MySettingsScreen = () => {
                   <button
                     className="btn w-full"
                     onClick={() => {
-                      gameManager.setSettings({
-                        ...settings,
-                        difficulty: activeDifficulty,
-                        coloring: coloring,
-                      });
+                      settingsManager.setColoring(coloring);
                     }}
                   >
                     Select

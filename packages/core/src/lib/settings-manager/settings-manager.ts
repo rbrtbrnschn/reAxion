@@ -1,14 +1,26 @@
 import { IColor, IDifficulty, ISettings } from '@reaxion/common';
 import { v4 as uuid, validate } from 'uuid';
-import { DefaultColoring, EasyDifficulty } from '../game-manager';
+import {
+  EmptySettingsManagerResponse,
+  SettingsManagerResponse,
+} from '../game-manager';
 import { ObserverSubject } from '../observer';
+import { DefaultColoring } from './modules/coloring';
+import { EasyDifficulty } from './modules/difficulty';
 
+export enum SettingsManagerEvent {
+  SET_COLORING = 'SET_COLORING',
+  SET_DIFFICULTY = 'SET_DIFFICULTY',
+  SET_USER_ID = 'SET_USER_ID',
+}
 export const defaultSettings: ISettings = {
   coloring: new DefaultColoring(),
   difficulty: new EasyDifficulty(),
   userId: uuid(),
 };
-export class SettingsManager extends ObserverSubject {
+export class SettingsManager extends ObserverSubject<
+  SettingsManagerResponse<unknown>
+> {
   protected state: ISettings;
   constructor(initialState?: ISettings) {
     super();
@@ -35,16 +47,37 @@ export class SettingsManager extends ObserverSubject {
   }
   setColoring(coloring: IColor): ISettings {
     this.setState({ coloring });
+    this.notify(
+      SettingsManagerEvent.SET_COLORING,
+      new EmptySettingsManagerResponse(
+        this.getState(),
+        SettingsManagerEvent.SET_COLORING
+      )
+    );
     return this.state;
   }
   setDifficulty(difficulty: IDifficulty): ISettings {
     this.setState({ difficulty });
+    this.notify(
+      SettingsManagerEvent.SET_DIFFICULTY,
+      new EmptySettingsManagerResponse(
+        this.getState(),
+        SettingsManagerEvent.SET_DIFFICULTY
+      )
+    );
     return this.state;
   }
   setUserId(userId: string): ISettings {
     if (!validate(userId) || userId.length !== 36)
       throw new UserIdIsInvalidUUIDError(userId);
     this.setState({ userId });
+    this.notify(
+      SettingsManagerEvent.SET_USER_ID,
+      new EmptySettingsManagerResponse(
+        this.getState(),
+        SettingsManagerEvent.SET_USER_ID
+      )
+    );
     return this.state;
   }
 }

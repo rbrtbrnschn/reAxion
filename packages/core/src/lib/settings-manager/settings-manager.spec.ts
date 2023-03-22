@@ -1,5 +1,6 @@
 import { v4 as uuid, validate } from 'uuid';
-import { AlternateColoring, MediumDifficulty } from '../game-manager';
+import { AlternateColoring } from './modules/coloring';
+import { MediumDifficulty } from './modules/difficulty';
 import { defaultSettings, SettingsManager } from './settings-manager';
 
 describe('settingsManager', () => {

@@ -1,6 +1,6 @@
 import {
-  Game,
   GameManagerResponse,
+  GameService,
   isCompleteReactionResponse,
   isReactionEndResponse,
   isReactionStartResponse,
@@ -11,7 +11,6 @@ import {
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { v4 as uuid4 } from 'uuid';
 import { withNavigation } from '../../components/navigation';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { useSettings } from '../../hooks/useSettings';
@@ -49,15 +48,9 @@ const MyGameScreenV2 = () => {
     },
   };
   useEffect(() => {
-    const game = new Game(
-      settings.userId,
-      gameManager.getSettings().difficulty,
-      0,
-      0,
-      uuid4(),
-      [],
-      []
-    );
+    const game = new GameService(
+      gameManager.mediator.getDifficulty()
+    ).createNewGame(gameManager.mediator.getUserId());
     const reaction = new ReactionService(
       game
     ).createReactionWithRandomDuration();
@@ -91,7 +84,7 @@ const MyGameScreenV2 = () => {
 
 const MvpAnimation: React.FC<any> = ({ children }) => {
   const { gameManager } = useGameManagerContext();
-  const [coloring] = useState(gameManager.getSettings().coloring);
+  const [coloring] = useState(gameManager.mediator.getColoring());
   const [color, setColor] = useState(coloring.countdown);
   const [hasNotStarted, setHasNotStarted] = useState(true);
 

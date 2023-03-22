@@ -1,4 +1,4 @@
-import { IDifficulty } from '@reaxion/common';
+import { IColor, IDifficulty } from '@reaxion/common';
 import { SettingsManager } from '../../settings-manager/settings-manager';
 
 export class GameManagerMediator {
@@ -9,5 +9,8 @@ export class GameManagerMediator {
   }
   getUserId(): string {
     return this.settingsManager.getUserId();
+  }
+  getColoring(): IColor {
+    return this.settingsManager.getColoring();
   }
 }
