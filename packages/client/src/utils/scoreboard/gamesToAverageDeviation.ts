@@ -1,4 +1,4 @@
-import { IGame } from "../../interfaces/game.interface";
+import { IGame } from '../../interfaces/game.interface';
 
 /**
  * Processes IGame and calculates average deviation.
@@ -16,6 +16,7 @@ export function gameToAverageDeviation(game: IGame): number {
       );
     })
     .reduce((prev, curr) => curr + prev, 0);
-  const averageDeviation = totalDeviation / game.reactions.length;
+  const averageDeviation =
+    totalDeviation / game.reactions.filter((r) => r.isGuessed).length;
   return averageDeviation;
 }

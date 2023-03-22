@@ -12,6 +12,7 @@ import { Stat1 } from '../../components/stats/stat1';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { routes } from '../../routes';
 import { GameModel } from '../../store/models/game.model';
+import { gameToAverageDeviation } from '../../utils/scoreboard/gamesToAverageDeviation';
 
 function useGameOverviewGame() {
   const [cookies] = useCookies(['userId']);
@@ -34,6 +35,16 @@ const MyGameOverviewScreen = () => {
   const { data: game, isLoading, isError } = useGameOverviewGame();
   const navigate = useNavigate();
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    if (game)
+      console.log(
+        'overview:',
+        game,
+        new GameProcessingService(game).getAverageDeviation(),
+        gameToAverageDeviation(game)
+      );
+  }, [game]);
   if (isError) return <div>Error</div>;
   if (isLoading) return <div>Loading...</div>;
   if (!game) return navigate('/game');
@@ -48,6 +59,7 @@ const MyGameOverviewScreen = () => {
   function parseSecond(number: number) {
     return (number / 1000).toFixed(2) + 's';
   }
+
   return (
     <div className="h-full px-2 flex flex-col gap-4">
       <div className="prose">
