@@ -1,5 +1,6 @@
 import { ISettings } from '@reaxion/common';
 import { DefaultColoring, EasyDifficulty } from '@reaxion/core';
+import { v4 as uuid4 } from 'uuid';
 
 export const useSettings = () => {
   const setSettings = (settings: ISettings) => {
@@ -9,6 +10,7 @@ export const useSettings = () => {
   const defaultSettings: ISettings = {
     difficulty: new EasyDifficulty(),
     coloring: new DefaultColoring(),
+    userId: uuid4(),
   };
 
   const getSettingsString = () => localStorage.getItem('settings') || '';

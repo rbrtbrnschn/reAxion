@@ -1,6 +1,7 @@
 export interface ISettings {
   difficulty: IDifficulty;
   coloring: IColor;
+  userId: string;
 }
 
 export interface IDifficulty {

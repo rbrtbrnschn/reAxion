@@ -10,11 +10,11 @@ import {
 } from '@reaxion/core';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import styled from 'styled-components';
 import { v4 as uuid4 } from 'uuid';
 import { withNavigation } from '../../components/navigation';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
+import { useSettings } from '../../hooks/useSettings';
 import { loggerService } from '../../utils/loggerService/Logger.service';
 import { GameAlert } from './alert';
 import { GameCount } from './count';
@@ -22,7 +22,7 @@ import { GameInput } from './game.input';
 import { GameOverModal } from './gameover.modal';
 const MyGameScreenV2 = () => {
   const { gameManager } = useGameManagerContext();
-  const [cookies] = useCookies(['userId']);
+  const [settings] = useSettings();
   const loggerObserver: Observer<GameManagerResponse<unknown>> = {
     id: 'loggerObserver',
     update(eventName, response) {
@@ -50,7 +50,7 @@ const MyGameScreenV2 = () => {
   };
   useEffect(() => {
     const game = new Game(
-      cookies.userId,
+      settings.userId,
       gameManager.getSettings().difficulty,
       0,
       0,

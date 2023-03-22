@@ -7,11 +7,11 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
 import { withNavigation } from '../../components/navigation';
+import { useSettings } from '../../hooks/useSettings';
 
 const MyGlobalScoreboardScreen = () => {
-  const [cookies] = useCookies(['userId']);
+  const [settings] = useSettings();
   const [sortBy, setSortBy] = useState<IDifficulty['id']>(
     new EasyDifficulty().id
   );
@@ -30,7 +30,7 @@ const MyGlobalScoreboardScreen = () => {
     });
   }
   const { data, isError, isLoading, refetch } = useGames();
-  const userHasWonGame = (game: IGame) => game.userId === cookies.userId;
+  const userHasWonGame = (game: IGame) => game.userId === settings.userId;
 
   useEffect(() => {
     refetch();
@@ -82,7 +82,7 @@ const MyGlobalScoreboardScreen = () => {
                   <tr
                     key={'game-' + (index + 1)}
                     className={
-                      game.userId === cookies.userId ? 'text-secondary' : ''
+                      game.userId === settings.userId ? 'text-secondary' : ''
                     }
                   >
                     <th>

@@ -3,19 +3,17 @@ import { IGame } from '@reaxion/common/interfaces';
 import { GameProcessingService } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { FilterActionTypes, StateMapper } from 'easy-peasy';
 import { useEffect } from 'react';
-import { useCookies } from 'react-cookie';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { withNavigation } from '../../components/navigation';
 import { Stat1 } from '../../components/stats/stat1';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
+import { useSettings } from '../../hooks/useSettings';
 import { routes } from '../../routes';
-import { GameModel } from '../../store/models/game.model';
 
 function useGameOverviewGame() {
-  const [cookies] = useCookies(['userId']);
-  const userId = cookies.userId;
+  const [settings] = useSettings();
+  const userId = settings.userId;
   return useQuery({
     queryKey: ['gameOverview'],
     queryFn: async (): Promise<IGame | undefined> => {

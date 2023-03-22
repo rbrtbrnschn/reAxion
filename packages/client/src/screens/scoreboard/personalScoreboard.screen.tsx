@@ -3,12 +3,12 @@ import { difficulties, GameProcessingService } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
-import { useCookies } from 'react-cookie';
 import { withNavigation } from '../../components/navigation';
+import { useSettings } from '../../hooks/useSettings';
 
 function useGames() {
-  const [cookies] = useCookies(['userId']);
-  const userId = cookies.userId;
+  const [settings] = useSettings();
+  const userId = settings.userId;
   const offset = 0;
   const limit = 50;
   return useQuery({
