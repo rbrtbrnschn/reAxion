@@ -19,7 +19,7 @@ const MySettingsScreen = () => {
   );
   const [activeColoring, setActiveColoring] = useState<IColor>(
     gameManager.getSettings().coloring
-  )
+  );
   // events outside the game loop by adding events to gameManager
 
   const setSettingsObserver: Observer<GameManagerResponse<unknown>> = {
@@ -27,7 +27,7 @@ const MySettingsScreen = () => {
     update(eventName, response) {
       if (isSetSettingsResponse(response)) {
         setActiveDiffulty(response.state.settings.difficulty);
-        setActiveColoring(response.state.settings.coloring)
+        setActiveColoring(response.state.settings.coloring);
         setSettings(response.state.settings);
       }
     },
@@ -39,13 +39,13 @@ const MySettingsScreen = () => {
     Object.entries(difficulties).map(([key, difficulty], index) =>
       cb(key, difficulty, index)
     );
-  
-    const mapOverGameColorings = (
-      cb: (key: string, coloring: IColor, index: number) => any
-    ) =>
-      Object.entries(colorings).map(([key, coloring], index) =>
-        cb(key, coloring, index)
-      );
+
+  const mapOverGameColorings = (
+    cb: (key: string, coloring: IColor, index: number) => any
+  ) =>
+    Object.entries(colorings).map(([key, coloring], index) =>
+      cb(key, coloring, index)
+    );
 
   useEffect(() => {
     gameManager.subscribe(setSettingsObserver);
@@ -89,7 +89,10 @@ const MySettingsScreen = () => {
                   <button
                     className="btn w-full"
                     onClick={() => {
-                      gameManager.setSettings({ difficulty: difficulty, coloring: activeColoring });
+                      gameManager.setSettings({
+                        difficulty: difficulty,
+                        coloring: activeColoring,
+                      });
                     }}
                   >
                     Select
@@ -101,7 +104,7 @@ const MySettingsScreen = () => {
         </table>
       </div>
       <div className="mt-2 prose">
-        <h1 className='pt-3'>Reaction Signal Colors</h1>
+        <h1 className="pt-3">Reaction Signal Colors</h1>
         <p></p>
       </div>
       <div className="overflow-x-auto w-full">
@@ -111,18 +114,29 @@ const MySettingsScreen = () => {
             {mapOverGameColorings((key, coloring, index) => (
               <tr
                 className={
-                  activeColoring.countdown === coloring.countdown ? 'active' : ''
+                  activeColoring.countdown === coloring.countdown
+                    ? 'active'
+                    : ''
                 }
                 key={key}
               >
-                <td><div className={coloring.countdown + " p-5"}></div></td>
-                <td><div className={coloring.waiting + " p-5"}></div></td>
-                <td><div className={coloring.end + " p-5"}></div></td>
+                <td>
+                  <div className={coloring.countdown + ' p-5'}></div>
+                </td>
+                <td>
+                  <div className={coloring.waiting + ' p-5'}></div>
+                </td>
+                <td>
+                  <div className={coloring.end + ' p-5'}></div>
+                </td>
                 <td>
                   <button
                     className="btn w-full"
                     onClick={() => {
-                      gameManager.setSettings({ difficulty: activeDifficulty, coloring: coloring });
+                      gameManager.setSettings({
+                        difficulty: activeDifficulty,
+                        coloring: coloring,
+                      });
                     }}
                   >
                     Select

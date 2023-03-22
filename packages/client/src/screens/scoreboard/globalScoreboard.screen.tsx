@@ -1,36 +1,40 @@
-import { IGame } from '@reaxion/common/interfaces';
-import { difficulties, GameProcessingService } from '@reaxion/core';
+import { IDifficulty, IGame } from '@reaxion/common/interfaces';
+import {
+  difficulties,
+  EasyDifficulty,
+  GameProcessingService,
+} from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { withNavigation } from '../../components/navigation';
 
-function useGames() {
-  return useQuery({
-    queryKey: ['globalGames'],
-    queryFn: async (): Promise<IGame[]> => {
-      const response = await axios.get(
-        `${process.env.REACT_APP_API_URL || ''}/api/game`
-      );
-      return response.data;
-    },
-  });
-}
-
 const MyGlobalScoreboardScreen = () => {
   const [cookies] = useCookies(['userId']);
-  const [sortBy, setSortBy] = useState<string | undefined>();
-  const { data, isError, isLoading } = useGames();
+  const [sortBy, setSortBy] = useState<IDifficulty['id']>(
+    new EasyDifficulty().id
+  );
+
+  function useGames() {
+    return useQuery({
+      queryKey: ['globalGames'],
+      queryFn: async (): Promise<IGame[]> => {
+        const response = await axios.get(
+          `${
+            process.env.REACT_APP_API_URL || ''
+          }/api/game/leaderboard?difficulty=${sortBy}`
+        );
+        return response.data;
+      },
+    });
+  }
+  const { data, isError, isLoading, refetch } = useGames();
   const userHasWonGame = (game: IGame) => game.userId === cookies.userId;
 
-  // const fetchMoreData = async () => {
-  //   const myDataSection = games.slice(rangeStart, 10);
-  //   setRangeStart((prev) => prev + 10);
-
-  //   setData([...data, ...myDataSection]);
-  // };
-  // const [targetRef, isFetching] = useInfiniteScroll(fetchMoreData);
+  useEffect(() => {
+    refetch();
+  }, [sortBy]);
 
   if (isError) return <div>Error</div>;
   if (isLoading) return <div>Loading...</div>;
@@ -46,13 +50,10 @@ const MyGlobalScoreboardScreen = () => {
             className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
           >
             {Object.values(difficulties).map((diff) => (
-              <li>
+              <li key={diff.id}>
                 <a onClick={() => setSortBy(diff.id)}>{diff.name}</a>
               </li>
             ))}
-            <li>
-              <a onClick={() => setSortBy(undefined)}>All</a>
-            </li>
           </ul>
         </div>
       </div>

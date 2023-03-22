@@ -7,7 +7,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { IGame } from '@reaxion/common';
+import { IDifficulty, IGame } from '@reaxion/common';
 import { Game } from '../schemas/game.schema';
 import { GameService } from './game.service';
 
@@ -30,6 +30,15 @@ export class GameController {
     return !userId
       ? this.gameService.findAll(limit, offset)
       : this.gameService.findAllByUser(limit, offset, userId);
+  }
+
+  @Get('/leaderboard')
+  getLeaderboardByDifficultyId(
+    @Query('difficulty') difficulty: IDifficulty['id']
+  ): Promise<IGame[]> {
+    if (!difficulty) throw new ForbiddenException();
+    if (difficulty === 'undefined') throw new ForbiddenException();
+    return this.gameService.getLeaderboardByDifficulty(difficulty);
   }
 
   @Get('/overview')

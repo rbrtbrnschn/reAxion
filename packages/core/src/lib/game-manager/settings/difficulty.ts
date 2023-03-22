@@ -28,7 +28,7 @@ export class ExtremeDifficulty implements IDifficulty {
   public readonly maxDuration = 500;
   public readonly name = 'Insane';
 }
-export const difficulties: Record<string, IDifficulty> = {
+export const difficulties: Record<IDifficulty['id'], IDifficulty> = {
   EASY_DIFFICULTY: new EasyDifficulty(),
   MEDIUM_DIFFICULTY: new MediumDifficulty(),
   HARD_DIFFICULTY: new HardDifficulty(),

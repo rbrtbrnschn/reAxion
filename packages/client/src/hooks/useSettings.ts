@@ -1,11 +1,14 @@
 import { ISettings } from '@reaxion/common';
-import { EasyDifficulty, DefaultColoring } from '@reaxion/core';
+import { DefaultColoring, EasyDifficulty } from '@reaxion/core';
 
 export const useSettings = () => {
+  const setSettings = (settings: ISettings) => {
+    localStorage.setItem('settings', JSON.stringify(settings));
+  };
   // get from SST
   const defaultSettings: ISettings = {
     difficulty: new EasyDifficulty(),
-    coloring: new DefaultColoring()
+    coloring: new DefaultColoring(),
   };
 
   const getSettingsString = () => localStorage.getItem('settings') || '';
@@ -13,10 +16,8 @@ export const useSettings = () => {
     localStorage.setItem('settings', JSON.stringify(defaultSettings));
   }
   const parsedSettings = JSON.parse(getSettingsString());
-
-  const setSettings = (settings: ISettings) => {
-    localStorage.setItem('settings', JSON.stringify(settings));
-  };
+  if (!(parsedSettings as ISettings).coloring)
+    setSettings({ ...parsedSettings, coloring: defaultSettings.coloring });
 
   return [parsedSettings, setSettings];
 };

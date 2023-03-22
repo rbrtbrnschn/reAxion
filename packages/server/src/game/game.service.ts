@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IGame } from '@reaxion/common/interfaces';
+import { IDifficulty, IGame } from '@reaxion/common/interfaces';
 import { Model } from 'mongoose';
 import { Game, GameDocument } from '../schemas/game.schema';
 
@@ -25,5 +25,21 @@ export class GameService {
   async addSingle(game: IGame): Promise<Game> {
     const createdGame = await this.gameModel.create(game);
     return createdGame.save();
+  }
+
+  async getLeaderboardByDifficulty(
+    difficulty: IDifficulty['id']
+  ): Promise<IGame[]> {
+    return this.gameModel.aggregate([
+      { $match: { 'difficulty.id': difficulty } },
+      { $sort: { score: -1 } },
+      {
+        $group: {
+          _id: '$userId',
+          doc: { $first: '$$ROOT' },
+        },
+      },
+      { $replaceRoot: { newRoot: '$doc' } },
+    ]);
   }
 }

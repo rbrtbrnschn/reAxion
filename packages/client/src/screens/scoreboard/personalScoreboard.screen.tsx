@@ -44,7 +44,7 @@ const MyPersonalScoreboardScreen = () => {
             className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
           >
             {Object.values(difficulties).map((diff) => (
-              <li>
+              <li key={diff.id}>
                 <a onClick={() => setSortBy(diff.id)}>{diff.name}</a>
               </li>
             ))}
