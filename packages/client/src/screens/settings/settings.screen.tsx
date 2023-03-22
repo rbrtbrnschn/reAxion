@@ -13,7 +13,7 @@ import { useSettings } from '../../hooks/useSettings';
 
 const MySettingsScreen = () => {
   const { gameManager } = useGameManagerContext();
-  const [_, setSettings] = useSettings();
+  const [settings, setSettings] = useSettings();
   const [activeDifficulty, setActiveDiffulty] = useState<IDifficulty>(
     gameManager.getSettings().difficulty
   );
@@ -92,6 +92,7 @@ const MySettingsScreen = () => {
                       gameManager.setSettings({
                         difficulty: difficulty,
                         coloring: activeColoring,
+                        userId: settings,
                       });
                     }}
                   >
@@ -134,6 +135,7 @@ const MySettingsScreen = () => {
                     className="btn w-full"
                     onClick={() => {
                       gameManager.setSettings({
+                        ...settings,
                         difficulty: activeDifficulty,
                         coloring: coloring,
                       });
