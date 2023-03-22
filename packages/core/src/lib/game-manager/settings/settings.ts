@@ -1,7 +1,11 @@
 import { IColor, IDifficulty, ISettings } from '@reaxion/common/interfaces';
 
 export class Settings implements ISettings {
-  constructor(public difficulty: IDifficulty, public coloring: IColor) {}
+  constructor(
+    public difficulty: IDifficulty,
+    public coloring: IColor,
+    public userId: string
+  ) {}
   public getDifficulty(): IDifficulty {
     return this.difficulty;
   }

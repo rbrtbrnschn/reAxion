@@ -1,5 +1,4 @@
 import { GameManagerGameEvent } from '../game-manager/game-manager';
-import { EasyDifficulty } from '../game-manager/settings/difficulty';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -20,9 +19,6 @@ describe('observer', () => {
         {
           events: [],
           games: [],
-          settings: {
-            difficulty: new EasyDifficulty(),
-          },
         },
         GameManagerGameEvent.DISPATCH_ADD_GUESS
       )

@@ -1,4 +1,3 @@
-import { ISettings } from '@reaxion/common/interfaces';
 import { Observer, ObserverSubject } from '../observer';
 import {
   NoCurrentGameError,
@@ -9,10 +8,9 @@ import {
 import { Game } from './game/game';
 import { GameService } from './game/game.service';
 import { HasEvent } from './has-event.decorator';
+import { GameManagerMediator } from './mediator/mediator';
 import { Reaction } from './reaction/reaction';
 import { ReactionService } from './reaction/reaction.service';
-import { DefaultColoring } from './settings';
-import { EasyDifficulty } from './settings/difficulty';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -22,7 +20,6 @@ import {
 
 export interface IGameManagerState {
   games: Game[];
-  settings: ISettings;
   events: GameManagerGameEvent[];
 }
 
@@ -46,19 +43,15 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   private readonly gameService: GameService;
   private state: IGameManagerState = {
     games: [],
-    settings: {
-      difficulty: new EasyDifficulty(),
-      coloring: new DefaultColoring()
-    },
     events: [],
   };
   constructor(
-    private readonly userId: string,
+    public readonly mediator: GameManagerMediator,
     gameState?: Partial<IGameManagerState>
   ) {
     super();
     this.state = { ...this.state, ...gameState };
-    this.gameService = new GameService(this.state.settings);
+    this.gameService = new GameService(this.mediator.getDifficulty());
 
     /* Rethink Architecture -> leave this open to concrete implementation */
     const addGuessObserver: Observer<MyResponseType> = {
@@ -93,22 +86,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   }
   public setState(gameState: IGameManagerState): IGameManagerState {
     this.state = { ...gameState };
-    return this.getState();
-  }
-
-  public getSettings(): ISettings {
-    return this.getState().settings;
-  }
-
-  public setSettings(settings: ISettings): IGameManagerState {
-    this.setState({ ...this.getState(), settings });
-    this.notify(
-      GameManagerEvent.DISPATCH_SET_SETTINGS,
-      new EmptyGameManagerResponse(
-        this.getState(),
-        GameManagerEvent.DISPATCH_SET_SETTINGS
-      )
-    );
     return this.getState();
   }
 
@@ -261,7 +238,9 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     GameManagerGameEvent.DISPATCH_SET_NAME,
   ])
   public dispatchResetGame() {
-    this.setCurrentGame(this.gameService.createNewGame(this.userId));
+    this.setCurrentGame(
+      this.gameService.createNewGame(this.mediator.getUserId())
+    );
     this.setCurrentEvent(GameManagerGameEvent.DISPATCH_RESET_GAME);
     this.notify(
       GameManagerGameEvent.DISPATCH_RESET_GAME,

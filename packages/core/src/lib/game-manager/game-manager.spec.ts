@@ -1,6 +1,7 @@
 import { GuessStatus, ReactionStatus } from '@reaxion/common';
-import { IDifficulty, ISettings } from '@reaxion/common/interfaces';
+import { ISettings } from '@reaxion/common/interfaces';
 import { Observer } from '../observer';
+import { SettingsManager } from '../settings-manager/settings-manager';
 import {
   AddGuessResponsePayload,
   GameManager,
@@ -9,10 +10,10 @@ import {
 } from './game-manager';
 import { Game } from './game/game';
 import { GameService } from './game/game.service';
+import { GameManagerMediator } from './mediator/mediator';
 import { Reaction } from './reaction/reaction';
 import { ReactionService } from './reaction/reaction.service';
 import { EasyDifficulty } from './settings/difficulty';
-import { Settings } from './settings/settings';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -22,18 +23,26 @@ import {
 describe('game', () => {
   let gameSubject: GameManager;
   let reaction: Reaction;
-  let settings: ISettings;
-  const difficulty: IDifficulty = new EasyDifficulty();
   let game: Game;
-
+  let settingsManager: SettingsManager;
   beforeEach(() => {
-    settings = new Settings(difficulty);
+    settingsManager = new SettingsManager();
     const gameState: Partial<IGameManagerState> = {
       games: [],
-      settings,
     };
-    gameSubject = new GameManager('addd', gameState);
-    game = new Game('asd', difficulty, 0, 0, 'asdd', [], []);
+    gameSubject = new GameManager(
+      new GameManagerMediator(settingsManager),
+      gameState
+    );
+    game = new Game(
+      gameSubject.mediator.getUserId(),
+      gameSubject.mediator.getDifficulty(),
+      0,
+      0,
+      'asdd',
+      [],
+      []
+    );
     gameSubject.setCurrentGame(game);
     reaction = new Reaction(
       'asd',
@@ -271,7 +280,7 @@ describe('game', () => {
       gameSubject.setCurrentEvent(GameManagerGameEvent.DISPATCH_REACTION_END);
       gameSubject.setCurrentReaction(reaction);
       Array.from({
-        length: gameSubject.getSettings().difficulty.maxFailedAttempts,
+        length: gameSubject.mediator.getDifficulty().maxFailedAttempts,
       }).forEach(() =>
         gameSubject.dispatchAddGuess(
           gameSubject.getCurrentReaction().duration +
@@ -293,19 +302,21 @@ describe('game', () => {
 
       expect(
         reactionService.guessIsRight(
-          reaction.duration - settings.difficulty.deviation
+          reaction.duration - game.difficulty.deviation
         )
       ).toEqual(true);
       expect(
         reactionService.guessIsRight(
-          reaction.duration - settings.difficulty.deviation - 1
+          reaction.duration - game.difficulty.deviation - 1
         )
       ).toEqual(false);
     });
 
     it('should create new reaction with random duration', () => {
-      const easySettings: ISettings = { difficulty: new EasyDifficulty() };
-      const mediumSettings: ISettings = {
+      const easySettings: Pick<ISettings, 'difficulty'> = {
+        difficulty: new EasyDifficulty(),
+      };
+      const mediumSettings: Pick<ISettings, 'difficulty'> = {
         difficulty: new EasyDifficulty(),
       };
 
@@ -315,12 +326,14 @@ describe('game', () => {
           () => service.createReactionWithRandomDuration().duration
         );
       }
-      const easyDurations = generateRandomDurations(easySettings);
+      const easyDurations = generateRandomDurations(easySettings as ISettings);
       const easyIsTrue = easyDurations.every(
         (e) => e <= easySettings.difficulty.maxDuration
       );
 
-      const mediumDurations = generateRandomDurations(mediumSettings);
+      const mediumDurations = generateRandomDurations(
+        mediumSettings as ISettings
+      );
       const mediumIsTrue = mediumDurations.every(
         (e) => e <= mediumSettings.difficulty.maxDuration
       );
@@ -332,7 +345,7 @@ describe('game', () => {
 
   describe('gameService', () => {
     it('should create new game', () => {
-      const service = new GameService(settings);
+      const service = new GameService(gameSubject.mediator.getDifficulty());
       const newGame = service.createNewGame('as');
 
       expect(newGame.id !== game.id).toEqual(true);
