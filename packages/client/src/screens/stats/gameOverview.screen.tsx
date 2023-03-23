@@ -29,12 +29,23 @@ function useGameOverviewGame() {
 
 const MyGameOverviewScreen = () => {
   const { gameManager } = useGameManagerContext();
-  const { data: game, isLoading, isError } = useGameOverviewGame();
+  let data;
+  const lastGame = useGameOverviewGame();
+
+  /* TODO Refactor to Strategy Pattern */
+  try {
+    const currentGame = gameManager.getPreviousGame();
+    data = { data: currentGame, isLoading: false, isError: false };
+  } catch (e) {
+    data = lastGame;
+  }
+
   const navigate = useNavigate();
 
-  if (isError) return <div>Error</div>;
-  if (isLoading) return <div>Loading...</div>;
-  if (!game) return navigate('/game');
+  if (data.isError) return <div>Error</div>;
+  if (data.isLoading) return <div>Loading...</div>;
+  if (!data.data) return navigate('/game');
+  const { data: game } = data;
 
   const handleTryAgain = (e: React.MouseEvent<HTMLButtonElement>) => {
     navigate(routes[RouteNames.GAME_PAGE].path);
