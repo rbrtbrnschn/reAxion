@@ -1,4 +1,5 @@
 import { RouteNames } from '@reaxion/common/enums';
+import { link } from 'fs';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '../routes';
 
@@ -22,7 +23,7 @@ export const Navigation = ({
   const navigate = useNavigate();
   const resolveItems = ({ label, path }: INavigationItem, i: number) => (
     <li key={`linkFor=${label}&to=${path}`}>
-      <a onClick={() => navigate(path)}>{label}</a>
+      <div className={window.location.pathname === path ? "text-purple-500" : ""} onClick={() => navigate(path)}>{label}</div>
     </li>
   );
   const NavbarItems = navbarItems.map(resolveItems);
@@ -57,7 +58,7 @@ export const Navigation = ({
               </svg>
             </label>
           </div>
-          <div className="btn btn-ghost normal-case text-xl">{title}</div>
+          <div className="btn btn-ghost normal-case text-xl lg:hidden">{title}</div>
           <div className="flex-none hidden lg:block">
             <ul className="menu menu-horizontal">
               {/* <!-- Navbar menu content here --> */}
