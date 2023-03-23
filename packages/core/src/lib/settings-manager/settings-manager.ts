@@ -13,6 +13,7 @@ export enum SettingsManagerEvent {
   SET_COLORING = 'SET_COLORING',
   SET_DIFFICULTY = 'SET_DIFFICULTY',
   SET_USER_ID = 'SET_USER_ID',
+  SET_STATE = 'SET_STATE',
 }
 export const defaultSettings: ISettings = {
   coloring: new DefaultColoring(),
@@ -48,6 +49,13 @@ export class SettingsManager extends ObserverSubject<
   /* Setters */
   setState(state: Partial<ISettings>) {
     this.state = { ...this.getState(), ...state };
+    this.notify(
+      SettingsManagerEvent.SET_STATE,
+      new EmptySettingsManagerResponse(
+        this.getState(),
+        SettingsManagerEvent.SET_STATE
+      )
+    );
   }
   setColoring(coloring: IColor): ISettings {
     this.setState({ coloring });

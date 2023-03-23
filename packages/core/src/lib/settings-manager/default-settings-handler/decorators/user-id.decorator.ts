@@ -11,7 +11,11 @@ export class UserIdFromCookieDecorator implements SettingDecorator {
   }
   decorate(): Partial<ISettings> {
     const userId = this.getCookie('userId');
-    if (userId) return { userId };
+    if (userId) {
+      document.cookie =
+        'userId=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+      return { userId };
+    }
     return {};
   }
 }

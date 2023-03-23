@@ -8,6 +8,7 @@ export class PersistedSettingsManagerDecorator extends SettingsManager {
   constructor(settingsManager: SettingsManager, persistor: Persistor) {
     super(settingsManager.getState());
     this.persistor = persistor;
+    this.setState(settingsManager.getState());
   }
 
   setState(state: Partial<ISettings>) {
