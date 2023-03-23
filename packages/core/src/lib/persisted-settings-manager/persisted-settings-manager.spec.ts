@@ -1,5 +1,6 @@
 import { ISettings } from '@reaxion/common';
 import { v4 as uuid } from 'uuid';
+import { ConcretePersistorImpl } from '../persistor/persistor';
 import { LocalStoragePersistorImpl } from '../persistor/strategies/local-storage.strategy';
 import {
   Alternate2Coloring,
@@ -14,9 +15,11 @@ describe('persisted settings manager', () => {
   const mockDifficulty = new MediumDifficulty();
   const mockColoring = new Alternate2Coloring();
   beforeEach(() => {
+    const persistor = new ConcretePersistorImpl();
+    persistor.setStrategy(new LocalStoragePersistorImpl());
     persistedSettingsManager = new PersistedSettingsManagerDecorator(
       new SettingsManager(),
-      new LocalStoragePersistorImpl()
+      persistor
     );
     new LocalStoragePersistorImpl().removeItem('settings');
   });

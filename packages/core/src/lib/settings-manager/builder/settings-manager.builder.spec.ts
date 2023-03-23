@@ -17,7 +17,7 @@ describe('Settings Manager Builder', () => {
     expect(
       new SettingsManagerBuilder()
         .withDecorators([])
-        .createWithDefaultSettings()
+        .createWithInitialState()
         .getState()
     ).toEqual(DefaultSettingsHandlerImpl.defaultSettings);
   });
@@ -26,7 +26,7 @@ describe('Settings Manager Builder', () => {
     expect(
       new SettingsManagerBuilder()
         .withDecorators([new UserIdFromCookieDecorator()])
-        .createWithDefaultSettings()
+        .createWithInitialState()
         .getState().userId
     ).toEqual(mockUserId);
   });

@@ -1,15 +1,11 @@
 import {
   DefaultSettingsHandlerImpl,
   SettingDecorator,
-  UserIdFromCookieDecorator,
 } from '../default-settings-handler';
 import { SettingsManager } from '../settings-manager';
 
 export class SettingsManagerBuilder {
-  decorators: SettingDecorator[];
-  constructor() {
-    this.decorators = [new UserIdFromCookieDecorator()];
-  }
+  private decorators: SettingDecorator[] = [];
 
   withDecorators(decorators: SettingDecorator[]): SettingsManagerBuilder {
     this.decorators = decorators;
@@ -20,10 +16,10 @@ export class SettingsManagerBuilder {
     return new SettingsManager();
   }
 
-  createWithDefaultSettings(): SettingsManager {
-    const defaultSettings = new DefaultSettingsHandlerImpl(
+  createWithInitialState(): SettingsManager {
+    const initialState = new DefaultSettingsHandlerImpl(
       this.decorators
     ).handle();
-    return new SettingsManager(defaultSettings);
+    return new SettingsManager(initialState);
   }
 }

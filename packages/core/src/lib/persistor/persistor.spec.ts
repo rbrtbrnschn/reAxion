@@ -34,4 +34,9 @@ describe('persitor', () => {
     persistor.removeItem(mockKey);
     expect(persistor.getItem(mockKey)).toEqual(null);
   });
+
+  it('should test has strategy', () => {
+    persistor.setStrategy(new LocalStoragePersistorImpl());
+    expect(persistor.hasStrategy()).toEqual(true);
+  });
 });

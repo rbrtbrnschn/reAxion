@@ -1,7 +1,8 @@
 import { PersistorStrategy } from './strategies/strategy.interface';
 
-interface Persistor extends PersistorStrategy {
+export interface Persistor extends PersistorStrategy {
   setStrategy(strategy: PersistorStrategy): void;
+  hasStrategy(): boolean;
   strategy: PersistorStrategy | undefined;
 }
 
@@ -10,6 +11,9 @@ export class ConcretePersistorImpl implements Persistor {
 
   setStrategy(strategy: PersistorStrategy): void {
     this.strategy = strategy;
+  }
+  hasStrategy(): boolean {
+    return !!this.strategy;
   }
 
   setItem(key: string, value: unknown): void {
