@@ -1,10 +1,13 @@
 import {
   GameManager,
   GameManagerMediator,
+  LocalStorageDecorator,
+  LocalStoragePersistorImpl,
+  PersistedSettingsManagerBuilder,
   SettingsManager,
+  UserIdFromCookieDecorator,
 } from '@reaxion/core';
 import React, { createContext, useContext } from 'react';
-import { useSettings } from '../hooks/useSettings';
 
 interface IGameManagerContext {
   gameManager: GameManager;
@@ -22,8 +25,13 @@ export const useGameManagerContext = () => {
 };
 
 export const GameManagerProvider: React.FC<any> = ({ children }) => {
-  const [parsedSettings] = useSettings();
-  const settingsManager = new SettingsManager(parsedSettings);
+  const settingsManager = new PersistedSettingsManagerBuilder()
+    .withDecorators([
+      new LocalStorageDecorator(),
+      new UserIdFromCookieDecorator(),
+    ])
+    .withPersistorStrategy(new LocalStoragePersistorImpl())
+    .createWithInitialState();
   const gameManagerMediator = new GameManagerMediator(settingsManager);
   const gameManager = new GameManager(gameManagerMediator);
 

@@ -8,10 +8,10 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { withNavigation } from '../../components/navigation';
-import { useSettings } from '../../hooks/useSettings';
+import { useGameManagerContext } from '../../contexts/game-manager.context';
 
 const MyGlobalScoreboardScreen = () => {
-  const [settings] = useSettings();
+  const { settingsManager } = useGameManagerContext();
   const [sortBy, setSortBy] = useState<IDifficulty['id']>(
     new EasyDifficulty().id
   );
@@ -30,7 +30,8 @@ const MyGlobalScoreboardScreen = () => {
     });
   }
   const { data, isError, isLoading, refetch } = useGames();
-  const userHasWonGame = (game: IGame) => game.userId === settings.userId;
+  const userHasWonGame = (game: IGame) =>
+    game.userId === settingsManager.getUserId();
 
   useEffect(() => {
     refetch();
@@ -82,7 +83,9 @@ const MyGlobalScoreboardScreen = () => {
                   <tr
                     key={'game-' + (index + 1)}
                     className={
-                      game.userId === settings.userId ? 'text-secondary' : ''
+                      game.userId === settingsManager.getUserId()
+                        ? 'text-secondary'
+                        : ''
                     }
                   >
                     <th>

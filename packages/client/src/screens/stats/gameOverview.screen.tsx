@@ -8,12 +8,9 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { withNavigation } from '../../components/navigation';
 import { Stat1 } from '../../components/stats/stat1';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
-import { useSettings } from '../../hooks/useSettings';
 import { routes } from '../../routes';
 
-function useGameOverviewGame() {
-  const [settings] = useSettings();
-  const userId = settings.userId;
+function useGameOverviewGame(userId: string) {
   return useQuery({
     queryKey: ['gameOverview'],
     queryFn: async (): Promise<IGame | undefined> => {
@@ -28,9 +25,9 @@ function useGameOverviewGame() {
 }
 
 const MyGameOverviewScreen = () => {
-  const { gameManager } = useGameManagerContext();
+  const { gameManager, settingsManager } = useGameManagerContext();
   let data;
-  const lastGame = useGameOverviewGame();
+  const lastGame = useGameOverviewGame(settingsManager.getUserId());
 
   /* TODO Refactor to Strategy Pattern */
   try {

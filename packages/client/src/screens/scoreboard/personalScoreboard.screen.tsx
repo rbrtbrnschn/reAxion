@@ -4,11 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
 import { withNavigation } from '../../components/navigation';
-import { useSettings } from '../../hooks/useSettings';
+import { useGameManagerContext } from '../../contexts/game-manager.context';
 
 function useGames() {
-  const [settings] = useSettings();
-  const userId = settings.userId;
+  const { settingsManager } = useGameManagerContext();
+  const userId = settingsManager.getUserId();
   const offset = 0;
   const limit = 50;
   return useQuery({

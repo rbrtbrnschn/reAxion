@@ -13,7 +13,6 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { withNavigation } from '../../components/navigation';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
-import { useSettings } from '../../hooks/useSettings';
 import { loggerService } from '../../utils/loggerService/Logger.service';
 import { GameAlert } from './alert';
 import { GameCount } from './count';
@@ -21,7 +20,6 @@ import { GameInput } from './game.input';
 import { GameOverModal } from './gameover.modal';
 const MyGameScreenV2 = () => {
   const { gameManager } = useGameManagerContext();
-  const [settings] = useSettings();
   const loggerObserver: Observer<GameManagerResponse<unknown>> = {
     id: 'loggerObserver',
     update(eventName, response) {
