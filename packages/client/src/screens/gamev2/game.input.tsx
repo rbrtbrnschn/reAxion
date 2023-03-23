@@ -115,7 +115,9 @@ export const GameInput = () => {
                 'animate-ping': showScoreAnimation,
               })}
             >
-              {score}
+              <div className="tooltip tooltip-secondary" data-tip="Score">
+                {score}
+              </div>
             </span>
             <span>
               {getLifes()}
