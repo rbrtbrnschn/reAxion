@@ -7,17 +7,22 @@ import {
 } from '@reaxion/core';
 import axios from 'axios';
 import classNames from 'classnames';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { routes } from '../../routes';
 
 export const GameOverModal = () => {
-  const { gameManager } = useGameManagerContext();
+  const { gameManager, settingsManager } = useGameManagerContext();
   const [isShowing, setIsShowing] = useState(false);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(settingsManager.getUsername());
   const [formHasError, setFormHasError] = useState(false);
+  const shouldAutoSave = useMemo(
+    () => !!settingsManager.getUsername(),
+    [settingsManager.getUsername()]
+  );
   const navigate = useNavigate();
+  const submitButton = useRef<HTMLButtonElement>(null);
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'asdasd',
     update(eventName, response) {
@@ -28,6 +33,21 @@ export const GameOverModal = () => {
       }
     },
   };
+
+  useEffect(() => {
+    if (
+      isShowing &&
+      shouldAutoSave &&
+      gameManager.getCurrentGame().score !== 0
+    ) {
+      setTimeout(() => {
+        submitButton.current?.focus();
+        setTimeout(() => {
+          submitButton.current?.click();
+        }, 250);
+      }, 250);
+    }
+  }, [isShowing]);
 
   useEffect(() => {
     gameManager.subscribe(observer);
@@ -105,7 +125,7 @@ export const GameOverModal = () => {
                     onChange={onChange}
                     value={input}
                   />
-                  <button className="btn" onClick={onClick}>
+                  <button ref={submitButton} className="btn" onClick={onClick}>
                     Submit
                   </button>
                 </label>

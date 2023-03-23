@@ -14,6 +14,7 @@ export class DefaultSettingsHandlerImpl implements DefaultSettingsHandler {
     coloring: new DefaultColoring(),
     difficulty: new EasyDifficulty(),
     userId: uuid(),
+    username: '',
   };
 
   constructor(decorators: SettingDecorator[]) {

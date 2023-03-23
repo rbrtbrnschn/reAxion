@@ -1,10 +1,12 @@
 import { v4 as uuid, validate } from 'uuid';
+import { DefaultSettingsHandlerImpl } from './default-settings-handler';
 import { AlternateColoring } from './modules/coloring';
 import { MediumDifficulty } from './modules/difficulty';
-import { defaultSettings, SettingsManager } from './settings-manager';
+import { SettingsManager } from './settings-manager';
 
 describe('settingsManager', () => {
   let settingsManager: SettingsManager;
+  const defaultSettings = DefaultSettingsHandlerImpl.defaultSettings;
   beforeEach(() => {
     settingsManager = new SettingsManager();
   });
@@ -27,5 +29,10 @@ describe('settingsManager', () => {
     ).toEqual(true);
     const shouldThrow = () => settingsManager.setUserId('bad');
     expect(shouldThrow).toThrowError();
+
+    settingsManager.setUsername('abc');
+    expect(settingsManager.setUsername('abc'));
+    const shouldThrow2 = () => settingsManager.setUsername('asdasda');
+    expect(shouldThrow2).toThrowError();
   });
 });
