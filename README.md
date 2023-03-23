@@ -25,7 +25,7 @@
 
 ## Introduction
 
-reAxion is a lightweight and modular ReactJS framework designed to help developers build scalable and maintainable web applications. The framework provides a range of built-in features and tools, making it easier to write high-quality code and increase productivity. 
+> 'reAxion is a lightweight and modular ReactJS framework designed to help developers build scalable and maintainable web applications. The framework provides a range of built-in features and tools, making it easier to write high-quality code and increase productivity.' ~ ChatGPT 
 
 
 ## Installation
