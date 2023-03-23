@@ -39,7 +39,7 @@ npm install
 
 1. In `./packages/server/` copy the `.env.SAMPLE` to `.env` and adjust parameters. 
 2. Run `MONGO_PORT=27017 MONGODB_ROOT_USERNAME=root MONGODB_ROOT_PASSWORD=password docker-compose up -d` in the root directory to 
-sping up the mongo db instance.
+spin up the mongo db instance.
 
 ## Usage
 
