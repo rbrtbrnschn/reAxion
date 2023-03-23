@@ -1,4 +1,4 @@
-import { GameManagerGameEvent } from '../game-manager/game-manager';
+import { GameManagerEvent } from '../game-manager/game-manager';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -20,7 +20,7 @@ describe('observer', () => {
           events: [],
           games: [],
         },
-        GameManagerGameEvent.DISPATCH_ADD_GUESS
+        GameManagerEvent.DISPATCH_ADD_GUESS
       )
     );
     subject.unsubscribe(observer);

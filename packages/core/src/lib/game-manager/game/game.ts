@@ -4,7 +4,7 @@ import {
   NoPreviousReactionError,
   UndefinedReactionError,
 } from '../errors';
-import { GameManagerGameEvent } from '../game-manager';
+import { GameManagerEvent } from '../game-manager';
 import { Reaction } from '../reaction/reaction';
 
 export class Game implements IGame {
@@ -17,7 +17,7 @@ export class Game implements IGame {
     public score: number,
     public readonly id: string,
     public reactions: Reaction[],
-    public events: GameManagerGameEvent[],
+    public events: GameManagerEvent[],
     public name?: string
   ) {
     this.isOver = false;
@@ -76,7 +76,7 @@ export class Game implements IGame {
   public getEvents() {
     return this.events;
   }
-  public setEvents(events: GameManagerGameEvent[]) {
+  public setEvents(events: GameManagerEvent[]) {
     this.events = events;
   }
 }

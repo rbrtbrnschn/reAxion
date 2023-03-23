@@ -4,7 +4,7 @@ import {
   IGameDifficulty,
   IReaction,
 } from '@reaxion/common/interfaces';
-import { difficulties } from '../game-manager/settings';
+import { difficulties } from '../settings-manager/modules/difficulty';
 
 export class GameProcessingService {
   private reactions: IReaction[];
