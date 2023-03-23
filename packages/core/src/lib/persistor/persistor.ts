@@ -16,7 +16,7 @@ export class ConcretePersistorImpl implements Persistor {
     if (!this.strategy) throw new NoStrategySetError();
     return this.strategy?.setItem(key, value);
   }
-  getItem(key: string): string | null {
+  getItem<T>(key: string): T | null {
     if (!this.strategy) throw new NoStrategySetError();
     return this.strategy.getItem(key);
   }

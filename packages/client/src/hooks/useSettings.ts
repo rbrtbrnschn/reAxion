@@ -3,6 +3,10 @@ import { defaultSettings } from '@reaxion/core';
 import { useCookies } from 'react-cookie';
 import { v4 as uuid4 } from 'uuid';
 
+/**
+ * @deprecated Will be made redudant by PersistedSettingsManager
+ * @returns
+ */
 export const useSettings = (): [
   ISettings,
   (newSettings: ISettings) => void
