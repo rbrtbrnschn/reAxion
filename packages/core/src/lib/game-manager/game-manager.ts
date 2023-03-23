@@ -3,6 +3,7 @@ import {
   NoCurrentGameError,
   NoCurrentGameEventError,
   NoCurrentReactionError,
+  NoPreviousGameError,
   NoPreviousReactionError,
 } from './errors';
 import { Game } from './game/game';
@@ -104,6 +105,16 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     if (!currentGame) throw new NoCurrentGameError();
 
     return currentGame;
+  }
+  public getPreviousGame(): Game {
+    const games = [...this.getState().games];
+    const currentGame = games.pop();
+    const prevGame = games.pop();
+
+    if (!currentGame) throw new NoCurrentGameError();
+    if (!prevGame) throw new NoPreviousGameError();
+
+    return prevGame;
   }
 
   public getCurrentEvent(): GameManagerEvent {

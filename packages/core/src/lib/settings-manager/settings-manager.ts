@@ -5,6 +5,7 @@ import {
   SettingsManagerResponse,
 } from '../game-manager';
 import { ObserverSubject } from '../observer';
+import { DefaultSettingsHandlerImpl } from './default-settings-handler';
 import { DefaultColoring } from './modules/coloring';
 import { EasyDifficulty } from './modules/difficulty';
 
@@ -24,7 +25,10 @@ export class SettingsManager extends ObserverSubject<
   protected state: ISettings;
   constructor(initialState?: ISettings) {
     super();
-    this.state = { ...defaultSettings, ...initialState };
+    this.state = {
+      ...DefaultSettingsHandlerImpl.defaultSettings,
+      ...initialState,
+    };
   }
 
   /* Getters */

@@ -13,6 +13,11 @@ export class NoCurrentGameError extends Error {
     super('No Current Game Found.');
   }
 }
+export class NoPreviousGameError extends Error {
+  constructor() {
+    super('No Previous Game Found.');
+  }
+}
 export class NoCurrentGameEventError extends Error {
   constructor() {
     super('No Current Event Found.');

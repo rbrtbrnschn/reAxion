@@ -12,7 +12,6 @@ import { useEffect, useState } from 'react';
 import { validate } from 'uuid';
 import { withNavigation } from '../../components/navigation';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
-import { useSettings } from '../../hooks/useSettings';
 
 enum UserIdChangeStatus {
   IS_OLD = 'IS_OLD',
@@ -21,7 +20,6 @@ enum UserIdChangeStatus {
 }
 const MySettingsScreen = () => {
   const { gameManager, settingsManager } = useGameManagerContext();
-  const [settings, setSettings] = useSettings();
   const [activeDifficulty, setActiveDiffulty] = useState<IDifficulty>(
     gameManager.mediator.getDifficulty()
   );
@@ -44,7 +42,6 @@ const MySettingsScreen = () => {
     if (!validate(userIdValue) || userIdValue.length !== 36)
       return setUserIdError(UserIdChangeStatus.IS_ERROR);
     settingsManager.setUserId(userIdValue);
-    setSettings({ ...settings, userId: userIdValue });
     setUserIdError(UserIdChangeStatus.IS_VALID);
   };
 
@@ -53,15 +50,12 @@ const MySettingsScreen = () => {
     update(eventName, response) {
       if (isSetColoringResponse(response)) {
         setActiveColoring(response.state.coloring);
-        setSettings(response.state);
       }
       if (isSetDifficultyResponse(response)) {
         setActiveDiffulty(response.state.difficulty);
-        setSettings(response.state);
       }
       if (isSetUserIdResponse(response)) {
         setUserIdValue(response.state.userId);
-        setSettings(response.state);
       }
     },
   };
