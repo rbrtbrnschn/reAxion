@@ -9,7 +9,6 @@ export const Navbar = () => {
       <div className="navbar-start">
         <div
           className="tooltip tooltip-secondary tooltip-bottom"
-          data-tip="Nope"
         >
           <div className="dropdown">
             <label tabIndex={0} className="btn btn-ghost lg:hidden">
@@ -34,11 +33,11 @@ export const Navbar = () => {
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <a>Item 1</a>
+                <div onClick={() => navigate(routes[RouteNames.SETTINGS_PAGE].path)}>Settings</div>
               </li>
               <li tabIndex={0}>
-                <a className="justify-between">
-                  Parent
+                <div className="justify-between">
+                  Leaderboards
                   <svg
                     className="fill-current"
                     xmlns="http://www.w3.org/2000/svg"
@@ -48,18 +47,15 @@ export const Navbar = () => {
                   >
                     <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
                   </svg>
-                </a>
+                </div>
                 <ul className="p-2 bg-base-100">
                   <li>
-                    <a>Submenu 1</a>
+                    <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path)}>Personal</div>
                   </li>
                   <li>
-                    <a>Submenu 2</a>
+                    <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path)}>Global</div>
                   </li>
                 </ul>
-              </li>
-              <li>
-                <a>Item 3</a>
               </li>
             </ul>
           </div>
@@ -68,18 +64,18 @@ export const Navbar = () => {
           className="tooltip tooltip-bottom tooltip-secondary"
           data-tip="Just for show too"
         >
-          <a className="btn btn-ghost normal-case text-xl">ReAxion</a>
+          <div className="btn btn-ghost normal-case text-xl">ReAxion</div>
         </div>
       </div>
       <div className="navbar-center hidden lg:flex">
         {/* Desktop View */}
-        {/* <ul className="menu menu-horizontal px-1">
+        <ul className="menu menu-horizontal px-1">
           <li>
-            <a>Item 1</a>
+            <div onClick={() => navigate(routes[RouteNames.SETTINGS_PAGE].path)}>Settings</div>
           </li>
           <li tabIndex={0}>
-            <a>
-              Parent
+            <div>
+              Leaderboards
               <svg
                 className="fill-current"
                 xmlns="http://www.w3.org/2000/svg"
@@ -89,30 +85,27 @@ export const Navbar = () => {
               >
                 <path d="M7.41,8.58L12,13.17L16.59,8.58L18,10L12,16L6,10L7.41,8.58Z" />
               </svg>
-            </a>
+            </div>
             <ul className="p-2 bg-base-100">
               <li>
-                <a>Submenu 1</a>
+                <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path)}>Personal</div>
               </li>
               <li>
-                <a>Submenu 2</a>
+                <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path)}>Global</div>
               </li>
             </ul>
           </li>
-          <li>
-            <a>Item 3</a>
-          </li>
-        </ul> */}
+        </ul>
       </div>
       <div className="navbar-end">
-        <a
+        <div
           className="btn btn-outline btn-primary"
           onClick={() => {
             navigate(routes[RouteNames.GAME_PAGE].path);
           }}
         >
           Get started
-        </a>
+        </div>
       </div>
     </div>
   );
