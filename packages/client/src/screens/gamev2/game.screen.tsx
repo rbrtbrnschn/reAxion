@@ -120,6 +120,7 @@ const MvpAnimation: React.FC<any> = ({ children }) => {
         'mask mask-hexagon': true,
         [color]: color,
         'animate-hueRotate': hasNotStarted,
+        indicator: true,
       })}
     >
       {children}
@@ -139,6 +140,7 @@ const Animation = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 `;
 
 const AnimationContent = styled.div`

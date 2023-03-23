@@ -1,10 +1,12 @@
 import {
   GameManagerResponse,
+  isAddGuessResponse,
   isFailGameResponse,
   isReactionEndResponse,
   isStartingSequenceResponse,
   Observer,
 } from '@reaxion/core';
+import classNames from 'classnames';
 import { Heart } from 'heroicons-react';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
@@ -13,8 +15,25 @@ import { useGameManagerContext } from '../../contexts/game-manager.context';
 export const GameInput = () => {
   const { gameManager } = useGameManagerContext();
   const [isDisabled, setIsDisabled] = useState(true);
+  const [score, setScore] = useState(0);
+  const [showScoreAnimation, setShowScoreAnimation] = useState(false);
   const [lifes, setLifes] = useState<number>(0);
   const ref = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setShowScoreAnimation(false);
+    }, 500);
+  }, [score]);
+  const scoreObserver: Observer<GameManagerResponse<unknown>> = {
+    id: 'scoreObserver',
+    update(eventName, response) {
+      if (!isAddGuessResponse(response)) return;
+      if (response.payload.data.status !== 'GUESS_VALID') return;
+      setShowScoreAnimation(true);
+      setScore(gameManager.getCurrentGame().score);
+    },
+  };
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'adsasd',
     update(eventName, response: GameManagerResponse<unknown>) {
@@ -36,8 +55,10 @@ export const GameInput = () => {
 
   useEffect(() => {
     gameManager.subscribe(observer);
+    gameManager.subscribe(scoreObserver);
     return () => {
       gameManager.unsubscribe(observer);
+      gameManager.unsubscribe(scoreObserver);
     };
   }, []);
 
@@ -86,10 +107,21 @@ export const GameInput = () => {
             onChange={onChange}
             value={value}
           />
-          <span>
-            {getLifes()}
-            <MyHeartOutline />
-          </span>
+          <div className="indicator">
+            <span
+              className={classNames({
+                [`indicator-item indicator-top indicator-center badge badge-secondary `]:
+                  true,
+                'animate-ping': showScoreAnimation,
+              })}
+            >
+              {score}
+            </span>
+            <span>
+              {getLifes()}
+              <MyHeartOutline />
+            </span>
+          </div>
         </div>
       </div>
     </form>
