@@ -32,6 +32,9 @@ const MyPersonalScoreboardScreen = () => {
 
   if (isError) return <div>Error</div>;
   if (isLoading) return <div>Loading...</div>;
+  if (data === null || data === undefined) return <div>Backend died.</div>;
+  if (!data.length) return 'No Entries';
+
   return (
     <div className="h-full flex flex-col px-2">
       <div className="flex" style={{ justifyContent: 'end' }}>
@@ -82,7 +85,7 @@ const MyPersonalScoreboardScreen = () => {
                     <td>{game?.name?.toUpperCase() || '???'}</td>
                     <td>{game.score}</td>
                     <td>
-                      {game.averageDeviation.toFixed(2)}
+                      {game.averageDeviation?.toFixed(2)}
                       ms
                     </td>
                     <td>{game.difficulty?.name}</td>

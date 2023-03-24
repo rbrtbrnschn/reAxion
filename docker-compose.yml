@@ -5,14 +5,36 @@ services:
     image: mongo:5.0.8
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-password}
+      MONGO_PORT: ${MONGO_PORT:-27017}
     volumes:
       - mongo_data:/data/db
-    command: mongod --auth
+    command: mongod --auth --bind_ip_all
     ports:
-      - "${MONGO_PORT}:27017"
+      - "${MONGO_PORT:-27017}:${MONGO_PORT:-27017}"
+
+  client:
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    command: npx nx serve client
+    ports:
+      - "${CLIENT_OUTER_PORT:-3000}:${CLIENT_INNER_PORT:-3000}"
+
+  server:
+    extends:
+      file: docker-compose.base.yml
+      service: nx-app-base
+    environment:
+      MONGODB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME:-root}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-password}
+      MONGO_PORT: ${MONGO_PORT:-27017}
+      PORT: ${SERVER_INNER_PORT:-8080} 
+    command: npx nx serve server
+    ports:
+      - "${SERVER_OUTER_PORT:-8080}:${SERVER_INNER_PORT:-8080}"
 
 volumes:
+  mono-node-modules: null
   mongo_data:
-

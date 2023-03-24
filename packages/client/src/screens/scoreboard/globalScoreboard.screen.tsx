@@ -35,6 +35,9 @@ const MyGlobalScoreboardScreen = () => {
 
   if (isError) return <div>Error</div>;
   if (isLoading) return <div>Loading...</div>;
+  if (data === null || data === undefined) return <div>Backend died.</div>;
+  if (!data.length) return 'No Entries';
+
   return (
     <div className="h-full flex flex-col px-2">
       <div className="flex" style={{ justifyContent: 'end' }}>
@@ -110,11 +113,11 @@ const MyGlobalScoreboardScreen = () => {
                     <td>
                       {userHasWonGame(game) ? (
                         <YouTooltip>
-                          {game.averageDeviation.toFixed(2)}
+                          {game.averageDeviation?.toFixed(2)}
                           ms
                         </YouTooltip>
                       ) : (
-                        game.averageDeviation.toFixed(2) + 'ms'
+                        game.averageDeviation?.toFixed(2) + 'ms'
                       )}
                     </td>
                     <td>
