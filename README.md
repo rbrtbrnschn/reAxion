@@ -53,6 +53,7 @@ nx test core --watch # testing core library
 ## Contributing
 
 Feel free to check out the issues and put in a pr. They are most welcome. 
+Leave your feature ideas [here](https://github.com/rbrtbrnschn/reAxion/discussions/50).
 
 ## Contributors
 
