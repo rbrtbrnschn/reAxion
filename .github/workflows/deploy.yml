@@ -21,4 +21,6 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd reAxion
+            git checkout main
+            git pull origin main
             MONGO_PORT=27017 MONGODB_ROOT_USERNAME=${{ secrets.MONGODB_ROOT_USERNAME }} MONGODB_ROOT_PASSWORD=${{ secrets.MONGODB_ROOT_PASSWORD }}  docker-compose up -d
