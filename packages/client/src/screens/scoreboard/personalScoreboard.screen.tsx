@@ -16,7 +16,7 @@ function useGames() {
     queryFn: async (): Promise<IGameWithStats[]> => {
       const response = await axios.get(
         `${
-          process.env.REACT_APP_API_URL || ''
+          process.env.REACT_APP_API_URL || 'http://localhost:8080'
         }/api/game?offset=${offset}&limit=${limit}&userId=${userId}`
       );
       return response.data;
@@ -33,7 +33,7 @@ const MyPersonalScoreboardScreen = () => {
   if (isError) return <div>Error</div>;
   if (isLoading) return <div>Loading...</div>;
   if (data === null || data === undefined) return <div>Backend died.</div>;
-  if (!data.length) return 'No Entries';
+  if (!data.length) return <div>No Entries</div>;
 
   return (
     <div className="h-full flex flex-col px-2">

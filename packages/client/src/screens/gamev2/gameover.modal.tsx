@@ -1,4 +1,3 @@
-import { RouteNames } from '@reaxion/common/enums';
 import {
   GameManagerResponse,
   isFailGameResponse,
@@ -10,7 +9,6 @@ import classNames from 'classnames';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
-import { routes } from '../../routes';
 
 export const GameOverModal = () => {
   const { gameManager, settingsManager } = useGameManagerContext();
@@ -70,14 +68,14 @@ export const GameOverModal = () => {
       return;
     }
     gameManager.dispatchSetName(input);
-    axios.post(
-      (process.env.REACT_APP_API_URL || '') + '/api/game',
-      gameManager.getCurrentGame()
-    );
+    const path =
+      (process.env.REACT_APP_API_URL || 'http://localhost:8080') + '/api/game';
+    console.log('posted to', path);
+    axios.post(path, gameManager.getCurrentGame());
     gameManager.dispatchResetGame();
-    navigate(routes[RouteNames.RECENT_STATS_PAGE].path);
-    //gameManager.dispatchGenerateNewWithRandomDuration();
-    //gameManager.dispatchStartingSequence();
+    // navigate(routes[RouteNames.RECENT_STATS_PAGE].path);
+    gameManager.dispatchGenerateNewWithRandomDuration();
+    gameManager.dispatchStartingSequence();
   };
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.currentTarget;
