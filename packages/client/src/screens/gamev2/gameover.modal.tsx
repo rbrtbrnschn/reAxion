@@ -43,9 +43,17 @@ export const GameOverModal = () => {
       setTimeout(() => {
         submitButton.current?.focus();
         setTimeout(() => {
-          submitButton.current?.click();
+          return submitButton.current?.click();
         }, 250);
       }, 250);
+    }
+    if (isShowing && gameManager.getCurrentGame().score === 0) {
+      submitButton.current?.focus();
+      setTimeout(() => {
+        gameManager.dispatchResetGame();
+        gameManager.dispatchGenerateNewWithRandomDuration();
+        gameManager.dispatchStartingSequence();
+      }, 500);
     }
   }, [isShowing]);
 
