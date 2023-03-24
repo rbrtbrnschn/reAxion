@@ -82,7 +82,7 @@ const MyPersonalScoreboardScreen = () => {
                     <td>{game?.name?.toUpperCase() || '???'}</td>
                     <td>{game.score}</td>
                     <td>
-                      {game.averageDeviation.toFixed(2)}
+                      {game.averageDeviation?.toFixed(2)}
                       ms
                     </td>
                     <td>{game.difficulty?.name}</td>
