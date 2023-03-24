@@ -110,11 +110,11 @@ const MyGlobalScoreboardScreen = () => {
                     <td>
                       {userHasWonGame(game) ? (
                         <YouTooltip>
-                          {game.averageDeviation.toFixed(2)}
+                          {game.averageDeviation?.toFixed(2)}
                           ms
                         </YouTooltip>
                       ) : (
-                        game.averageDeviation.toFixed(2) + 'ms'
+                        game.averageDeviation?.toFixed(2) + 'ms'
                       )}
                     </td>
                     <td>
