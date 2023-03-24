@@ -14,3 +14,7 @@ export interface IGame {
   name?: string;
   userId: string;
 }
+
+export interface IGameWithStats extends IGame {
+  averageDeviation: number;
+}

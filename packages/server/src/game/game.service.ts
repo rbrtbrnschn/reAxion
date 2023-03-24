@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IDifficulty, IGame } from '@reaxion/common/interfaces';
+import { IDifficulty, IGame, IGameWithStats } from '@reaxion/common/interfaces';
+import { GameProcessingService } from '@reaxion/core';
 import { Model } from 'mongoose';
 import { Game, GameDocument } from '../schemas/game.schema';
 
@@ -8,15 +9,30 @@ import { Game, GameDocument } from '../schemas/game.schema';
 export class GameService {
   constructor(@InjectModel(Game.name) private gameModel: Model<GameDocument>) {}
 
-  async findAll(limit: number, offset: number): Promise<Game[]> {
-    return this.gameModel.find().skip(offset).limit(limit).exec();
+  async findAll(limit: number, offset: number): Promise<IGameWithStats[]> {
+    const games = await this.gameModel.find().skip(offset).limit(limit).exec();
+    return games.map((game) => ({
+      ...game,
+      averageDeviation: new GameProcessingService(game).getAverageDeviation(),
+    }));
   }
   async findAllByUser(
     limit: number,
     offset: number,
     userId: string
-  ): Promise<Game[]> {
-    return this.gameModel.find({ userId }).skip(offset).limit(limit).exec();
+  ): Promise<IGameWithStats[]> {
+    const games = await this.gameModel
+      .find({ userId })
+      .skip(offset)
+      .limit(limit)
+      .exec();
+    return games.map((game) => {
+      const gameWithStats = {
+        ...game.toObject(),
+        averageDeviation: new GameProcessingService(game).getAverageDeviation(),
+      };
+      return gameWithStats;
+    });
   }
 
   async findLastByUser(userId: string): Promise<IGame | undefined> {
@@ -29,8 +45,8 @@ export class GameService {
 
   async getLeaderboardByDifficulty(
     difficulty: IDifficulty['id']
-  ): Promise<IGame[]> {
-    return this.gameModel.aggregate([
+  ): Promise<IGameWithStats[]> {
+    const games = (await this.gameModel.aggregate([
       { $match: { 'difficulty.id': difficulty } },
       { $sort: { score: -1 } },
       {
@@ -40,6 +56,13 @@ export class GameService {
         },
       },
       { $replaceRoot: { newRoot: '$doc' } },
-    ]);
+    ])) as IGame[];
+
+    return games.map((game) => {
+      return {
+        ...game,
+        averageDeviation: new GameProcessingService(game).getAverageDeviation(),
+      };
+    }) as IGameWithStats[];
   }
 }

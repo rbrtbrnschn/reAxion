@@ -1,5 +1,5 @@
-import { IGame } from '@reaxion/common/interfaces';
-import { difficulties, GameProcessingService } from '@reaxion/core';
+import { IGameWithStats } from '@reaxion/common/interfaces';
+import { difficulties } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';
@@ -13,7 +13,7 @@ function useGames() {
   const limit = 50;
   return useQuery({
     queryKey: ['personalGame'],
-    queryFn: async (): Promise<IGame[]> => {
+    queryFn: async (): Promise<IGameWithStats[]> => {
       const response = await axios.get(
         `${
           process.env.REACT_APP_API_URL || ''
@@ -82,12 +82,10 @@ const MyPersonalScoreboardScreen = () => {
                     <td>{game?.name?.toUpperCase() || '???'}</td>
                     <td>{game.score}</td>
                     <td>
-                      {new GameProcessingService(game)
-                        .getAverageDeviation()
-                        .toFixed(2)}
+                      {game.averageDeviation.toFixed(2)}
                       ms
                     </td>
-                    <td>{game.difficulty.name}</td>
+                    <td>{game.difficulty?.name}</td>
                   </tr>
                 );
               })}

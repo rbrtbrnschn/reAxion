@@ -1,9 +1,5 @@
-import { IDifficulty, IGame } from '@reaxion/common/interfaces';
-import {
-  difficulties,
-  EasyDifficulty,
-  GameProcessingService,
-} from '@reaxion/core';
+import { IDifficulty, IGame, IGameWithStats } from '@reaxion/common/interfaces';
+import { DefaultSettingsHandlerImpl, difficulties } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -13,13 +9,13 @@ import { useGameManagerContext } from '../../contexts/game-manager.context';
 const MyGlobalScoreboardScreen = () => {
   const { settingsManager } = useGameManagerContext();
   const [sortBy, setSortBy] = useState<IDifficulty['id']>(
-    new EasyDifficulty().id
+    DefaultSettingsHandlerImpl.defaultSettings.difficulty.id
   );
 
   function useGames() {
     return useQuery({
       queryKey: ['globalGames'],
-      queryFn: async (): Promise<IGame[]> => {
+      queryFn: async (): Promise<IGameWithStats[]> => {
         const response = await axios.get(
           `${
             process.env.REACT_APP_API_URL || ''
@@ -114,15 +110,11 @@ const MyGlobalScoreboardScreen = () => {
                     <td>
                       {userHasWonGame(game) ? (
                         <YouTooltip>
-                          {new GameProcessingService(game)
-                            .getAverageDeviation()
-                            .toFixed(2)}
+                          {game.averageDeviation.toFixed(2)}
                           ms
                         </YouTooltip>
                       ) : (
-                        new GameProcessingService(game)
-                          .getAverageDeviation()
-                          .toFixed(2) + 'ms'
+                        game.averageDeviation.toFixed(2) + 'ms'
                       )}
                     </td>
                     <td>

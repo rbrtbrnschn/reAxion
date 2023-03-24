@@ -1,6 +1,11 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { GuessStatus, IReaction, ReactionStatus } from '@reaxion/common';
+import {
+  GuessStatus,
+  IGameWithStats,
+  IReaction,
+  ReactionStatus,
+} from '@reaxion/common';
 import { Game as CoreGame, MediumDifficulty, Reaction } from '@reaxion/core';
 import { ModuleMocker } from 'jest-mock';
 import { v4 as uuid4 } from 'uuid';
@@ -46,12 +51,13 @@ describe('GameService', () => {
   });
 
   it('should find all games', async () => {
+    const result: IGameWithStats[] = [{ ...gameModel, averageDeviation: 13 }];
     jest
       .spyOn(service, 'findAll')
-      .mockImplementation(() => Promise.resolve([gameModel]));
+      .mockImplementation(() => Promise.resolve(result));
 
     try {
-      const tbd = await service.findAll();
+      const tbd = await service.findAll(50, 0);
       expect(tbd).toBe([gameModel]);
     } catch (e) {
       expect(e).toBeDefined();
@@ -65,6 +71,7 @@ describe('GameService', () => {
       .mockImplementation(() => Promise.resolve(result));
 
     const igame = new CoreGame(
+      uuid4(),
       new MediumDifficulty(),
       0,
       0,
@@ -82,5 +89,14 @@ describe('GameService', () => {
       []
     );
     expect(await service.addSingle(igame)).toEqual(result);
+  });
+
+  it('should get leaderboard', () => {
+    const result: IGameWithStats[] = [{ ...gameModel, averageDeviation: 13 }];
+    jest
+      .spyOn(service, 'getLeaderboardByDifficulty')
+      .mockImplementation(() => Promise.resolve(result));
+
+    expect(service.getLeaderboardByDifficulty(new MediumDifficulty().id));
   });
 });

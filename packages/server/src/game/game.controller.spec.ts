@@ -49,7 +49,7 @@ describe('GameController', () => {
     jest
       .spyOn(controller, 'getAll')
       .mockImplementation(() => Promise.resolve(result));
-    expect(await controller.getAll()).toEqual(result);
+    expect(await controller.getAll(50, 0, uuid4())).toEqual(result);
   });
 
   it('should add new', async () => {
