@@ -23,4 +23,5 @@ jobs:
             cd reAxion
             git checkout main
             git pull origin main
-            MONGO_PORT=27017 MONGODB_ROOT_USERNAME=${{ secrets.MONGODB_ROOT_USERNAME }} MONGODB_ROOT_PASSWORD=${{ secrets.MONGODB_ROOT_PASSWORD }}  docker-compose up -d
+            npx nx --target=deploy --parallel --projects=server,client
+            MONGO_PORT=27017 MONGODB_ROOT_USERNAME=${{ secrets.MONGODB_ROOT_USERNAME }} MONGODB_ROOT_PASSWORD=${{ secrets.MONGODB_ROOT_PASSWORD }}  docker-compose -f docker-compose.prod.yml up -d

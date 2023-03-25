@@ -10,6 +10,7 @@ import { AppModule } from './app/app.module';
 
 async function bootstrap() {
   console.log(process.env);
+  console.log(`mongodb://${process.env.MONGODB_ROOT_USERNAME}:${process.env.MONGODB_ROOT_PASSWORD}@mongodb:${process.env.MONGO_PORT}`)
 
   const app = await NestFactory.create(AppModule);
   app.enableCors();
