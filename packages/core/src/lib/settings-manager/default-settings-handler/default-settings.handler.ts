@@ -116,7 +116,8 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
     return;
   }
 }
-
+// TODO do not use handleGameOver
+// put all login in handleAddGuess
 export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
   implements DifficultyStrategy
 {
@@ -126,11 +127,11 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
   static maxDuration = 3000;
   static maxDeviation = 500;
 
-  handleAddGuess(gameManager: GameManager) {
-    return;
+  handleAddGuess(gameManager: GameManager, guess: number) {
+    new EasyDifficultyStrategy().handleAddGuess(gameManager, guess);
   }
   handleGameOver(gameManager: GameManager): void {
-    return;
+    new EasyDifficultyStrategy().handleGameOver(gameManager);
   }
   isGameOver(gameManager: GameManager): boolean {
     return !!Math.round(Math.random());
