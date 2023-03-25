@@ -22,8 +22,6 @@ export interface DifficultyStrategy {
   guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus;
   generateReaction(gameManager: GameManager): Reaction;
 
-  // onFailedGuess: (gameManager: GameManager) => void;
-
   onReactionStart: (gameManager: GameManager) => void;
   onReactionComplete: (gameManager: GameManager) => void;
   onGameStart: (gameManager: GameManager) => void;
@@ -33,7 +31,7 @@ export interface DifficultyStrategy {
 export class EasyDifficultyStrategy implements DifficultyStrategy {
   public key = 'DIFFICULTY_STRATEGY';
   public id = 'EASY_DIFFICULTY';
-  public name = this.id;
+  public name = 'Easy';
   static maxFailedAttempts = 5;
   static maxDuration = 3000;
   static maxDeviation = 500;
@@ -101,12 +99,7 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
 
     return new Reaction(id, duration, [], false);
   }
-  onFailedGuess(gameManager: GameManager) {
-    gameManager
-      .getCurrentGame()
-      .setFailedAttempts(gameManager.getCurrentGame().getFailedAttempts() + 1);
-    return;
-  }
+
   onReactionStart(gameManager: GameManager) {
     return;
   }
@@ -129,7 +122,7 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
 {
   public key = 'DIFFICULTY_STRATEGY';
   public id = 'UNLIMITED_LIVES_BUT_50_50_CHANCE_OF_GAME_OVER_DIFFICULTY';
-  public name = this.id;
+  public name = '50/50';
   static maxDuration = 3000;
   static maxDeviation = 500;
 
@@ -181,7 +174,7 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
 
 export class VariableDeviationDifficulty implements DifficultyStrategy {
   public key = 'DIFFICULTY_STRATEGY';
-  public id = 'VARIABLE_DEVIATION_DIFFICULTY';
+  public id = 'Variable Deviation';
   public name = this.id;
   static maxDuration = 3000;
   static maxDeviation = 1000;
@@ -244,7 +237,7 @@ export class VariableDeviationDifficulty implements DifficultyStrategy {
 
 export class TimerOnGuessDifficulty implements DifficultyStrategy {
   public key = 'DIFFICULTY_STRATEGY';
-  public id = 'TIMER_ON_GUESS_DIFFICULTY';
+  public id = 'Timer on Guess';
   public name = this.id;
   static maxDuration = 3000;
   static maxDeviation = 1000;
