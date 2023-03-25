@@ -1,2 +1,2 @@
 export * from './coloring';
-export * from './difficulty-strategy/';
+//export * from './difficulty-strategy/';

@@ -1,6 +1,8 @@
 import { v4 as uuid, validate } from 'uuid';
-import { DefaultSettingsHandlerImpl } from './default-settings-handler';
-import { TimerOnGuessDifficulty } from './modules';
+import {
+  DefaultSettingsHandlerImpl,
+  TimerOnGuessDifficulty,
+} from './default-settings-handler';
 import { AlternateColoring } from './modules/coloring';
 import { SettingsManager } from './settings-manager';
 

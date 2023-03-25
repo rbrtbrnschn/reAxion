@@ -1,13 +1,12 @@
 import { v4 as uuid } from 'uuid';
-import { SettingsManager } from '../..';
+import { EasyDifficultyStrategy, SettingsManager } from '..';
 import {
   GameManager,
   GameManagerMediator,
   GameService,
   Reaction,
-} from '../../../game-manager';
-import { Game } from '../../../game-manager/game/game';
-import { EasyDifficultyStrategy } from './difficulty.strategy';
+} from '../../game-manager';
+import { Game } from '../../game-manager/game/game';
 
 describe('EasyDifficultyStrategy', () => {
   let game: Game;
