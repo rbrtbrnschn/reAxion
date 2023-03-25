@@ -1,6 +1,5 @@
-import { Settings } from '../interfaces/settings.interface';
 import { Observer } from '../observer';
-import { EasyDifficultyStrategy } from '../settings-manager/modules/difficulty';
+import { EasyDifficultyStrategy } from '../settings-manager/modules/difficulty-strategy';
 import { SettingsManager } from '../settings-manager/settings-manager';
 import {
   AddGuessResponsePayload,
@@ -203,11 +202,11 @@ describe('game', () => {
     it('should not add guess after game is over', () => {
       gameSubject.setCurrentReaction(reaction);
       gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
-      Array.from({ length: 10 }).map((_, i) => gameSubject.dispatchAddGuess(i));
-
-      // expect(gameSubject.getCurrentGame().getFailedAttempts()).toEqual(
-      //   gameSubject.getCurrentGame().difficulty.maxFailedAttempts
-      // );
+      expect(() => {
+        Array.from({ length: 10 }).map((_, i) =>
+          gameSubject.dispatchAddGuess(i)
+        );
+      }).toThrowError();
     });
 
     it('should complete game if guess correctly', () => {
@@ -241,13 +240,8 @@ describe('game', () => {
       expect(gameSubject.getCurrentGame().getScore()).toBeGreaterThanOrEqual(1);
     });
 
-    // 0. gameService
-    // 1. frontend mvp
-
-    // 2.may need to write converters or storage engine (TAKE A LOOK INTO AFTER FRONTEND WORKS)
+    // TODO .may need to write converters or storage engine (TAKE A LOOK INTO AFTER FRONTEND WORKS)
     // -> game class and reaction class may need to take ids/keys to allow for this
-
-    // should generate and set new current reaction upon valid guess
     it('should generate and set new current reaction upon valid guess', () => {
       gameSubject.setCurrentReaction(reaction);
       gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
@@ -266,15 +260,15 @@ describe('game', () => {
     it('should reset game', () => {
       gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
       gameSubject.setCurrentReaction(reaction);
-      // Array.from({
-      //   length: gameSubject.mediator.getDifficulty().maxFailedAttempts,
-      // }).forEach(() =>
-      //   gameSubject.dispatchAddGuess(
-      //     gameSubject.getCurrentReaction().duration +
-      //       gameSubject.getCurrentGame().difficulty.deviation +
-      //       1
-      //   )
-      // );
+      expect(() => {
+        Array.from({
+          length: 6,
+        }).forEach(() =>
+          gameSubject.dispatchAddGuess(
+            gameSubject.getCurrentReaction().duration + -10000
+          )
+        );
+      }).toThrowError();
 
       expect(gameSubject.getCurrentGame().reactions.length).toEqual(1);
       gameSubject.dispatchResetGame();
@@ -285,48 +279,12 @@ describe('game', () => {
 
   describe('reaction service', () => {
     it('should calculate guess correctly ', () => {
-      // const reactionService = new ReactionService(game).withReaction(reaction);
-      // expect(
-      //   reactionService.guessIsRight(
-      //     reaction.duration - game.difficulty.deviation
-      //   )
-      // ).toEqual(true);
-      // expect(
-      //   reactionService.guessIsRight(
-      //     reaction.duration - game.difficulty.deviation - 1
-      //   )
-      // ).toEqual(false);
-    });
-
-    it('should create new reaction with random duration', () => {
-      const easySettings: Pick<Settings, 'difficulty'> = {
-        difficulty: new EasyDifficultyStrategy(),
-      };
-      const mediumSettings: Pick<Settings, 'difficulty'> = {
-        difficulty: new EasyDifficultyStrategy(),
-      };
-
-      function generateRandomDurations(settings: Settings, amount = 100) {
-        // const service = new ReactionService(game);
-        // return Array.from({ length: amount }).map(
-        //   () => service.createReactionWithRandomDuration().duration
-        // );
-        return [];
-      }
-      const easyDurations = generateRandomDurations(easySettings as Settings);
-      const easyIsTrue = easyDurations.every(
-        (e) => e <= easySettings.difficulty.id
-      );
-
-      // const mediumDurations = generateRandomDurations(
-      //   mediumSettings as Settings
-      // );
-      // const mediumIsTrue = mediumDurations.every(
-      //   (e) => e <= mediumSettings.difficulty.maxDuration
-      // );
-
-      // expect(easyIsTrue).toEqual(true);
-      // expect(mediumIsTrue).toEqual(true);
+      gameSubject.setCurrentReaction(reaction);
+      expect(
+        gameSubject
+          .getCurrentGame()
+          .difficulty.guessIsValid(gameSubject, reaction.duration)
+      ).toEqual('GUESS_VALID');
     });
   });
 
@@ -380,7 +338,9 @@ describe('game', () => {
       gameSubject.dispatchAddGuess(1);
       gameSubject.dispatchAddGuess(1);
       gameSubject.dispatchAddGuess(1);
-      gameSubject.dispatchAddGuess(1);
+      expect(() => {
+        gameSubject.dispatchAddGuess(1);
+      }).toThrowError();
 
       expect(gameSubject.getCurrentGame().isOver).toEqual(true);
       expect(gameSubject.getCurrentEvent()).toEqual(

@@ -1,5 +1,5 @@
 import { IGame } from '../../interfaces/game.interface';
-import { DifficultyStrategy } from '../../settings-manager/modules/difficulty/difficulty.strategy';
+import { DifficultyStrategy } from '../../settings-manager/modules/difficulty-strategy/difficulty.strategy';
 import {
   NoCurrentReactionError,
   NoPreviousReactionError,

@@ -4,15 +4,15 @@ import { ConcretePersistorImpl } from '../persistor/persistor';
 import { LocalStoragePersistorImpl } from '../persistor/strategies/local-storage.strategy';
 import {
   Alternate2Coloring,
-  MediumDifficulty,
   SettingsManager,
+  TimerOnGuessDifficulty,
 } from '../settings-manager';
 import { PersistedSettingsManagerDecorator } from './persisted-settings-manager';
 
 describe('persisted settings manager', () => {
   let persistedSettingsManager: PersistedSettingsManagerDecorator;
   const mockUserId = uuid();
-  const mockDifficulty = new MediumDifficulty();
+  const mockDifficulty = new TimerOnGuessDifficulty();
   const mockColoring = new Alternate2Coloring();
   beforeEach(() => {
     const persistor = new ConcretePersistorImpl();

@@ -7,7 +7,6 @@ import {
   Reaction,
 } from '../../../game-manager';
 import { Game } from '../../../game-manager/game/game';
-import { EasyDifficulty } from '../difficulty';
 import { EasyDifficultyStrategy } from './difficulty.strategy';
 
 describe('EasyDifficultyStrategy', () => {
@@ -21,7 +20,7 @@ describe('EasyDifficultyStrategy', () => {
     const mediator = new GameManagerMediator(new SettingsManager());
     gameManager = new GameManager(mediator);
     difficultyStrategy = new EasyDifficultyStrategy();
-    game = new GameService(new EasyDifficulty()).createNewGame(uuid());
+    game = new GameService(new EasyDifficultyStrategy()).createNewGame(uuid());
     reaction = new Reaction('asdasd', reactionDuration, [], false, Date.now());
     gameManager.setCurrentGame(game);
     gameManager.setCurrentReaction(reaction);
@@ -34,13 +33,13 @@ describe('EasyDifficultyStrategy', () => {
         gameManager,
         reactionDuration - EasyDifficultyStrategy.maxDeviation
       )
-    ).toEqual(true);
+    ).toEqual('GUESS_VALID');
     expect(
       difficultyStrategy.guessIsValid(
         gameManager,
         reactionDuration - EasyDifficultyStrategy.maxDeviation - 1
       )
-    ).toEqual(false);
+    ).toEqual('GUESS_INVALID_LOW');
   });
 
   // TODO

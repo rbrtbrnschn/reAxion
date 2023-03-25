@@ -1,2 +1,2 @@
 export * from './coloring';
-export * from './difficulty';
+export * from './difficulty-strategy/';

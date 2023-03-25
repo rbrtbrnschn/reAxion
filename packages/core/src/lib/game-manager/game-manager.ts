@@ -149,7 +149,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   @HasEvent([
     GameManagerEvent.DISPATCH_REACTION_END,
     GameManagerEvent.DISPATCH_ADD_GUESS,
-    GameManagerEvent.DISPATCH_FAIL_GAME,
   ])
   public dispatchAddGuess(guess: number) {
     if (this.getCurrentGame().isOver) return;
