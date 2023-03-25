@@ -37,17 +37,37 @@ npm install
 
 ## Setup
 
-1. In `./packages/server/` copy the `.env.SAMPLE` to `.env` and adjust parameters. 
-2. Run `MONGO_PORT=27017 MONGODB_ROOT_USERNAME=root MONGODB_ROOT_PASSWORD=password docker-compose up -d` in the root directory to 
+### Docker
+
+1. Run `MONGO_PORT=27017 MONGODB_ROOT_USERNAME=root MONGODB_ROOT_PASSWORD=password docker-compose up -d` in the root directory to 
 spin up the mongo db instance.
+
+### Local
+
+1. In `./packages/server/` copy the `.env.SAMPLE` to `.env` and adjust parameters. 
+
+#### Disclaimer:
+
+> "Make sure you have a mongodb instance running."
 
 ## Usage
 
-For development purposes.
+> For development purposes.
 
-```
+### Either locally via nx
+
+```bash
 nx run-many --target=serve --parallel --projects=client,server # Running dev environment
 nx test core --watch # testing core library
+```
+
+> Testing can only be done locally as of right now:
+
+
+### Or docker
+
+```bash
+docker-compose up -d
 ```
 
 ## Contributing
