@@ -24,4 +24,4 @@ jobs:
             git checkout main
             git pull origin main
             /home/github/.volta/bin/npx nx run-many --target=build --parallel --projects=server,client
-            pm2 restart 0
+            /home/github/.volta/bin/pm2 restart 0
