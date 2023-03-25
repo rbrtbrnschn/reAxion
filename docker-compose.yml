@@ -32,6 +32,7 @@ services:
     environment:
       MONGODB_ROOT_USERNAME: ${MONGODB_ROOT_USERNAME:-root}
       MONGODB_ROOT_PASSWORD: ${MONGODB_ROOT_PASSWORD:-password}
+      MONGODB_HOST: mongodb
       MONGO_PORT: 27017
       PORT: ${SERVER_INNER_PORT:-8080} 
     command: npx nx serve server
