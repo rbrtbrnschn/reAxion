@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { common } from '@reaxion/common';
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { routes } from '../routes';
 
@@ -11,7 +11,9 @@ const StyledApp = styled.div`
 `;
 
 export function App() {
-  const name = common();
+  useEffect(() => {
+    console.log('Welcome.');
+  }, []);
   return (
     <Routes>
       {Object.entries(routes).map(([key, route]) => (
