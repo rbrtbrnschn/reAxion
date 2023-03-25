@@ -1,5 +1,6 @@
-import { IColor, IDifficulty, ISettings } from '@reaxion/common';
+import { Coloring, Settings } from '../interfaces';
 import { Persistor } from '../persistor/persistor';
+import { DifficultyStrategy } from '../settings-manager';
 import { SettingsManager } from '../settings-manager/settings-manager';
 
 export class PersistedSettingsManagerDecorator extends SettingsManager {
@@ -11,14 +12,14 @@ export class PersistedSettingsManagerDecorator extends SettingsManager {
     this.setState(settingsManager.getState());
   }
 
-  setState(state: Partial<ISettings>) {
+  setState(state: Partial<Settings>) {
     super.setState(state);
 
     if (!this.persistor.hasStrategy()) throw new PersistorHasNoStrategyError();
     this.persistor.setItem('settings', this.getState());
   }
 
-  setColoring(coloring: IColor): ISettings {
+  setColoring(coloring: Coloring): Settings {
     const updatedSettings = super.setColoring(coloring);
 
     if (!this.persistor.hasStrategy()) throw new PersistorHasNoStrategyError();
@@ -26,7 +27,7 @@ export class PersistedSettingsManagerDecorator extends SettingsManager {
     return updatedSettings;
   }
 
-  setDifficulty(difficulty: IDifficulty): ISettings {
+  setDifficulty(difficulty: DifficultyStrategy): Settings {
     const updatedSettings = super.setDifficulty(difficulty);
 
     if (!this.persistor.hasStrategy()) throw new PersistorHasNoStrategyError();
@@ -34,7 +35,7 @@ export class PersistedSettingsManagerDecorator extends SettingsManager {
     return updatedSettings;
   }
 
-  setUserId(userId: string): ISettings {
+  setUserId(userId: string): Settings {
     const updatedSettings = super.setUserId(userId);
 
     if (!this.persistor.hasStrategy()) throw new PersistorHasNoStrategyError();

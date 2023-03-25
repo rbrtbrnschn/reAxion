@@ -1,4 +1,4 @@
-import { ISettings } from '@reaxion/common';
+import { Settings } from '../../../interfaces';
 import { SettingDecorator } from './decorator.interface';
 
 export class UserIdFromCookieDecorator implements SettingDecorator {
@@ -9,7 +9,7 @@ export class UserIdFromCookieDecorator implements SettingDecorator {
     if (match) return match[2];
     return undefined;
   }
-  decorate(): Partial<ISettings> {
+  decorate(): Partial<Settings> {
     const userId = this.getCookie('userId');
     if (userId) {
       document.cookie =

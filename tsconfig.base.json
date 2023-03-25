@@ -15,11 +15,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@reaxion/common": ["packages/common/src/index.ts"],
-      "@reaxion/common/enums": ["packages/common/src/lib/enums/index.ts"],
-      "@reaxion/common/interfaces": [
-        "packages/common/src/lib/interfaces/index.ts"
-      ],
       "@reaxion/core": ["packages/core/src/index.ts"]
     }
   },

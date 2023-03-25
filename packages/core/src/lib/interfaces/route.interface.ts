@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RouteNames } from '../enums/routes.enum';
+import { RouteNames } from '../../../../core/src/lib/enums/routes.enum';
 
 export interface IRoute {
   label: RouteNames;

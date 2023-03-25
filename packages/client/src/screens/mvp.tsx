@@ -1,9 +1,9 @@
-import { GuessStatus, ReactionStatus } from '@reaxion/common';
 import {
   EasyDifficulty,
   Game,
   GameManager,
   GameManagerResponse,
+  GuessStatus,
   isCompleteReactionResponse,
   isFailGameResponse,
   isReactionEndResponse,
@@ -11,6 +11,7 @@ import {
   isStartingSequenceResponse,
   Observer,
   Reaction,
+  ReactionStatus,
 } from '@reaxion/core';
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
@@ -31,7 +32,7 @@ export const Mvp = () => {
   };
   useEffect(() => {
     gameManager.setCurrentGame(
-      new Game(new EasyDifficulty(), 0, 0, uuid4(), [], [])
+      new Game('', new EasyDifficulty(), 0, 0, uuid4(), [], [])
     );
     gameManager.setCurrentReaction(
       new Reaction(

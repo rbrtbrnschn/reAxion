@@ -1,5 +1,5 @@
-import { ISettings } from '@reaxion/common/interfaces';
+import { Settings } from '../../../interfaces';
 
 export interface SettingDecorator {
-  decorate: () => Partial<ISettings>;
+  decorate: () => Partial<Settings>;
 }

@@ -1,4 +1,3 @@
-import { GuessStatus, ReactionStatus } from '@reaxion/common';
 import { v4 as uuid } from 'uuid';
 import { SettingsManager } from '../..';
 import {
@@ -23,15 +22,7 @@ describe('EasyDifficultyStrategy', () => {
     gameManager = new GameManager(mediator);
     difficultyStrategy = new EasyDifficultyStrategy();
     game = new GameService(new EasyDifficulty()).createNewGame(uuid());
-    reaction = new Reaction(
-      'asdasd',
-      reactionDuration,
-      [],
-      false,
-      GuessStatus.IS_WAITING,
-      ReactionStatus.HAS_NOT_STARTED,
-      Date.now()
-    );
+    reaction = new Reaction('asdasd', reactionDuration, [], false, Date.now());
     gameManager.setCurrentGame(game);
     gameManager.setCurrentReaction(reaction);
   });

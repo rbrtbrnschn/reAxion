@@ -1,15 +1,12 @@
-import { RouteNames } from '@reaxion/common/enums';
 import { useNavigate } from 'react-router-dom';
-import { routes } from '../routes';
+import { RouteNames, routes } from '../routes';
 
 export const Navbar = () => {
   const navigate = useNavigate();
   return (
     <div className="navbar bg-base-100 ">
       <div className="navbar-start">
-        <div
-          className="tooltip tooltip-secondary tooltip-bottom"
-        >
+        <div className="tooltip tooltip-secondary tooltip-bottom">
           <div className="dropdown">
             <label tabIndex={0} className="btn btn-ghost lg:hidden">
               <svg
@@ -33,7 +30,13 @@ export const Navbar = () => {
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li>
-                <div onClick={() => navigate(routes[RouteNames.SETTINGS_PAGE].path)}>Settings</div>
+                <div
+                  onClick={() =>
+                    navigate(routes[RouteNames.SETTINGS_PAGE].path)
+                  }
+                >
+                  Settings
+                </div>
               </li>
               <li tabIndex={0}>
                 <div className="justify-between">
@@ -50,10 +53,24 @@ export const Navbar = () => {
                 </div>
                 <ul className="p-2 bg-base-100">
                   <li>
-                    <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path)}>Personal</div>
+                    <div
+                      onClick={() =>
+                        navigate(
+                          routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path
+                        )
+                      }
+                    >
+                      Personal
+                    </div>
                   </li>
                   <li>
-                    <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path)}>Global</div>
+                    <div
+                      onClick={() =>
+                        navigate(routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path)
+                      }
+                    >
+                      Global
+                    </div>
                   </li>
                 </ul>
               </li>
@@ -71,7 +88,11 @@ export const Navbar = () => {
         {/* Desktop View */}
         <ul className="menu menu-horizontal px-1">
           <li>
-            <div onClick={() => navigate(routes[RouteNames.SETTINGS_PAGE].path)}>Settings</div>
+            <div
+              onClick={() => navigate(routes[RouteNames.SETTINGS_PAGE].path)}
+            >
+              Settings
+            </div>
           </li>
           <li tabIndex={0}>
             <div>
@@ -88,10 +109,22 @@ export const Navbar = () => {
             </div>
             <ul className="p-2 bg-base-100">
               <li>
-                <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path)}>Personal</div>
+                <div
+                  onClick={() =>
+                    navigate(routes[RouteNames.SCOREBOARD_PERSONAL_PAGE].path)
+                  }
+                >
+                  Personal
+                </div>
               </li>
               <li>
-                <div onClick={() => navigate(routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path)}>Global</div>
+                <div
+                  onClick={() =>
+                    navigate(routes[RouteNames.SCOREBOARD_GLOBAL_PAGE].path)
+                  }
+                >
+                  Global
+                </div>
               </li>
             </ul>
           </li>

@@ -1,4 +1,4 @@
-import { IGame } from '@reaxion/common';
+import { IGame } from '../interfaces';
 import { GameProcessingService } from './game-processing.service';
 describe('game processing service', () => {
   it('should getGameTime', () => {

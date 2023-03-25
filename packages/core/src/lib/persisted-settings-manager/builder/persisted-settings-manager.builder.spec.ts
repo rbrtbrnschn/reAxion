@@ -1,5 +1,5 @@
-import { ISettings } from '@reaxion/common';
 import { v4 as uuid } from 'uuid';
+import { Settings } from '../../interfaces';
 import { LocalStoragePersistorImpl } from '../../persistor/strategies/local-storage.strategy';
 import { UserIdFromCookieDecorator } from '../../settings-manager/default-settings-handler/decorators/user-id.decorator';
 import { PersistedSettingsManagerBuilder } from './persisted-settings-manager.builder';
@@ -16,7 +16,7 @@ describe('persisted settings manager builder', () => {
     settingsManager.setUserId(mockUserId);
 
     expect(
-      new LocalStoragePersistorImpl().getItem<ISettings>('settings')?.userId
+      new LocalStoragePersistorImpl().getItem<Settings>('settings')?.userId
     ).toEqual(mockUserId);
   });
 

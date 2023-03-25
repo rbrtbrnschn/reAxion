@@ -1,5 +1,10 @@
-import { IDifficulty, IGame, IGameWithStats } from '@reaxion/common/interfaces';
-import { DefaultSettingsHandlerImpl, difficulties } from '@reaxion/core';
+import {
+  DefaultSettingsHandlerImpl,
+  difficulties,
+  DifficultyStrategy,
+  IGame,
+  IGameWithStats,
+} from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -8,7 +13,7 @@ import { useGameManagerContext } from '../../contexts/game-manager.context';
 
 const MyGlobalScoreboardScreen = () => {
   const { settingsManager } = useGameManagerContext();
-  const [sortBy, setSortBy] = useState<IDifficulty['id']>(
+  const [sortBy, setSortBy] = useState<DifficultyStrategy['id']>(
     DefaultSettingsHandlerImpl.defaultSettings.difficulty.id
   );
 

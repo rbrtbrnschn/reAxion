@@ -1,5 +1,4 @@
-import { IGameWithStats } from '@reaxion/common/interfaces';
-import { difficulties } from '@reaxion/core';
+import { difficulties, IGameWithStats } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useState } from 'react';

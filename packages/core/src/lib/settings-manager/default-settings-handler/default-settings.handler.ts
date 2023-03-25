@@ -1,18 +1,22 @@
-import { ISettings } from '@reaxion/common';
 import { v4 as uuid } from 'uuid';
-import { DefaultColoring, EasyDifficulty } from '../modules';
+import { Settings } from '../../interfaces';
+import {
+  DefaultColoring,
+  UnlimitedLivesBut5050ChanceOfGameOverDifficulty,
+} from '../modules';
+
 import { SettingDecorator } from './decorators/decorator.interface';
 
 interface DefaultSettingsHandler {
-  handle: () => ISettings;
+  handle: () => Settings;
 }
 
 export class DefaultSettingsHandlerImpl implements DefaultSettingsHandler {
-  private readonly settings: ISettings;
+  private readonly settings: Settings;
 
-  static readonly defaultSettings: ISettings = {
+  static readonly defaultSettings: Settings = {
     coloring: new DefaultColoring(),
-    difficulty: new EasyDifficulty(),
+    difficulty: new UnlimitedLivesBut5050ChanceOfGameOverDifficulty(),
     userId: uuid(),
     username: '',
   };
@@ -24,7 +28,7 @@ export class DefaultSettingsHandlerImpl implements DefaultSettingsHandler {
     );
   }
 
-  handle(): ISettings {
+  handle(): Settings {
     return this.settings;
   }
 }

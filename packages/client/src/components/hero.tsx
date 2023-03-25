@@ -1,7 +1,6 @@
-import { RouteNames } from '@reaxion/common';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { routes } from '../routes';
+import { RouteNames, routes } from '../routes';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 export const Hero = ({ ...props }: Props) => {

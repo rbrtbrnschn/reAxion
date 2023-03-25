@@ -1,7 +1,8 @@
-import { IColor, IDifficulty } from '@reaxion/common';
 import {
+  Coloring,
   colorings,
   difficulties,
+  DifficultyStrategy,
   isSetColoringResponse,
   isSetDifficultyResponse,
   isSetUserIdResponse,
@@ -25,10 +26,10 @@ enum UsernameChangeStatus {
 }
 const MySettingsScreen = () => {
   const { gameManager, settingsManager } = useGameManagerContext();
-  const [activeDifficulty, setActiveDiffulty] = useState<IDifficulty>(
+  const [activeDifficulty, setActiveDiffulty] = useState<DifficultyStrategy>(
     gameManager.mediator.getDifficulty()
   );
-  const [activeColoring, setActiveColoring] = useState<IColor>(
+  const [activeColoring, setActiveColoring] = useState<Coloring>(
     gameManager.mediator.getColoring()
   );
   const [userIdValue, setUserIdValue] = useState(
@@ -84,14 +85,14 @@ const MySettingsScreen = () => {
   };
 
   const mapOverGameDifficulties = (
-    cb: (key: string, difficulty: IDifficulty, index: number) => any
+    cb: (key: string, difficulty: DifficultyStrategy, index: number) => any
   ) =>
     Object.entries(difficulties).map(([key, difficulty], index) =>
       cb(key, difficulty, index)
     );
 
   const mapOverGameColorings = (
-    cb: (key: string, coloring: IColor, index: number) => any
+    cb: (key: string, coloring: Coloring, index: number) => any
   ) =>
     Object.entries(colorings).map(([key, coloring], index) =>
       cb(key, coloring, index)

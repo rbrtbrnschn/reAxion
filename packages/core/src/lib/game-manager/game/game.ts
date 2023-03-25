@@ -1,4 +1,5 @@
-import { IDifficulty, IGame } from '@reaxion/common';
+import { IGame } from '../../interfaces/game.interface';
+import { DifficultyStrategy } from '../../settings-manager/modules/difficulty/difficulty.strategy';
 import {
   NoCurrentReactionError,
   NoPreviousReactionError,
@@ -12,7 +13,7 @@ export class Game implements IGame {
   public isOver: boolean;
   constructor(
     public readonly userId: string,
-    public readonly difficulty: IDifficulty,
+    public readonly difficulty: DifficultyStrategy,
     public failedAttempts: number,
     public score: number,
     public readonly id: string,
