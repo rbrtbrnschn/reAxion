@@ -16,6 +16,7 @@ export interface DifficultyStrategy {
 
   handleAddGuess(gameManager: GameManager, guess: number): void;
   handleGameOver(gameManager: GameManager): void;
+  getLifeCount(gameManager: GameManager): number;
 
   isGameOver(gameManager: GameManager): boolean;
   guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus;
@@ -30,8 +31,8 @@ export interface DifficultyStrategy {
 }
 
 export class EasyDifficultyStrategy implements DifficultyStrategy {
-  public key = 'EASY_DIFFICULTY_STRATEGY';
-  public id = this.key;
+  public key = 'DIFFICULTY_STRATEGY';
+  public id = 'EASY_DIFFICULTY';
   public name = this.id;
   static maxFailedAttempts = 5;
   static maxDuration = 3000;
@@ -48,19 +49,29 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
         status: guessStatus,
       })
     );
-    gameManager.notify(gameManager.getCurrentEvent(), response);
+
+    const isValid = guessStatus === 'GUESS_VALID';
+    if (isValid) {
+      gameManager.notify(gameManager.getCurrentEvent(), response);
+      return gameManager.dispatchCompleteReaction();
+    }
 
     gameManager
       .getCurrentGame()
       .setFailedAttempts(gameManager.getCurrentGame().getFailedAttempts() + 1);
-
-    const isValid = guessStatus === 'GUESS_VALID';
-    if (isValid) return gameManager.dispatchCompleteReaction();
+    gameManager.notify(gameManager.getCurrentEvent(), response);
   }
 
   handleGameOver(gameManager: GameManager): void {
     const isGameOver = this.isGameOver(gameManager);
     if (isGameOver) return gameManager.dispatchFailGame();
+  }
+
+  getLifeCount(gameManager: GameManager): number {
+    return (
+      EasyDifficultyStrategy.maxFailedAttempts -
+      gameManager.getCurrentGame().getFailedAttempts()
+    );
   }
 
   isGameOver(gameManager: GameManager): boolean {
@@ -123,8 +134,8 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
 export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
   implements DifficultyStrategy
 {
-  public key = 'UnlimitedLivesBut5050ChanceOfGameOverDifficulty';
-  public id = this.key;
+  public key = 'DIFFICULTY_STRATEGY';
+  public id = 'UNLIMITED_LIVES_BUT_50_50_CHANCE_OF_GAME_OVER_DIFFICULTY';
   public name = this.id;
   static maxDuration = 3000;
   static maxDeviation = 500;
@@ -161,6 +172,13 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
       ReactionStatus.HAS_NOT_STARTED
     );
   }
+  getLifeCount(gameManager: GameManager): number {
+    return (
+      EasyDifficultyStrategy.maxFailedAttempts -
+      gameManager.getCurrentGame().getFailedAttempts()
+    );
+  }
+
   onReactionStart(gameManager: GameManager) {
     return;
   }
@@ -176,8 +194,8 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
 }
 
 export class VariableDeviationDifficulty implements DifficultyStrategy {
-  public key = 'VariableDeviationDifficulty';
-  public id = this.key;
+  public key = 'DIFFICULTY_STRATEGY';
+  public id = 'VariableDeviationDifficulty';
   public name = this.id;
   static maxDuration = 3000;
   static maxDeviation = 1000;
@@ -188,13 +206,18 @@ export class VariableDeviationDifficulty implements DifficultyStrategy {
   handleAddGuess(gameManager: GameManager, guess: number): void {
     return;
   }
+  getLifeCount(gameManager: GameManager): number {
+    return (
+      EasyDifficultyStrategy.maxFailedAttempts -
+      gameManager.getCurrentGame().getFailedAttempts()
+    );
+  }
 
   isGameOver(gameManager: GameManager): boolean {
     // @TODO refactor IReaction.guesses to be objects
     return (
       gameManager.getCurrentGame().getCurrentReaction().guesses[
         gameManager.getCurrentGame().getCurrentReaction().guesses.length - 1
-        //@ts-ignore
       ].createdAt <
       (gameManager.getCurrentGame().getCurrentReaction()?.startedAt ||
         new Date().getTime())
@@ -241,8 +264,8 @@ export class VariableDeviationDifficulty implements DifficultyStrategy {
 }
 
 export class TimerOnGuessDifficulty implements DifficultyStrategy {
-  public key = 'TimerOnGuessDifficulty';
-  public id = this.key;
+  public key = 'DIFFICULTY_STRATEGY';
+  public id = 'TimerOnGuessDifficulty';
   public name = this.id;
   static maxDuration = 3000;
   static maxDeviation = 1000;
@@ -252,6 +275,12 @@ export class TimerOnGuessDifficulty implements DifficultyStrategy {
   }
   handleAddGuess(gameManager: GameManager, guess: number): void {
     return;
+  }
+  getLifeCount(gameManager: GameManager): number {
+    return (
+      EasyDifficultyStrategy.maxFailedAttempts -
+      gameManager.getCurrentGame().getFailedAttempts()
+    );
   }
 
   isGameOver(): boolean {

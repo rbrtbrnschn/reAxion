@@ -166,7 +166,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     const currentReaction = this.getCurrentReaction();
     currentReaction.setCompletedAt(Date.now());
     currentReaction.setIsGuessed();
-    const { difficulty } = this.getCurrentGame();
+    const difficulty = this.getCurrentGame().difficulty;
 
     difficulty.onReactionComplete(this);
 

@@ -22,8 +22,6 @@ export const Mvp = () => {
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'logger',
     update(eventName, response) {
-      console.log(eventName);
-
       if (isCompleteReactionResponse(response)) {
         gameManager.dispatchGenerateNewWithRandomDuration();
         gameManager.dispatchStartingSequence();

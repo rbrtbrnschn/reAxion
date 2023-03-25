@@ -8,9 +8,6 @@ export interface ILoggerService {
 }
 class LoggerService implements ILoggerService {
   isDebug = process.env.NODE_ENV === 'development';
-  constructor() {
-    console.log('isDebug:L', process.env.NODE_ENV, this.isDebug);
-  }
 
   log(...args: any) {
     console.info(...args);

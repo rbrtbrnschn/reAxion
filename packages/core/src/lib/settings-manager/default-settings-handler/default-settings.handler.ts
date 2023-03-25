@@ -10,15 +10,9 @@ import { Settings } from '../../interfaces';
 import { DefaultColoring } from '../modules';
 import { DifficultyStrategy } from '../modules/difficulty-strategy/difficulty.strategy';
 
-import { SettingDecorator } from './decorators/decorator.interface';
-
-interface DefaultSettingsHandler {
-  handle: () => Settings;
-}
-
 class EasyDifficultyStrategy implements DifficultyStrategy {
-  public key = 'EASY_DIFFICULTY_STRATEGY';
-  public id = this.key;
+  public key = 'DIFFICULTY_STRATEGY';
+  public id = 'EASY_DIFFICULTY';
   public name = this.id;
   static maxFailedAttempts = 5;
   static maxDuration = 3000;
@@ -37,17 +31,24 @@ class EasyDifficultyStrategy implements DifficultyStrategy {
     );
     gameManager.notify(gameManager.getCurrentEvent(), response);
 
+    const isValid = guessStatus === 'GUESS_VALID';
+    if (isValid) return gameManager.dispatchCompleteReaction();
+
     gameManager
       .getCurrentGame()
       .setFailedAttempts(gameManager.getCurrentGame().getFailedAttempts() + 1);
-
-    const isValid = guessStatus === 'GUESS_VALID';
-    if (isValid) return gameManager.dispatchCompleteReaction();
   }
 
   handleGameOver(gameManager: GameManager): void {
     const isGameOver = this.isGameOver(gameManager);
     if (isGameOver) return gameManager.dispatchFailGame();
+  }
+
+  getLifeCount(gameManager: GameManager): number {
+    return (
+      EasyDifficultyStrategy.maxFailedAttempts -
+      gameManager.getCurrentGame().getFailedAttempts()
+    );
   }
 
   isGameOver(gameManager: GameManager): boolean {
@@ -100,7 +101,7 @@ class EasyDifficultyStrategy implements DifficultyStrategy {
   }
 }
 
-export class DefaultSettingsHandlerImpl implements DefaultSettingsHandler {
+export class DefaultSettingsHandlerImpl {
   private readonly settings: Settings;
 
   static readonly defaultSettings: Settings = {
@@ -110,14 +111,40 @@ export class DefaultSettingsHandlerImpl implements DefaultSettingsHandler {
     username: '',
   };
 
-  constructor(decorators: SettingDecorator[]) {
-    this.settings = decorators.reduce(
-      (acc, decorator) => ({ ...acc, ...decorator.decorate() }),
-      { ...DefaultSettingsHandlerImpl.defaultSettings }
+  constructor(public middleware: Middleware<Settings>[]) {
+    this.settings = new MiddlewareHandler(this.middleware).handle(
+      DefaultSettingsHandlerImpl.defaultSettings
     );
   }
 
   handle(): Settings {
     return this.settings;
+  }
+}
+
+export interface Middleware<T> {
+  (context: T, next: () => T): T;
+}
+
+export class MiddlewareHandler<T> {
+  private readonly middleware: Middleware<T>[];
+
+  constructor(middleware: Middleware<T>[]) {
+    this.middleware = middleware;
+  }
+
+  handle(context: T): T {
+    const firstMiddleware = this.middleware[0];
+
+    const finalMiddleware = this.middleware.reduceRight(
+      //@ts-ignore
+      (next, middleware) => () => middleware(context, next),
+      () => context
+    );
+
+    return this.middleware.length
+      ? //@ts-ignore
+        firstMiddleware(context, finalMiddleware)
+      : context;
   }
 }

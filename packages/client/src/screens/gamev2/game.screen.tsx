@@ -6,7 +6,6 @@ import {
   isReactionStartResponse,
   isStartingSequenceResponse,
   Observer,
-  ReactionService,
 } from '@reaxion/core';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
@@ -46,12 +45,11 @@ const MyGameScreenV2 = () => {
     },
   };
   useEffect(() => {
-    const game = new GameService(
-      gameManager.mediator.getDifficulty()
-    ).createNewGame(gameManager.mediator.getUserId());
-    const reaction = new ReactionService(
-      game
-    ).createReactionWithRandomDuration();
+    const difficulty = gameManager.mediator.getDifficulty();
+    const game = new GameService(difficulty).createNewGame(
+      gameManager.mediator.getUserId()
+    );
+    const reaction = difficulty.generateReaction(gameManager);
 
     gameManager.setCurrentGame(game);
     gameManager.setCurrentReaction(reaction);

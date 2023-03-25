@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { UserIdFromCookieDecorator } from './decorators/user-id.decorator';
+import { UserIdFromCookieMiddleware } from './decorators/user-id.middleware';
 import { DefaultSettingsHandlerImpl } from './default-settings.handler';
 
 describe('Default Settings Handler', () => {
@@ -10,7 +10,7 @@ describe('Default Settings Handler', () => {
     const mockUserId = uuid();
     document.cookie = 'userId=' + mockUserId;
     const myDefaultSettings = new DefaultSettingsHandlerImpl([
-      new UserIdFromCookieDecorator(),
+      UserIdFromCookieMiddleware,
     ]).handle();
     expect(myDefaultSettings.userId).toEqual(mockUserId);
   });

@@ -1,11 +1,12 @@
 import {
   GameManager,
   GameManagerMediator,
-  LocalStorageDecorator,
+  LocalStorageMiddleware,
   LocalStoragePersistorImpl,
   PersistedSettingsManagerBuilder,
+  RehydrateSettingsMiddleware,
   SettingsManager,
-  UserIdFromCookieDecorator,
+  UserIdFromCookieMiddleware,
 } from '@reaxion/core';
 import React, { createContext, useContext } from 'react';
 
@@ -26,9 +27,10 @@ export const useGameManagerContext = () => {
 
 export const GameManagerProvider: React.FC<any> = ({ children }) => {
   const settingsManager = new PersistedSettingsManagerBuilder()
-    .withDecorators([
-      new LocalStorageDecorator(),
-      new UserIdFromCookieDecorator(),
+    .withMiddleware([
+      LocalStorageMiddleware,
+      RehydrateSettingsMiddleware,
+      UserIdFromCookieMiddleware,
     ])
     .withPersistorStrategy(new LocalStoragePersistorImpl())
     .createWithInitialState();

@@ -1,6 +1,6 @@
 import {
   GameManagerResponse,
-  isAddGuessResponse,
+  isCompleteReactionResponse,
   isFailGameResponse,
   isReactionEndResponse,
   isStartingSequenceResponse,
@@ -28,19 +28,19 @@ export const GameInput = () => {
   const scoreObserver: Observer<GameManagerResponse<unknown>> = {
     id: 'scoreObserver',
     update(eventName, response) {
-      if (!isAddGuessResponse(response)) return;
-      if (response.payload.data.status !== 'GUESS_VALID') return;
+      setScore(gameManager.getCurrentGame().getScore());
+      if (!isCompleteReactionResponse(response)) return;
       setShowScoreAnimation(true);
-      setScore(gameManager.getCurrentGame().score);
     },
   };
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'adsasd',
     update(eventName, response: GameManagerResponse<unknown>) {
       try {
-        const newLifes =
-          gameManager.getCurrentGame().difficulty.maxFailedAttempts -
-          gameManager.getCurrentGame().getFailedAttempts();
+        const newLifes = gameManager
+          .getCurrentGame()
+          .difficulty.getLifeCount(gameManager);
+        console.log('newLifes', newLifes);
         setLifes(newLifes);
       } catch (e) {}
       if (isFailGameResponse(response)) {
@@ -78,16 +78,6 @@ export const GameInput = () => {
     gameManager.dispatchAddGuess(parseInt(value));
     setValue('');
   };
-  const getLifes = () => {
-    try {
-      return (
-        gameManager.getCurrentGame().difficulty.maxFailedAttempts -
-        gameManager.getCurrentGame().getFailedAttempts()
-      );
-    } catch (e) {
-      return 0;
-    }
-  };
 
   return (
     <form
@@ -120,7 +110,7 @@ export const GameInput = () => {
               </div>
             </span>
             <span>
-              {getLifes()}
+              {lifes}
               <MyHeartOutline />
             </span>
           </div>

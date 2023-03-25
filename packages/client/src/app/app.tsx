@@ -11,9 +11,7 @@ const StyledApp = styled.div`
 `;
 
 export function App() {
-  useEffect(() => {
-    console.log('Welcome.');
-  }, []);
+  useEffect(() => {}, []);
   return (
     <Routes>
       {Object.entries(routes).map(([key, route]) => (

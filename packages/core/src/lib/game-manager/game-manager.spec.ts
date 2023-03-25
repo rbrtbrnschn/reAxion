@@ -323,6 +323,7 @@ describe('game', () => {
       };
       gameSubject.subscribe(onCompleteObserver);
       gameSubject.dispatchAddGuess(reaction.duration);
+      expect(gameSubject.getCurrentGame().getScore()).toEqual(1);
 
       // reaction 2
       const notYetAllowed2 = () => {
@@ -338,6 +339,8 @@ describe('game', () => {
       gameSubject.dispatchAddGuess(1);
       gameSubject.dispatchAddGuess(1);
       gameSubject.dispatchAddGuess(1);
+      gameSubject.dispatchAddGuess(1);
+
       expect(() => {
         gameSubject.dispatchAddGuess(1);
       }).toThrowError();
