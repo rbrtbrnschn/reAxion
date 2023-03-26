@@ -115,8 +115,8 @@ const MySettingsScreen = () => {
               <h2>Game Mode</h2>
               <p>Choose your difficulty.</p>
             </div>
-            <div className="overflow-x-scroll">
-              <table className="table w-full">
+            <div className="flex" style={{ flex: 1 }}>
+              <table className="table" style={{ flex: 1 }}>
                 {/* head */}
                 <thead>
                   <tr>
@@ -133,7 +133,18 @@ const MySettingsScreen = () => {
                       }
                       key={key}
                     >
-                      <th>{difficulty.name}</th>
+                      <th
+                        style={{
+                          overflowWrap: 'break-word',
+                          wordWrap: 'break-word',
+                        }}
+                      >
+                        {difficulty.name}
+                        <br />
+                        <small className="hidden md:block">
+                          {difficulty.description}
+                        </small>
+                      </th>
                       <td>
                         <button
                           className="btn w-full"
