@@ -235,7 +235,7 @@ export class VariableDeviationDifficulty
   public description = `New Deviation Per Reaction ranging from ${VariableDeviationDifficulty.minDeviation}ms to ${VariableDeviationDifficulty.maxDeviation}ms`;
   static maxDuration = 3000;
   static minDeviation = 50;
-  static maxDeviation = 1000;
+  static maxDeviation = 500;
   public currentMaxDeviation: number = VariableDeviationDifficulty.maxDeviation;
 
   generateReaction(): Reaction {

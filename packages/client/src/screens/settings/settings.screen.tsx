@@ -162,7 +162,7 @@ const MySettingsScreen = () => {
             </div>
             <div className="block lg:hidden prose">
               <h3>Disclaimer</h3>
-              <p>Difficuulty descriptions are not shown on mobile or tablet.</p>
+              <p>Difficulty descriptions are not shown on mobile or tablet.</p>
             </div>
             <div className="divider"></div>
             <div className="prose">
