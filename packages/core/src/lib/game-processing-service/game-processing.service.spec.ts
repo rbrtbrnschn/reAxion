@@ -1,6 +1,6 @@
 import { ReactionGuess } from '../game-manager/reaction/guess/guess';
 import { IGame } from '../interfaces';
-import { EasyDifficultyStrategy } from '../settings-manager';
+import { EasyDifficultyStrategy } from '../settings-manager/modules/difficulty/difficulty';
 import { GameProcessingService } from './game-processing.service';
 describe('game processing service', () => {
   it('should getGameTime', () => {

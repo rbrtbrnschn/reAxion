@@ -1,5 +1,5 @@
 import { v4 as uuid4 } from 'uuid';
-import { DifficultyStrategy } from '../../settings-manager';
+import { DifficultyStrategy } from '../../settings-manager/modules/difficulty/difficulty';
 import { Game } from './game';
 export class GameService {
   constructor(protected difficulty: DifficultyStrategy) {}

@@ -2,11 +2,8 @@ import { v4 as uuid } from 'uuid';
 import { Settings } from '../interfaces';
 import { ConcretePersistorImpl } from '../persistor/persistor';
 import { LocalStoragePersistorImpl } from '../persistor/strategies/local-storage.strategy';
-import {
-  Alternate2Coloring,
-  SettingsManager,
-  TimerOnGuessDifficulty,
-} from '../settings-manager';
+import { Alternate2Coloring, SettingsManager } from '../settings-manager';
+import { TimerOnGuessDifficulty } from '../settings-manager/modules/difficulty/difficulty';
 import { PersistedSettingsManagerDecorator } from './persisted-settings-manager';
 
 describe('persisted settings manager', () => {

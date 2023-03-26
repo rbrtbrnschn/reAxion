@@ -1,6 +1,6 @@
 import { Settings } from '../../../interfaces';
+import { Middleware } from '../../../middleware';
 import { LocalStoragePersistorImpl } from '../../../persistor';
-import { Middleware } from '../default-settings.handler';
 
 export const LocalStorageMiddleware: Middleware<Settings> = (context, next) => {
   const settings = new LocalStoragePersistorImpl().getItem<Settings>(

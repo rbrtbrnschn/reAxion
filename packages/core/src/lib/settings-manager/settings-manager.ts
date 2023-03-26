@@ -5,10 +5,8 @@ import {
 } from '../game-manager';
 import { Coloring, Settings } from '../interfaces';
 import { ObserverSubject } from '../observer';
-import {
-  DefaultSettingsHandlerImpl,
-  DifficultyStrategy,
-} from './default-settings-handler';
+import { DefaultSettingsHandlerImpl } from './default-settings-handler';
+import { DifficultyStrategy } from './modules/difficulty/difficulty';
 
 export enum SettingsManagerEvent {
   SET_COLORING = 'SET_COLORING',

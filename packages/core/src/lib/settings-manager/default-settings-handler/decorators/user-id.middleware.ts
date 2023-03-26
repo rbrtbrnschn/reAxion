@@ -1,5 +1,5 @@
 import { Settings } from '../../../interfaces';
-import { Middleware } from '../default-settings.handler';
+import { Middleware } from '../../../middleware/middleware';
 
 export const UserIdFromCookieMiddleware: Middleware<Settings> = (
   context,

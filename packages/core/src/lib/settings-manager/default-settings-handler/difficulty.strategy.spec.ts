@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { EasyDifficultyStrategy, SettingsManager } from '..';
+import { SettingsManager } from '..';
 import {
   GameManager,
   GameManagerMediator,
@@ -7,6 +7,7 @@ import {
   Reaction,
 } from '../../game-manager';
 import { Game } from '../../game-manager/game/game';
+import { EasyDifficultyStrategy } from '../modules/difficulty/difficulty';
 
 describe('EasyDifficultyStrategy', () => {
   let game: Game;

@@ -1,11 +1,11 @@
 import { Settings } from '../../../interfaces';
+import { Middleware } from '../../../middleware';
 import {
   EasyDifficultyStrategy,
-  Middleware,
   TimerOnGuessDifficulty,
   UnlimitedLivesBut5050ChanceOfGameOverDifficulty,
   VariableDeviationDifficulty,
-} from '../default-settings.handler';
+} from '../../modules/difficulty/difficulty';
 
 export const RehydrateSettingsMiddleware: Middleware<Settings> = (
   context,

@@ -1,8 +1,6 @@
 import { Settings } from '../../interfaces';
-import {
-  DefaultSettingsHandlerImpl,
-  Middleware,
-} from '../default-settings-handler';
+import { Middleware } from '../../middleware';
+import { DefaultSettingsHandlerImpl } from '../default-settings-handler';
 import { SettingsManager } from '../settings-manager';
 
 export class SettingsManagerBuilder {

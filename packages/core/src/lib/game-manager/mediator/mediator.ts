@@ -1,5 +1,5 @@
 import { Coloring } from '../../interfaces';
-import { DifficultyStrategy } from '../../settings-manager';
+import { DifficultyStrategy } from '../../settings-manager/modules/difficulty/difficulty';
 import { SettingsManager } from '../../settings-manager/settings-manager';
 
 export class GameManagerMediator {

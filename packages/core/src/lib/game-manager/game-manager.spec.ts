@@ -1,5 +1,5 @@
 import { Observer } from '../observer';
-import { EasyDifficultyStrategy } from '../settings-manager/default-settings-handler/default-settings.handler';
+import { EasyDifficultyStrategy } from '../settings-manager/modules/difficulty/difficulty';
 import { SettingsManager } from '../settings-manager/settings-manager';
 import {
   AddGuessResponsePayload,

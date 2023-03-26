@@ -1,5 +1,8 @@
 import { IFinishedReaction, IGame, IReaction } from '../interfaces';
-import { difficulties, DifficultyStrategy } from '../settings-manager';
+import {
+  difficulties,
+  DifficultyStrategy,
+} from '../settings-manager/modules/difficulty/difficulty';
 
 export class GameProcessingService {
   private reactions: IReaction[];

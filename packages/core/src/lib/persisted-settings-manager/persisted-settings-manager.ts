@@ -1,6 +1,6 @@
 import { Coloring, Settings } from '../interfaces';
 import { Persistor } from '../persistor/persistor';
-import { DifficultyStrategy } from '../settings-manager';
+import { DifficultyStrategy } from '../settings-manager/modules/difficulty/difficulty';
 import { SettingsManager } from '../settings-manager/settings-manager';
 
 export class PersistedSettingsManagerDecorator extends SettingsManager {
