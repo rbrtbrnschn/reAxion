@@ -18,11 +18,7 @@ export const GameAlert = () => {
     id: 'a',
     update: (eventName, response) => {
       if (isAddGuessResponse(response)) {
-        if (response.payload.data.status === 'GUESS_INVALID_HIGH') {
-          setMessage('Too high.');
-        } else if (response.payload.data.status === 'GUESS_INVALID_LOW') {
-          setMessage('Too low.');
-        }
+        setMessage(response.payload.data.message);
       } else if (isStartingSequenceResponse(response)) {
         setMessage('Get Ready.');
       } else if (isReactionStartResponse(response)) {

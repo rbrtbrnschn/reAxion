@@ -1,6 +1,9 @@
 import { IReaction } from '@reaxion/core';
 import { v4 as uuid4 } from 'uuid';
 
+/**
+ * @deprecated
+ */
 export class ReactionBuilder {
   buildByDuration({ duration }: Pick<IReaction, 'duration'>): IReaction {
     return {

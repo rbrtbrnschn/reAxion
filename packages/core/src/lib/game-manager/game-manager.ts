@@ -161,7 +161,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     const { difficulty } = this.getCurrentGame();
 
     difficulty.handleAddGuess(this, guess);
-    difficulty.handleGameOver(this);
   }
 
   @HasEvent([GameManagerEvent.DISPATCH_ADD_GUESS])
@@ -242,9 +241,10 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 
 export class AddGuessResponsePayload extends GameManagerResponsePayload<{
   status: AddGuessStatus;
+  message: string;
 }> {
   public readonly id = 'ADD_GUESS_RESPONSE';
-  constructor(data: { status: AddGuessStatus }) {
+  constructor(data: { status: AddGuessStatus; message: string }) {
     super(data);
   }
 }
@@ -268,4 +268,5 @@ export class ReactionEndResponsePayload<
 export type AddGuessStatus =
   | 'GUESS_VALID'
   | 'GUESS_INVALID_HIGH'
-  | 'GUESS_INVALID_LOW';
+  | 'GUESS_INVALID_LOW'
+  | 'GUESS_TIMEOUT';

@@ -1,6 +1,5 @@
 import {
   GameManagerResponse,
-  isCompleteReactionResponse,
   isFailGameResponse,
   isReactionEndResponse,
   isStartingSequenceResponse,
@@ -21,16 +20,16 @@ export const GameInput = () => {
   const ref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (score === 0) return;
+    setShowScoreAnimation(() => true);
     setTimeout(() => {
-      setShowScoreAnimation(false);
+      setShowScoreAnimation(() => false);
     }, 500);
   }, [score]);
   const scoreObserver: Observer<GameManagerResponse<unknown>> = {
     id: 'scoreObserver',
     update(eventName, response) {
       setScore(gameManager.getCurrentGame().getScore());
-      if (!isCompleteReactionResponse(response)) return;
-      setShowScoreAnimation(true);
     },
   };
   const observer: Observer<GameManagerResponse<unknown>> = {
@@ -40,7 +39,6 @@ export const GameInput = () => {
         const newLifes = gameManager
           .getCurrentGame()
           .difficulty.getLifeCount(gameManager);
-        console.log('newLifes', newLifes);
         setLifes(newLifes);
       } catch (e) {}
       if (isFailGameResponse(response)) {

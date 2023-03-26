@@ -41,7 +41,14 @@ describe('game', () => {
       []
     );
     gameSubject.setCurrentGame(game);
-    reaction = new Reaction('asd', 1000, [], false, Date.now());
+    reaction = new Reaction(
+      'asd',
+      1000,
+      EasyDifficultyStrategy.maxDeviation,
+      [],
+      false,
+      Date.now()
+    );
   });
 
   describe('getters & setters', () => {

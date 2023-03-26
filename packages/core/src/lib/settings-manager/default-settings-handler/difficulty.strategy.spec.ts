@@ -20,7 +20,14 @@ describe('EasyDifficultyStrategy', () => {
     gameManager = new GameManager(mediator);
     difficultyStrategy = new EasyDifficultyStrategy();
     game = new GameService(new EasyDifficultyStrategy()).createNewGame(uuid());
-    reaction = new Reaction('asdasd', reactionDuration, [], false, Date.now());
+    reaction = new Reaction(
+      'asdasd',
+      reactionDuration,
+      EasyDifficultyStrategy.maxDeviation,
+      [],
+      false,
+      Date.now()
+    );
     gameManager.setCurrentGame(game);
     gameManager.setCurrentReaction(reaction);
   });

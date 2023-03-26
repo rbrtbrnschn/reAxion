@@ -24,9 +24,9 @@ const MyGameScreenV2 = () => {
     update(eventName, response) {
       if (isStartingSequenceResponse(response)) {
         loggerService.debug(
-          `New Reaction with duration of ${
+          `New Reaction | duration: ${
             gameManager.getCurrentReaction().duration
-          }ms`
+          }ms | deviation: ${gameManager.getCurrentReaction().deviation}`
         );
       } else if (isReactionStartResponse(response)) {
         loggerService.debugTime('animation');

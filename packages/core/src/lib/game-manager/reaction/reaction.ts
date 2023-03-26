@@ -6,6 +6,7 @@ export class Reaction implements IReaction {
   constructor(
     public readonly id: string,
     public readonly duration: number,
+    public readonly deviation: number,
     public guesses: ReactionGuess[],
     public isGuessed: boolean,
     public startedAt?: number,
