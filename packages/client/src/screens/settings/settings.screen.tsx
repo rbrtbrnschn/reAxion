@@ -141,7 +141,7 @@ const MySettingsScreen = () => {
                       >
                         {difficulty.name}
                         <br />
-                        <small className="hidden md:block">
+                        <small className="hidden lg:block">
                           {difficulty.description}
                         </small>
                       </th>
@@ -159,6 +159,10 @@ const MySettingsScreen = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+            <div className="block lg:hidden prose">
+              <h3>Disclaimer</h3>
+              <p>Difficuulty descriptions are not shown on mobile or tablet.</p>
             </div>
             <div className="divider"></div>
             <div className="prose">
