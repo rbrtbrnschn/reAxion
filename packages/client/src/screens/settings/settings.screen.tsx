@@ -115,14 +115,12 @@ const MySettingsScreen = () => {
               <h2>Game Mode</h2>
               <p>Choose your difficulty.</p>
             </div>
-            <div className="overflow-x-scroll w-full flex-grow-0 flex-shrink-1">
+            <div className="overflow-x-scroll">
               <table className="table w-full">
                 {/* head */}
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Deviation</th>
-                    <th>Lifes</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -136,8 +134,6 @@ const MySettingsScreen = () => {
                       key={key}
                     >
                       <th>{difficulty.name}</th>
-                      <td>{difficulty.deviation}ms</td>
-                      <td>{difficulty.maxFailedAttempts}</td>
                       <td>
                         <button
                           className="btn w-full"
