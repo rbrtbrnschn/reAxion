@@ -3,8 +3,11 @@ import {
   AddGuessResponsePayload,
   AddGuessStatus,
   GameManager,
+  GameManagerEvent,
   GameManagerResponse,
   Reaction,
+  SetExtraPayload,
+  SetExtraPayloadTypes,
 } from '../../game-manager';
 import { Settings } from '../../interfaces';
 import { DefaultColoring } from '../modules';
@@ -22,9 +25,10 @@ export interface DifficultyStrategy {
   guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus;
   generateReaction(gameManager: GameManager): Reaction;
 
+  onReactionStartingSequence: (gameManager: GameManager) => void;
   onReactionStart: (gameManager: GameManager) => void;
+  onReactionEnd: (gameManager: GameManager) => void;
   onReactionComplete: (gameManager: GameManager) => void;
-  onGameStart: (gameManager: GameManager) => void;
   onGameEnd: (gameManager: GameManager) => void;
 }
 
@@ -119,13 +123,16 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
   onReactionStart(gameManager: GameManager) {
     return;
   }
+  onReactionEnd(gameManager: GameManager) {
+    return;
+  }
   onReactionComplete(gameManager: GameManager) {
     gameManager
       .getCurrentGame()
       .setScore(gameManager.getCurrentGame().getScore() + 1);
     return;
   }
-  onGameStart(gameManager: GameManager) {
+  onReactionStartingSequence(gameManager: GameManager) {
     return;
   }
   onGameEnd(gameManager: GameManager) {
@@ -151,12 +158,39 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
     boundHandleAddGuess(gameManager, guess);
   }
   isGameOver(gameManager: GameManager): boolean {
-    console.log('ran isgameover');
     const lastGuess = gameManager.getCurrentReaction().guesses.pop();
     if (!lastGuess) throw new NoLastGuessError();
     if (this.guessIsValid(gameManager, lastGuess.guess) === 'GUESS_VALID')
       return false;
-    return !!Math.round(Math.random());
+    const isGameOver = !!Math.round(Math.random());
+    const extraMessage = 'You got lucky.';
+    if (!isGameOver) {
+      gameManager.notify(
+        GameManagerEvent.DISPATCH_SET_EXTRA,
+        new GameManagerResponse(
+          gameManager.getState(),
+          GameManagerEvent.DISPATCH_SET_EXTRA,
+          new SetExtraPayload({
+            message: extraMessage,
+            type: SetExtraPayloadTypes.MESSAGE,
+          })
+        )
+      );
+      setTimeout(() => {
+        gameManager.notify(
+          GameManagerEvent.DISPATCH_SET_EXTRA,
+          new GameManagerResponse(
+            gameManager.getState(),
+            GameManagerEvent.DISPATCH_SET_EXTRA,
+            new SetExtraPayload({
+              message: '',
+              type: SetExtraPayloadTypes.MESSAGE,
+            })
+          )
+        );
+      }, 1000);
+    }
+    return isGameOver;
   }
   guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus {
     const deviation = Math.abs(
@@ -199,20 +233,11 @@ export class VariableDeviationDifficulty
   public id = 'VARIABLE_DEVIATION_DIFFICULTY';
   public name = 'Variable Deviation Per Reaction';
   public description = `New Deviation Per Reaction ranging from ${VariableDeviationDifficulty.minDeviation}ms to ${VariableDeviationDifficulty.maxDeviation}ms`;
-
   static maxDuration = 3000;
   static minDeviation = 50;
   static maxDeviation = 1000;
+  public currentMaxDeviation: number = VariableDeviationDifficulty.maxDeviation;
 
-  isGameOver(gameManager: GameManager): boolean {
-    return (
-      gameManager.getCurrentGame().getCurrentReaction().guesses[
-        gameManager.getCurrentGame().getCurrentReaction().guesses.length - 1
-      ].createdAt <
-      (gameManager.getCurrentGame().getCurrentReaction()?.startedAt ||
-        new Date().getTime())
-    );
-  }
   generateReaction(): Reaction {
     // todo refactor to service to make it testable.
     const getCurrentMaxDeviation = (): number => {
@@ -227,8 +252,22 @@ export class VariableDeviationDifficulty
       Math.random() * VariableDeviationDifficulty.maxDuration
     );
     const id = uuid();
-
-    return new Reaction(id, duration, getCurrentMaxDeviation(), [], false);
+    const currentMaxDeviation = getCurrentMaxDeviation();
+    this.currentMaxDeviation = currentMaxDeviation;
+    return new Reaction(id, duration, currentMaxDeviation, [], false);
+  }
+  onReactionStartingSequence(gameManager: GameManager): void {
+    gameManager.notify(
+      GameManagerEvent.DISPATCH_SET_EXTRA,
+      new GameManagerResponse(
+        gameManager.getState(),
+        GameManagerEvent.DISPATCH_SET_EXTRA,
+        new SetExtraPayload({
+          message: `${this.currentMaxDeviation}`,
+          type: SetExtraPayloadTypes.DEVIATION,
+        })
+      )
+    );
   }
 }
 
@@ -242,6 +281,7 @@ export class TimerOnGuessDifficulty
   public description = `3 seconds on the clock, once the animation finishes. Deviation ${TimerOnGuessDifficulty.maxDeviation}ms.`;
   static maxDuration = 3000;
   static maxDeviation = 500;
+  private timeout?: ReturnType<typeof setTimeout>;
 
   getLifeCount(gameManager: GameManager): number {
     return (
@@ -253,36 +293,36 @@ export class TimerOnGuessDifficulty
   isGameOver(): boolean {
     return !!Math.round(Math.random());
   }
-  guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus {
-    const isApplicableForValidation =
-      gameManager.getCurrentGame().getCurrentReaction().guesses[
-        gameManager.getCurrentGame().getCurrentReaction().guesses.length - 1
-      ].createdAt <
-      (gameManager.getCurrentGame().getCurrentReaction()?.startedAt ||
-        new Date().getTime()) +
-        3000;
-    const deviation = Math.abs(
-      gameManager.getCurrentGame().getCurrentReaction().duration - guess
-    );
-    const isValid =
-      isApplicableForValidation &&
-      deviation <= gameManager.getCurrentReaction().deviation;
-    const isLow =
-      isApplicableForValidation &&
-      !isValid &&
-      guess < gameManager.getCurrentReaction().deviation;
-    const isHigh =
-      isApplicableForValidation &&
-      !isValid &&
-      guess > gameManager.getCurrentReaction().deviation;
-    return isValid
-      ? 'GUESS_VALID'
-      : isLow
-      ? 'GUESS_INVALID_LOW'
-      : isHigh
-      ? 'GUESS_INVALID_HIGH'
-      : 'GUESS_TIMEOUT';
-  }
+  // guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus {
+  //   const isApplicableForValidation =
+  //     gameManager.getCurrentGame().getCurrentReaction().guesses[
+  //       gameManager.getCurrentGame().getCurrentReaction().guesses.length - 1
+  //     ].createdAt <
+  //     (gameManager.getCurrentGame().getCurrentReaction()?.startedAt ||
+  //       new Date().getTime()) +
+  //       3000;
+  //   const deviation = Math.abs(
+  //     gameManager.getCurrentGame().getCurrentReaction().duration - guess
+  //   );
+  //   const isValid =
+  //     isApplicableForValidation &&
+  //     deviation <= gameManager.getCurrentReaction().deviation;
+  //   const isLow =
+  //     isApplicableForValidation &&
+  //     !isValid &&
+  //     guess < gameManager.getCurrentReaction().deviation;
+  //   const isHigh =
+  //     isApplicableForValidation &&
+  //     !isValid &&
+  //     guess > gameManager.getCurrentReaction().deviation;
+  //   return isValid
+  //     ? 'GUESS_VALID'
+  //     : isLow
+  //     ? 'GUESS_INVALID_LOW'
+  //     : isHigh
+  //     ? 'GUESS_INVALID_HIGH'
+  //     : 'GUESS_TIMEOUT';
+  // }
   getMessageFromGuessStatus(gameManager: GameManager, guess: number): string {
     const status = this.guessIsValid(gameManager, guess);
     return status === 'GUESS_VALID'
@@ -317,8 +357,59 @@ export class TimerOnGuessDifficulty
   onGameStart(gameManager: GameManager) {
     return;
   }
-  onGameEnd(gameManager: GameManager) {
+  onReactionEnd(gameManager: GameManager) {
+    const notfiyWithCount = (count: number) => {
+      gameManager.notify(
+        GameManagerEvent.DISPATCH_SET_EXTRA,
+        new GameManagerResponse(
+          gameManager.getState(),
+          GameManagerEvent.DISPATCH_SET_EXTRA,
+          new SetExtraPayload({
+            message: count + '',
+            type: SetExtraPayloadTypes.COUNTDOWN,
+          })
+        )
+      );
+    };
+
+    const currentReaction = gameManager.getCurrentReaction();
+
+    notfiyWithCount(3);
+    this.timeout = setTimeout(() => {
+      notfiyWithCount(2);
+      this.timeout = setTimeout(() => {
+        notfiyWithCount(1);
+        this.timeout = setTimeout(() => {
+          notfiyWithCount(0);
+          this.timeout = setTimeout(() => {
+            notfiyWithCount(-1);
+            if (!currentReaction.isGuessed) {
+              gameManager.dispatchFailGame();
+            }
+          }, 1000);
+        }, 1000);
+      }, 1000);
+    }, 1000);
+
     return;
+  }
+
+  onReactionComplete(gameManager: GameManager): void {
+    const boundOnReactionComplete =
+      new EasyDifficultyStrategy().onReactionComplete.bind(this);
+    boundOnReactionComplete(gameManager);
+    clearTimeout(this.timeout);
+    gameManager.notify(
+      GameManagerEvent.DISPATCH_SET_EXTRA,
+      new GameManagerResponse(
+        gameManager.getState(),
+        GameManagerEvent.DISPATCH_SET_EXTRA,
+        new SetExtraPayload({
+          message: -1 + '',
+          type: SetExtraPayloadTypes.COUNTDOWN,
+        })
+      )
+    );
   }
 }
 

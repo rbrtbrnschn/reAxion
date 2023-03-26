@@ -15,6 +15,7 @@ import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { loggerService } from '../../utils/loggerService/Logger.service';
 import { GameAlert } from './alert';
 import { GameCount } from './count';
+import { Extra } from './extra';
 import { GameInput } from './game.input';
 import { GameOverModal } from './gameover.modal';
 const MyGameScreenV2 = () => {
@@ -67,6 +68,7 @@ const MyGameScreenV2 = () => {
       <GameAlert />
       <Flex>
         <AnimationContent className="flex flex-col justify-center items-center">
+          <Extra />
           <MvpAnimation>
             <GameCount />
           </MvpAnimation>

@@ -32,6 +32,8 @@ export enum GameManagerEvent {
   DISPATCH_FAIL_GAME = 'DISPATCH_FAIL_GAME',
   DISPATCH_SET_NAME = 'DISPATCH_SET_NAME',
   DISPATCH_RESET_GAME = 'DISPATCH_RESET_GAME',
+
+  DISPATCH_SET_EXTRA = 'DISPATCH_SET_EXTRA',
 }
 
 type MyResponseType = GameManagerResponse<unknown>;
@@ -120,7 +122,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   public dispatchStartingSequence() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_STARTING_SEQUENCE);
 
-    this.getCurrentGame().difficulty.onGameStart(this);
+    this.getCurrentGame().difficulty.onReactionStartingSequence(this);
     this.notify(
       this.getCurrentEvent(),
       new GameManagerResponse(
@@ -134,6 +136,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   @HasEvent([GameManagerEvent.DISPATCH_STARTING_SEQUENCE])
   public dispatchReactionStart() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_START);
+    this.getCurrentGame().difficulty.onReactionStart(this);
     this.notify(
       this.getCurrentEvent(),
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
@@ -144,7 +147,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
     this.getCurrentReaction().setStartedAt(Date.now());
 
-    this.getCurrentGame().difficulty.onReactionStart(this);
+    this.getCurrentGame().difficulty.onReactionEnd(this);
     this.notify(
       this.getCurrentEvent(),
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
@@ -197,7 +200,11 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     );
   }
 
-  @HasEvent([GameManagerEvent.DISPATCH_ADD_GUESS])
+  @HasEvent([
+    GameManagerEvent.DISPATCH_ADD_GUESS,
+    GameManagerEvent.DISPATCH_STARTING_SEQUENCE,
+    GameManagerEvent.DISPATCH_REACTION_END,
+  ])
   public dispatchFailGame() {
     this.getCurrentReaction().setCompletedAt(Date.now());
     this.getCurrentGame().setIsOver();
@@ -263,6 +270,22 @@ export class ReactionEndResponsePayload<
   constructor(data: T) {
     super(data);
   }
+}
+
+export class SetExtraPayload extends GameManagerResponsePayload<{
+  message: string;
+  type: string;
+}> {
+  public readonly id = 'SET_EXTRA_RESPONSE';
+  constructor(data: { message: string; type: string }) {
+    super(data);
+  }
+}
+
+export enum SetExtraPayloadTypes {
+  DEVIATION = 'DEVIATION',
+  COUNTDOWN = 'COUNTDOWN',
+  MESSAGE = 'MESSAGE',
 }
 
 export type AddGuessStatus =

@@ -2,6 +2,7 @@ import {
   AddGuessResponsePayload,
   GameManagerEvent,
   IGameManagerState,
+  SetExtraPayload,
 } from '../game-manager';
 
 export class GameManagerResponse<T> {
@@ -73,4 +74,10 @@ export function isFailGameResponse(
   response: GameManagerResponse<unknown>
 ): response is EmptyGameManagerResponse {
   return response.id === getResponseId(GameManagerEvent.DISPATCH_FAIL_GAME);
+}
+
+export function isSetExtraResponse(
+  response: GameManagerResponse<unknown>
+): response is GameManagerResponse<SetExtraPayload> {
+  return response.id === getResponseId(GameManagerEvent.DISPATCH_SET_EXTRA);
 }
