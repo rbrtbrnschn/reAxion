@@ -121,7 +121,8 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 
   public dispatchStartingSequence() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_STARTING_SEQUENCE);
-
+    if (this.getCurrentGame().reactions.length === 1)
+      this.getCurrentGame().setStartedAt(Date.now());
     this.getCurrentGame().difficulty.onReactionStartingSequence(this);
     this.notify(
       this.getCurrentEvent(),
@@ -208,6 +209,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   public dispatchFailGame() {
     this.getCurrentReaction().setCompletedAt(Date.now());
     this.getCurrentGame().setIsOver();
+    this.getCurrentGame().setEndedAt(Date.now());
     this.setCurrentEvent(GameManagerEvent.DISPATCH_FAIL_GAME);
 
     this.getCurrentGame().difficulty.onGameEnd(this);

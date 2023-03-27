@@ -11,6 +11,8 @@ import { Reaction } from '../reaction/reaction';
 export class Game implements IGame {
   public readonly key = 'GAME_CLASS';
   public isOver: boolean;
+  public startedAt?: number | undefined;
+  public endedAt?: number | undefined;
   constructor(
     public readonly userId: string,
     public readonly difficulty: DifficultyStrategy,
@@ -79,6 +81,12 @@ export class Game implements IGame {
   }
   public setEvents(events: GameManagerEvent[]) {
     this.events = events;
+  }
+  public setStartedAt(date: number) {
+    this.startedAt = date;
+  }
+  public setEndedAt(date: number) {
+    this.endedAt = date;
   }
 }
 

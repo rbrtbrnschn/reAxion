@@ -50,6 +50,7 @@ export class GameController {
   @Post('/')
   async addNew(@Body() game: IGame) {
     if (!game) throw new NotAcceptableException();
+    console.log('GOT GAME', game);
     const savedGame = await this.gameService.addSingle(game);
     return new Response(200, savedGame);
   }
