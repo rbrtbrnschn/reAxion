@@ -23,7 +23,7 @@ const MyGlobalScoreboardScreen = () => {
       queryFn: async (): Promise<IGameWithStats[]> => {
         const response = await axios.get(
           `${
-            process.env.REACT_APP_API_URL || 'http://localhost:8080'
+            process.env.REACT_APP_API_URL ?? 'http://localhost:8080'
           }/api/game/leaderboard?difficulty=${sortBy}`
         );
         return response.data;

@@ -14,7 +14,7 @@ function useGameOverviewGame(userId: string) {
     queryFn: async (): Promise<IGame | undefined> => {
       const response = await axios.get(
         `${
-          process.env.REACT_APP_API_URL || ''
+          process.env.REACT_APP_API_URL ?? ''
         }/api/game/overview?userId=${userId}`
       );
       return response.data;

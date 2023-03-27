@@ -38,7 +38,7 @@ export enum GameManagerEvent {
 
 type MyResponseType = GameManagerResponse<unknown>;
 export class GameManager extends ObserverSubject<MyResponseType> {
-  private readonly gameService: GameService;
+  // private readonly gameService: GameService;
   private state: IGameManagerState = {
     games: [],
     events: [],
@@ -49,7 +49,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   ) {
     super();
     this.state = { ...this.state, ...gameState };
-    this.gameService = new GameService(this.mediator.getDifficulty());
+    // this.gameService = new GameService(this.mediator.getDifficulty());
   }
 
   public getState(): IGameManagerState {
@@ -224,7 +224,9 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   ])
   public dispatchResetGame() {
     this.setCurrentGame(
-      this.gameService.createNewGame(this.mediator.getUserId())
+      new GameService(this.mediator.getDifficulty()).createNewGame(
+        this.mediator.getUserId()
+      )
     );
     this.setCurrentEvent(GameManagerEvent.DISPATCH_RESET_GAME);
     this.notify(

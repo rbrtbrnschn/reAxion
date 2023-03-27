@@ -266,6 +266,19 @@ export class VariableDeviationDifficulty
       )
     );
   }
+  onGameEnd(gameManager: GameManager): void {
+    gameManager.notify(
+      GameManagerEvent.DISPATCH_SET_EXTRA,
+      new GameManagerResponse(
+        gameManager.getState(),
+        GameManagerEvent.DISPATCH_SET_EXTRA,
+        new SetExtraPayload({
+          message: ``,
+          type: SetExtraPayloadTypes.MESSAGE,
+        })
+      )
+    );
+  }
 }
 
 export class TimerOnGuessDifficulty

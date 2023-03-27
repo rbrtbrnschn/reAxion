@@ -37,7 +37,8 @@ export const Extra = () => {
     };
   });
 
-  const jsx = count > -1 ? <Countdown value={count} /> : message;
+  const jsx =
+    count > -1 ? <Countdown value={count} /> : message.length ? message : null;
   return <ExtraDiv>{jsx}</ExtraDiv>;
 };
 const ExtraDiv = styled.div`
