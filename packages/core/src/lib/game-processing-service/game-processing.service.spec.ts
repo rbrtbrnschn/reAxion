@@ -1,6 +1,6 @@
 import { ReactionGuess } from '../game-manager/reaction/guess/guess';
 import { IGame } from '../interfaces';
-import { EasyDifficultyStrategy } from '../settings-manager/modules/difficulty/difficulty';
+import { easyDifficulty } from '../settings-manager';
 import { GameProcessingService } from './game-processing.service';
 describe('game processing service', () => {
   it('should getGameTime', () => {
@@ -53,7 +53,7 @@ const MOCK_GAMES: IGame[] = [
   {
     score: 3,
     userId: 'e5690617-e75d-4c09-a41f-646a56cebcaa',
-    difficulty: new EasyDifficultyStrategy(),
+    difficulty: easyDifficulty,
     name: 'bob',
     failedAttempts: 1,
     reactions: [
@@ -94,7 +94,7 @@ const MOCK_GAMES: IGame[] = [
   {
     score: 1,
     userId: 'f9d8414d-150e-4dc0-b787-fa76f3574247',
-    difficulty: new EasyDifficultyStrategy(),
+    difficulty: easyDifficulty,
     name: 'aaa',
     failedAttempts: 5,
     reactions: [
@@ -125,7 +125,7 @@ const MOCK_GAMES: IGame[] = [
   {
     score: 2,
     userId: 'f9d8414d-150e-4dc0-b787-fa76f3574247',
-    difficulty: new EasyDifficultyStrategy(),
+    difficulty: easyDifficulty,
     name: 'aaa',
     failedAttempts: 5,
     reactions: [
@@ -163,7 +163,7 @@ const MOCK_GAMES: IGame[] = [
   {
     score: 4,
     userId: '5d3950a7-c418-4b26-afc5-8f6d2805d884',
-    difficulty: new EasyDifficultyStrategy(),
+    difficulty: easyDifficulty,
     name: 'Bob',
     failedAttempts: 1,
     reactions: [
@@ -212,7 +212,7 @@ const MOCK_GAMES: IGame[] = [
   {
     score: 4,
     userId: '5d3950a7-c418-4b26-afc5-8f6d2805d884',
-    difficulty: new EasyDifficultyStrategy(),
+    difficulty: easyDifficulty,
     name: 'Bob',
     failedAttempts: 1,
     reactions: [
@@ -250,7 +250,7 @@ const MOCK_GAMES: IGame[] = [
 const OTHER_MOCK_GAME = {
   score: 3,
   userId: '5d3950a7-c418-4b26-afc5-8f6d2805d884',
-  difficulty: new EasyDifficultyStrategy(),
+  difficulty: easyDifficulty,
   name: 'Bob',
   failedAttempts: 1,
   reactions: [

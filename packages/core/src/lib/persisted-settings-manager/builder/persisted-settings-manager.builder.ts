@@ -1,7 +1,8 @@
 import { Settings } from '../../interfaces';
+import { Middleware } from '../../middleware';
 import { ConcretePersistorImpl, Persistor } from '../../persistor/persistor';
 import { PersistorStrategy } from '../../persistor/strategies/strategy.interface';
-import { Middleware, SettingsManagerBuilder } from '../../settings-manager';
+import { SettingsManagerBuilder } from '../../settings-manager';
 import { PersistedSettingsManagerDecorator } from '../persisted-settings-manager';
 
 export class PersistedSettingsManagerBuilder {

@@ -1,7 +1,7 @@
 import { v4 as uuid, validate } from 'uuid';
 import { DefaultSettingsHandlerImpl } from './default-settings-handler';
 import { AlternateColoring } from './modules/coloring';
-import { TimerOnGuessDifficulty } from './modules/difficulty/difficulty';
+import { timerDifficulty } from './modules/difficulty/difficulty';
 import { SettingsManager } from './settings-manager';
 
 describe('settingsManager', () => {
@@ -20,10 +20,8 @@ describe('settingsManager', () => {
 
     settingsManager.setColoring(new AlternateColoring());
     expect(settingsManager.getColoring()).toEqual(new AlternateColoring());
-    settingsManager.setDifficulty(new TimerOnGuessDifficulty());
-    expect(settingsManager.getDifficulty()).toEqual(
-      new TimerOnGuessDifficulty()
-    );
+    settingsManager.setDifficulty(timerDifficulty);
+    expect(settingsManager.getDifficulty().id).toEqual(timerDifficulty.id);
     settingsManager.setUserId(uuid());
     expect(
       validate(settingsManager.getUserId()) &&

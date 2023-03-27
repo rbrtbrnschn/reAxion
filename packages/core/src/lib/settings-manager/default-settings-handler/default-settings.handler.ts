@@ -1,15 +1,14 @@
 import { v4 as uuid } from 'uuid';
 import { Settings } from '../../interfaces';
 import { Middleware, MiddlewareHandler } from '../../middleware/middleware';
-import { DefaultColoring } from '../modules';
-import { EasyDifficultyStrategy } from '../modules/difficulty/difficulty';
+import { DefaultColoring, easyDifficulty } from '../modules';
 
 export class DefaultSettingsHandlerImpl {
   private readonly settings: Settings;
 
   static readonly defaultSettings: Settings = {
     coloring: new DefaultColoring(),
-    difficulty: new EasyDifficultyStrategy(),
+    difficulty: easyDifficulty,
     userId: uuid(),
     username: '',
   };

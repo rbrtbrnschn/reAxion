@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { SettingsManager } from '..';
+import { easyDifficulty, SettingsManager, StandardDifficulty } from '..';
 import {
   GameManager,
   GameManagerMediator,
@@ -7,11 +7,10 @@ import {
   Reaction,
 } from '../../game-manager';
 import { Game } from '../../game-manager/game/game';
-import { EasyDifficultyStrategy } from '../modules/difficulty/difficulty';
 
 describe('EasyDifficultyStrategy', () => {
   let game: Game;
-  let difficultyStrategy: EasyDifficultyStrategy;
+  let difficultyStrategy: StandardDifficulty;
   let gameManager: GameManager;
   let reaction: Reaction;
   const reactionDuration = 1000;
@@ -19,12 +18,12 @@ describe('EasyDifficultyStrategy', () => {
   beforeEach(() => {
     const mediator = new GameManagerMediator(new SettingsManager());
     gameManager = new GameManager(mediator);
-    difficultyStrategy = new EasyDifficultyStrategy();
-    game = new GameService(new EasyDifficultyStrategy()).createNewGame(uuid());
+    difficultyStrategy = easyDifficulty;
+    game = new GameService(difficultyStrategy).createNewGame(uuid());
     reaction = new Reaction(
       'asdasd',
       reactionDuration,
-      EasyDifficultyStrategy.maxDeviation,
+      difficultyStrategy.maxDeviation,
       [],
       false,
       Date.now()
@@ -38,13 +37,13 @@ describe('EasyDifficultyStrategy', () => {
     expect(
       difficultyStrategy.guessIsValid(
         gameManager,
-        reactionDuration - EasyDifficultyStrategy.maxDeviation
+        reactionDuration - difficultyStrategy.maxDeviation
       )
     ).toEqual('GUESS_VALID');
     expect(
       difficultyStrategy.guessIsValid(
         gameManager,
-        reactionDuration - EasyDifficultyStrategy.maxDeviation - 1
+        reactionDuration - difficultyStrategy.maxDeviation - 1
       )
     ).toEqual('GUESS_INVALID_LOW');
   });

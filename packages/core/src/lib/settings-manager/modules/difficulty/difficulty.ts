@@ -30,14 +30,89 @@ export interface DifficultyStrategy {
   onGameEnd: (gameManager: GameManager) => void;
 }
 
-export class EasyDifficultyStrategy implements DifficultyStrategy {
-  public key = 'DIFFICULTY_STRATEGY';
-  public id = 'EASY_DIFFICULTY';
-  public name = 'Easy';
-  public description = `${EasyDifficultyStrategy.maxFailedAttempts}lifes, allowed deviation of ${EasyDifficultyStrategy.maxDeviation}ms.`;
-  static maxFailedAttempts = 5;
-  static maxDuration = 3000;
-  static maxDeviation = 500;
+enum DifficultyVersionTag {
+  V001 = 'V001',
+}
+
+interface DifficultyArgs {
+  name: string;
+  description: string;
+  version: DifficultyVersionTag;
+}
+
+interface DeviationDurationDifficultyArgs extends DifficultyArgs {
+  maxDuration: number;
+  maxDeviation: number;
+}
+
+interface StandardDifficultyArgs extends DeviationDurationDifficultyArgs {
+  maxFailedAttempts: number;
+}
+interface MinMaxDeviationDurationDifficultyArgs extends StandardDifficultyArgs {
+  minDeviation: number;
+}
+export class Difficulty implements DifficultyStrategy {
+  public key = 'DIFFICULTY';
+  public name: string;
+  public description: string;
+  public version: DifficultyVersionTag;
+  public id: string;
+  constructor({ name, description, version }: DifficultyArgs) {
+    this.name = name;
+    this.description = description;
+    this.version = version;
+    this.id = uuid();
+  }
+  handleAddGuess(gameManager: GameManager, guess: number): void {
+    throw new Error('Method not implemented.');
+  }
+  getLifeCount(gameManager: GameManager): number {
+    throw new Error('Method not implemented.');
+  }
+  isGameOver(gameManager: GameManager): boolean {
+    throw new Error('Method not implemented.');
+  }
+  guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus {
+    throw new Error('Method not implemented.');
+  }
+  generateReaction(gameManager: GameManager): Reaction {
+    throw new Error('Method not implemented.');
+  }
+  onReactionStartingSequence(gameManager: GameManager) {
+    return;
+  }
+  onReactionStart(gameManager: GameManager) {
+    return;
+  }
+  onReactionEnd(gameManager: GameManager) {
+    return;
+  }
+  onReactionComplete(gameManager: GameManager) {
+    return;
+  }
+  onGameEnd(gameManager: GameManager) {
+    return;
+  }
+}
+export class StandardDifficulty
+  extends Difficulty
+  implements DifficultyStrategy
+{
+  public maxFailedAttempts: number;
+  public maxDeviation: number;
+  public maxDuration: number;
+
+  constructor({
+    maxDeviation,
+    maxDuration,
+    maxFailedAttempts,
+    ...base
+  }: StandardDifficultyArgs) {
+    super(base);
+    this.maxDeviation = maxDeviation;
+    this.maxDuration = maxDuration;
+    this.maxFailedAttempts = maxFailedAttempts;
+  }
 
   handleAddGuess(gameManager: GameManager, guess: number) {
     gameManager.getCurrentReaction().addGuess(guess);
@@ -78,15 +153,13 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
 
   getLifeCount(gameManager: GameManager): number {
     return (
-      EasyDifficultyStrategy.maxFailedAttempts -
-      gameManager.getCurrentGame().getFailedAttempts()
+      this.maxFailedAttempts - gameManager.getCurrentGame().getFailedAttempts()
     );
   }
 
   isGameOver(gameManager: GameManager): boolean {
     return (
-      gameManager.getCurrentGame().getFailedAttempts() >=
-      EasyDifficultyStrategy.maxFailedAttempts
+      gameManager.getCurrentGame().getFailedAttempts() >= this.maxFailedAttempts
     );
   }
   guessIsValid(gameManager: GameManager, guess: number): AddGuessStatus {
@@ -103,25 +176,10 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
       : 'GUESS_INVALID_HIGH';
   }
   generateReaction(): Reaction {
-    const duration = Math.ceil(
-      Math.random() * EasyDifficultyStrategy.maxDuration
-    );
+    const duration = Math.ceil(Math.random() * this.maxDuration);
     const id = uuid();
 
-    return new Reaction(
-      id,
-      duration,
-      EasyDifficultyStrategy.maxDeviation,
-      [],
-      false
-    );
-  }
-
-  onReactionStart(gameManager: GameManager) {
-    return;
-  }
-  onReactionEnd(gameManager: GameManager) {
-    return;
+    return new Reaction(id, duration, this.maxDeviation, [], false);
   }
   onReactionComplete(gameManager: GameManager) {
     gameManager
@@ -129,28 +187,18 @@ export class EasyDifficultyStrategy implements DifficultyStrategy {
       .setScore(gameManager.getCurrentGame().getScore() + 1);
     return;
   }
-  onReactionStartingSequence(gameManager: GameManager) {
-    return;
-  }
-  onGameEnd(gameManager: GameManager) {
-    return;
-  }
 }
-// TODO do not use handleGameOver
-// put all login in handleAddGuess
+
 export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
-  extends EasyDifficultyStrategy
+  extends StandardDifficulty
   implements DifficultyStrategy
 {
-  public key = 'DIFFICULTY_STRATEGY';
-  public id = 'UNLIMITED_LIVES_BUT_50_50_CHANCE_OF_GAME_OVER_DIFFICULTY';
-  public name = '50/50';
-  public description = `A game of chance. Deviation ${UnlimitedLivesBut5050ChanceOfGameOverDifficulty.maxDeviation}. You guess incorrectly, either you can guess again or it's game over.`;
-  static maxDuration = 3000;
-  static maxDeviation = 500;
+  constructor(args: DeviationDurationDifficultyArgs) {
+    super({ ...args, maxFailedAttempts: Infinity });
+  }
 
   handleAddGuess(gameManager: GameManager, guess: number) {
-    const handleAddGuess = new EasyDifficultyStrategy().handleAddGuess;
+    const handleAddGuess = easyDifficulty.handleAddGuess;
     const boundHandleAddGuess = handleAddGuess.bind(this);
     boundHandleAddGuess(gameManager, guess);
   }
@@ -193,7 +241,7 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
     const deviation = Math.abs(
       gameManager.getCurrentGame().getCurrentReaction().duration - guess
     );
-    const isValid = deviation <= EasyDifficultyStrategy.maxDeviation;
+    const isValid = deviation <= this.maxDeviation;
     const isTooLow =
       !isValid && guess < gameManager.getCurrentReaction().duration;
     return isValid
@@ -203,19 +251,10 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
       : 'GUESS_INVALID_HIGH';
   }
   generateReaction(): Reaction {
-    const duration = Math.ceil(
-      Math.random() *
-        UnlimitedLivesBut5050ChanceOfGameOverDifficulty.maxDuration
-    );
+    const duration = Math.ceil(Math.random() * this.maxDuration);
     const id = uuid();
 
-    return new Reaction(
-      id,
-      duration,
-      UnlimitedLivesBut5050ChanceOfGameOverDifficulty.maxDeviation,
-      [],
-      false
-    );
+    return new Reaction(id, duration, this.maxDeviation, [], false);
   }
   getLifeCount(gameManager: GameManager): number {
     return '?' as unknown as number;
@@ -223,31 +262,28 @@ export class UnlimitedLivesBut5050ChanceOfGameOverDifficulty
 }
 
 export class VariableDeviationDifficulty
-  extends EasyDifficultyStrategy
+  extends StandardDifficulty
   implements DifficultyStrategy
 {
-  public key = 'DIFFICULTY_STRATEGY';
-  public id = 'VARIABLE_DEVIATION_DIFFICULTY';
-  public name = 'Variable Deviation Per Reaction';
-  public description = `New Deviation Per Reaction ranging from ${VariableDeviationDifficulty.minDeviation}ms to ${VariableDeviationDifficulty.maxDeviation}ms`;
-  static maxDuration = 3000;
-  static minDeviation = 50;
-  static maxDeviation = 500;
-  public currentMaxDeviation: number = VariableDeviationDifficulty.maxDeviation;
+  public readonly minDeviation: number;
+  public currentMaxDeviation = this.maxDeviation;
+
+  constructor({
+    minDeviation,
+    ...args
+  }: MinMaxDeviationDurationDifficultyArgs) {
+    super({ ...args });
+    this.minDeviation = minDeviation;
+  }
 
   generateReaction(): Reaction {
     // todo refactor to service to make it testable.
     const getCurrentMaxDeviation = (): number => {
-      const deviation = Math.ceil(
-        Math.random() * VariableDeviationDifficulty.maxDeviation
-      );
-      if (deviation < VariableDeviationDifficulty.minDeviation)
-        return getCurrentMaxDeviation();
+      const deviation = Math.ceil(Math.random() * this.maxDeviation);
+      if (deviation < this.minDeviation) return getCurrentMaxDeviation();
       return deviation;
     };
-    const duration = Math.ceil(
-      Math.random() * VariableDeviationDifficulty.maxDuration
-    );
+    const duration = Math.ceil(Math.random() * this.maxDuration);
     const id = uuid();
     const currentMaxDeviation = getCurrentMaxDeviation();
     this.currentMaxDeviation = currentMaxDeviation;
@@ -282,21 +318,18 @@ export class VariableDeviationDifficulty
 }
 
 export class TimerOnGuessDifficulty
-  extends EasyDifficultyStrategy
+  extends StandardDifficulty
   implements DifficultyStrategy
 {
-  public key = 'DIFFICULTY_STRATEGY';
-  public id = 'TIMER_ON_GUESS_DIFFICULTY';
-  public name = '3s Timer On Guess';
-  public description = `3 seconds on the clock, once the animation finishes. Deviation ${TimerOnGuessDifficulty.maxDeviation}ms.`;
-  static maxDuration = 3000;
-  static maxDeviation = 500;
   private timeout?: ReturnType<typeof setTimeout>;
+
+  constructor(args: StandardDifficultyArgs) {
+    super(args);
+  }
 
   getLifeCount(gameManager: GameManager): number {
     return (
-      EasyDifficultyStrategy.maxFailedAttempts -
-      gameManager.getCurrentGame().getFailedAttempts()
+      this.maxFailedAttempts - gameManager.getCurrentGame().getFailedAttempts()
     );
   }
 
@@ -317,18 +350,10 @@ export class TimerOnGuessDifficulty
       : '';
   }
   generateReaction(): Reaction {
-    const duration = Math.ceil(
-      Math.random() * EasyDifficultyStrategy.maxDuration
-    );
+    const duration = Math.ceil(Math.random() * this.maxDuration);
     const id = uuid();
 
-    return new Reaction(
-      id,
-      duration,
-      TimerOnGuessDifficulty.maxDeviation,
-      [],
-      false
-    );
+    return new Reaction(id, duration, this.maxDeviation, [], false);
   }
 
   onGameStart(gameManager: GameManager) {
@@ -373,7 +398,7 @@ export class TimerOnGuessDifficulty
 
   onReactionComplete(gameManager: GameManager): void {
     const boundOnReactionComplete =
-      new EasyDifficultyStrategy().onReactionComplete.bind(this);
+      easyDifficulty.onReactionComplete.bind(this);
     boundOnReactionComplete(gameManager);
     clearTimeout(this.timeout);
     gameManager.notify(
@@ -390,16 +415,90 @@ export class TimerOnGuessDifficulty
   }
 }
 
-export const difficulties: Record<
-  DifficultyStrategy['id'],
-  DifficultyStrategy
-> = {
-  EASY_DIFFICULTY_STRATEGY: new EasyDifficultyStrategy(),
-  UnlimitedLivesBut5050ChanceOfGameOverDifficulty:
-    new UnlimitedLivesBut5050ChanceOfGameOverDifficulty(),
-  VariableDeviationDifficulty: new VariableDeviationDifficulty(),
-  TimerOnGuessDifficulty: new TimerOnGuessDifficulty(),
-};
+export const easyDifficulty = new StandardDifficulty({
+  maxDuration: 3000,
+  maxDeviation: 300,
+  maxFailedAttempts: 5,
+  name: 'Easy',
+  description: '5 Lives. Duration: 3000. Devation: 300.',
+  version: DifficultyVersionTag.V001,
+});
+export const mediumDifficulty = new StandardDifficulty({
+  maxDuration: 2250,
+  maxDeviation: 175,
+  maxFailedAttempts: 3,
+  name: 'Medium',
+  description: '3 Lives. Duration: 2250. Devation: 175.',
+  version: DifficultyVersionTag.V001,
+});
+export const hardDifficulty = new StandardDifficulty({
+  maxDuration: 1500,
+  maxDeviation: 100,
+  maxFailedAttempts: 1,
+  name: 'Hard',
+  description: '1 Life. Duration: 2000. Devation: 100.',
+  version: DifficultyVersionTag.V001,
+});
+export const insaneDifficulty = new StandardDifficulty({
+  maxDuration: 1000,
+  maxDeviation: 50,
+  maxFailedAttempts: 1,
+  name: 'Insane',
+  description: '1 Life. Duration: 1000. Devation: 50.',
+  version: DifficultyVersionTag.V001,
+});
+
+export const fiftyFiftyDifficulty =
+  new UnlimitedLivesBut5050ChanceOfGameOverDifficulty({
+    name: '50/50',
+    description:
+      "A game of chance. Deviation 500. You guess incorrectly, either you can guess again or it's game over.",
+    maxDuration: 1000,
+    maxDeviation: 200,
+    version: DifficultyVersionTag.V001,
+  });
+
+export const variableDifficulty = new VariableDeviationDifficulty({
+  name: 'Variable Deviation',
+  description: 'New Deviation Per Reaction ranging from 50ms to 300ms',
+  maxFailedAttempts: 3,
+  maxDuration: 2000,
+  minDeviation: 50,
+  maxDeviation: 300,
+  version: DifficultyVersionTag.V001,
+});
+
+export const timerDifficulty = new TimerOnGuessDifficulty({
+  name: '3s Timer On Guess',
+  description:
+    '3 seconds on the clock, once the animation finishes. Deviation 200ms.',
+  maxFailedAttempts: 3,
+  maxDeviation: 200,
+  maxDuration: 1000,
+  version: DifficultyVersionTag.V001,
+});
+
+const _difficulties: DifficultyStrategy[] = [
+  easyDifficulty,
+  mediumDifficulty,
+  hardDifficulty,
+  insaneDifficulty,
+  fiftyFiftyDifficulty,
+  variableDifficulty,
+  timerDifficulty,
+];
+
+export const difficulties: Record<string, DifficultyStrategy> =
+  _difficulties.reduce(
+    (
+      accumulator: Record<string, DifficultyStrategy>,
+      currentValue: DifficultyStrategy
+    ) => {
+      accumulator[currentValue.id] = currentValue;
+      return accumulator;
+    },
+    {}
+  );
 
 class NoLastGuessError extends Error {
   constructor() {

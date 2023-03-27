@@ -1,5 +1,5 @@
 import { Observer } from '../observer';
-import { EasyDifficultyStrategy } from '../settings-manager/modules/difficulty/difficulty';
+import { easyDifficulty } from '../settings-manager';
 import { SettingsManager } from '../settings-manager/settings-manager';
 import {
   AddGuessResponsePayload,
@@ -44,7 +44,7 @@ describe('game', () => {
     reaction = new Reaction(
       'asd',
       1000,
-      EasyDifficultyStrategy.maxDeviation,
+      easyDifficulty.maxDeviation,
       [],
       false,
       Date.now()
@@ -311,7 +311,7 @@ describe('game', () => {
     it('should not fail', () => {
       // reaction 1
       gameSubject.setCurrentGame(
-        new Game('', new EasyDifficultyStrategy(), 0, 0, '', [], [])
+        new Game('', easyDifficulty, 0, 0, '', [], [])
       );
       gameSubject.setCurrentReaction(reaction);
 
