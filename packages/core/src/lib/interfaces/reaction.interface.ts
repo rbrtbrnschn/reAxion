@@ -1,8 +1,6 @@
-import { ReactionGuess } from '../game-manager';
-
 export interface IReaction {
   duration: number;
-  guesses: ReactionGuess[];
+  guesses: any[];
   isGuessed: boolean;
   startedAt?: number;
   completedAt?: number;

@@ -6,7 +6,7 @@ import {
   UndefinedReactionError,
 } from '../errors';
 import { GameManagerEvent } from '../game-manager';
-import { Reaction } from '../reaction/reaction';
+import { BaseReaction, Reaction } from '../reaction/reaction';
 
 export class Game implements IGame {
   public readonly key = 'GAME_CLASS';
@@ -19,7 +19,7 @@ export class Game implements IGame {
     public failedAttempts: number,
     public score: number,
     public readonly id: string,
-    public reactions: Reaction[],
+    public reactions: BaseReaction[],
     public events: GameManagerEvent[],
     public name?: string
   ) {

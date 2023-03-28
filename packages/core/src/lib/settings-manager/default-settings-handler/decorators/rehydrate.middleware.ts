@@ -10,19 +10,7 @@ export const RehydrateSettingsMiddleware: Middleware<Settings> = (
   const hasDehydratedDifficulty = context.difficulty;
   if (!hasDehydratedDifficulty) return next();
 
-  const hasDifficultyStrategy = context.difficulty.key === 'DIFFICULTY';
-  if (hasDifficultyStrategy) {
-    const hasId = context.difficulty.id;
-    if (hasId) {
-      const difficultyFromId = difficulties[context.difficulty.id];
-      if (difficultyFromId) {
-        context.difficulty = difficulties[context.difficulty.id];
-      } else {
-        context.difficulty = new DifficultyBuilder().buildEasy();
-      }
-    }
-  } else {
-    context.difficulty = new DifficultyBuilder().buildEasy();
-  }
+  context.difficulty =
+    difficulties[context.difficulty?.id] || new DifficultyBuilder().buildEasy();
   return next();
 };
