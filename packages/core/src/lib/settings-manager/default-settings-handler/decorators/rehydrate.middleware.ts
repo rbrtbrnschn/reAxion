@@ -21,6 +21,8 @@ export const RehydrateSettingsMiddleware: Middleware<Settings> = (
         context.difficulty = new DifficultyBuilder().buildEasy();
       }
     }
+  } else {
+    context.difficulty = new DifficultyBuilder().buildEasy();
   }
   return next();
 };
