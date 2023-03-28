@@ -2,14 +2,17 @@ import { v4 as uuid } from 'uuid';
 import { Settings } from '../interfaces';
 import { ConcretePersistorImpl } from '../persistor/persistor';
 import { LocalStoragePersistorImpl } from '../persistor/strategies/local-storage.strategy';
-import { Alternate2Coloring, SettingsManager } from '../settings-manager';
-import { timerDifficulty } from '../settings-manager/modules/difficulty/difficulty';
+import {
+  Alternate2Coloring,
+  DifficultyBuilder,
+  SettingsManager,
+} from '../settings-manager';
 import { PersistedSettingsManagerDecorator } from './persisted-settings-manager';
 
 describe('persisted settings manager', () => {
   let persistedSettingsManager: PersistedSettingsManagerDecorator;
   const mockUserId = uuid();
-  const mockDifficulty = timerDifficulty;
+  const mockDifficulty = new DifficultyBuilder().buildBaseTimer();
   const mockColoring = new Alternate2Coloring();
   beforeEach(() => {
     const persistor = new ConcretePersistorImpl();

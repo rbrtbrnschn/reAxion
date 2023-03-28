@@ -7,10 +7,10 @@ export const LocalStorageMiddleware: Middleware<Settings> = (context, next) => {
     'settings'
   );
   if (settings) {
-    context.coloring = settings.coloring;
-    context.difficulty = settings.difficulty;
-    context.userId = settings.userId;
-    context.username = settings.username;
+    Object.entries(settings).forEach(([key, value]) => {
+      if (!value) return;
+      context[key as keyof Settings] = value;
+    });
   }
   return next();
 };

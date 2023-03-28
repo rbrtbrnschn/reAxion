@@ -21,6 +21,7 @@ export class Game implements IGame {
       id: String,
       key: String,
       name: String,
+      version: String,
     },
   })
   difficulty: DifficultyStrategy;

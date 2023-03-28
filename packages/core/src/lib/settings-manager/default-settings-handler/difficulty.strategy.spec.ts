@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { easyDifficulty, SettingsManager, StandardDifficulty } from '..';
+import { DifficultyBuilder, SettingsManager } from '..';
 import {
   GameManager,
   GameManagerMediator,
@@ -7,6 +7,7 @@ import {
   Reaction,
 } from '../../game-manager';
 import { Game } from '../../game-manager/game/game';
+import { StandardDifficulty } from '../modules/difficulty/modules/standard.difficulty';
 
 describe('EasyDifficultyStrategy', () => {
   let game: Game;
@@ -18,7 +19,7 @@ describe('EasyDifficultyStrategy', () => {
   beforeEach(() => {
     const mediator = new GameManagerMediator(new SettingsManager());
     gameManager = new GameManager(mediator);
-    difficultyStrategy = easyDifficulty;
+    difficultyStrategy = new DifficultyBuilder().buildEasy();
     game = new GameService(difficultyStrategy).createNewGame(uuid());
     reaction = new Reaction(
       'asdasd',
