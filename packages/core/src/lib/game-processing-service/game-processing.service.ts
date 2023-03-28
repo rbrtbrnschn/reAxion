@@ -1,18 +1,25 @@
-import { IFinishedReaction, IGame, IReaction } from '../interfaces';
+import { IFinishedReaction, IGame } from '../interfaces';
 import {
   difficulties,
   DifficultyStrategy,
 } from '../settings-manager/modules/difficulty/difficulty';
+import {
+  IDeviationCalculator,
+  ReactionGuessDeviationCalculator,
+} from './caclulator/deviation-calculator/deviation-calculator';
 
 export class GameProcessingService {
-  private reactions: IReaction[];
+  private reactions: IFinishedReaction[];
   private guessedReactions: IFinishedReaction[];
   private difficulty: DifficultyStrategy;
   private failedAttempts: number;
   private name: string;
   private score: number;
-  constructor(game: IGame) {
-    this.reactions = game.reactions;
+  constructor(
+    game: IGame,
+    private deviationCalculator: IDeviationCalculator = new ReactionGuessDeviationCalculator()
+  ) {
+    this.reactions = game.reactions as IFinishedReaction[];
     this.guessedReactions = this.reactions?.filter(
       (r) => r.isGuessed
     ) as IFinishedReaction[];
@@ -27,10 +34,7 @@ export class GameProcessingService {
   }
 
   getAverageDeviation() {
-    const totalDeviation = this.guessedReactions
-      .map(toReactionDeviation)
-      .reduce(toSum, 0);
-    return totalDeviation / this.guessedReactions.length;
+    return this.deviationCalculator.calculateDeviation(this.reactions);
   }
 
   getAverageTimeForCorrectGuess() {

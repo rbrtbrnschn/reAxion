@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import {
   DifficultyStrategy,
-  GameProcessingService,
+  GameProcessingServiceFactory,
   IGame,
   IGameWithStats,
 } from '@reaxion/core';
@@ -17,7 +17,8 @@ export class GameService {
     const games = await this.gameModel.find().skip(offset).limit(limit).exec();
     return games.map((game) => ({
       ...game,
-      averageDeviation: new GameProcessingService(game).getAverageDeviation(),
+      averageDeviation:
+        GameProcessingServiceFactory.create(game).getAverageDeviation(),
     }));
   }
   async findAllByUser(
@@ -33,7 +34,8 @@ export class GameService {
     return games.map((game) => {
       const gameWithStats = {
         ...game.toObject(),
-        averageDeviation: new GameProcessingService(game).getAverageDeviation(),
+        averageDeviation:
+          GameProcessingServiceFactory.create(game).getAverageDeviation(),
       };
       return gameWithStats;
     });
@@ -65,7 +67,8 @@ export class GameService {
     return games.map((game) => {
       return {
         ...game,
-        averageDeviation: new GameProcessingService(game).getAverageDeviation(),
+        averageDeviation:
+          GameProcessingServiceFactory.create(game).getAverageDeviation(),
       };
     }) as IGameWithStats[];
   }

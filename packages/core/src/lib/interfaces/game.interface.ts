@@ -1,4 +1,4 @@
-import { DifficultyStrategy } from '../settings-manager/modules/difficulty-strategy/difficulty.strategy';
+import { DifficultyStrategy } from '../settings-manager/modules/difficulty/difficulty';
 import { IReaction } from './reaction.interface';
 export interface IGameDifficulty {
   deviation: number;

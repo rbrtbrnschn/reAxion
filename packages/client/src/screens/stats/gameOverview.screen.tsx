@@ -1,4 +1,4 @@
-import { GameProcessingService, IGame } from '@reaxion/core';
+import { GameProcessingServiceFactory, IGame } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -45,7 +45,7 @@ const MyGameOverviewScreen = () => {
   const handleTryAgain = (e: React.MouseEvent<HTMLButtonElement>) => {
     navigate(routes[RouteNames.GAME_PAGE].path);
   };
-  const statsProcessor = new GameProcessingService(game);
+  const statsProcessor = GameProcessingServiceFactory.create(game);
   function parseMillisecond(number: number) {
     return number.toFixed(2) + 'ms';
   }
