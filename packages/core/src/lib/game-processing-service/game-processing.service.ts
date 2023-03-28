@@ -1,15 +1,13 @@
+import { IFinishedReaction, IGame, IReaction } from '../interfaces';
 import {
-  IFinishedReaction,
-  IGame,
-  IGameDifficulty,
-  IReaction,
-} from '@reaxion/common/interfaces';
-import { difficulties } from '../settings-manager/modules/difficulty';
+  difficulties,
+  DifficultyStrategy,
+} from '../settings-manager/modules/difficulty/difficulty';
 
 export class GameProcessingService {
   private reactions: IReaction[];
   private guessedReactions: IFinishedReaction[];
-  private difficulty: IGameDifficulty;
+  private difficulty: DifficultyStrategy;
   private failedAttempts: number;
   private name: string;
   private score: number;
@@ -44,4 +42,4 @@ const toSum = (prev: number, curr: number) => prev + curr;
 const toReactionDuration = (r: IFinishedReaction) =>
   r.completedAt - r.startedAt;
 const toReactionDeviation = (r: IFinishedReaction) =>
-  Math.abs(r.duration - r.guesses[r.guesses.length - 1]);
+  Math.abs(r.duration - r.guesses[r.guesses.length - 1].guess);

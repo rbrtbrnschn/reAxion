@@ -1,14 +1,14 @@
-import { GuessStatus, ReactionStatus } from '@reaxion/common/enums';
-import { IReaction } from '@reaxion/common/interfaces';
+import { IReaction } from '@reaxion/core';
 import { v4 as uuid4 } from 'uuid';
 
+/**
+ * @deprecated
+ */
 export class ReactionBuilder {
   buildByDuration({ duration }: Pick<IReaction, 'duration'>): IReaction {
     return {
       duration,
       guesses: [],
-      guessStatus: GuessStatus.IS_WAITING,
-      reactionStatus: ReactionStatus.HAS_NOT_STARTED,
       isGuessed: false,
       id: uuid4(),
     };

@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import {
   DefaultSettingsHandlerImpl,
   SettingsManager,
-  UserIdFromCookieDecorator,
+  UserIdFromCookieMiddleware,
 } from '..';
 import { SettingsManagerBuilder } from './settings-manager.builder';
 
@@ -16,7 +16,7 @@ describe('Settings Manager Builder', () => {
   it('should create with default settings with no decorators', () => {
     expect(
       new SettingsManagerBuilder()
-        .withDecorators([])
+        .withMiddleware([])
         .createWithInitialState()
         .getState()
     ).toEqual(DefaultSettingsHandlerImpl.defaultSettings);
@@ -25,7 +25,7 @@ describe('Settings Manager Builder', () => {
     document.cookie = 'userId=' + mockUserId;
     expect(
       new SettingsManagerBuilder()
-        .withDecorators([new UserIdFromCookieDecorator()])
+        .withMiddleware([UserIdFromCookieMiddleware])
         .createWithInitialState()
         .getState().userId
     ).toEqual(mockUserId);

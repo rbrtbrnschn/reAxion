@@ -1,4 +1,4 @@
-import { Observer, ObserverSubject } from '../observer';
+import { ObserverSubject } from '../observer';
 import {
   NoCurrentGameError,
   NoCurrentGameEventError,
@@ -11,12 +11,10 @@ import { GameService } from './game/game.service';
 import { HasEvent } from './has-event.decorator';
 import { GameManagerMediator } from './mediator/mediator';
 import { Reaction } from './reaction/reaction';
-import { ReactionService } from './reaction/reaction.service';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
   GameManagerResponsePayload,
-  isAddGuessResponse,
 } from './util/response.util';
 
 export interface IGameManagerState {
@@ -34,11 +32,13 @@ export enum GameManagerEvent {
   DISPATCH_FAIL_GAME = 'DISPATCH_FAIL_GAME',
   DISPATCH_SET_NAME = 'DISPATCH_SET_NAME',
   DISPATCH_RESET_GAME = 'DISPATCH_RESET_GAME',
+
+  DISPATCH_SET_EXTRA = 'DISPATCH_SET_EXTRA',
 }
 
 type MyResponseType = GameManagerResponse<unknown>;
 export class GameManager extends ObserverSubject<MyResponseType> {
-  private readonly gameService: GameService;
+  // private readonly gameService: GameService;
   private state: IGameManagerState = {
     games: [],
     events: [],
@@ -49,34 +49,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   ) {
     super();
     this.state = { ...this.state, ...gameState };
-    this.gameService = new GameService(this.mediator.getDifficulty());
-
-    /* Rethink Architecture -> leave this open to concrete implementation */
-    const addGuessObserver: Observer<MyResponseType> = {
-      id: 'addGuessObserver',
-      update: (eventName, response: GameManagerResponse<any>) => {
-        if (eventName !== GameManagerEvent.DISPATCH_ADD_GUESS) return;
-        if (!isAddGuessResponse(response)) return;
-
-        if (response.payload.data.status === 'GUESS_VALID') {
-          this.dispatchCompleteReaction();
-          return;
-        }
-
-        this.getCurrentGame().setFailedAttempts(
-          this.getCurrentGame().getFailedAttempts() + 1
-        );
-
-        if (
-          this.getCurrentGame().getFailedAttempts() !==
-          this.getCurrentGame().difficulty.maxFailedAttempts
-        )
-          return;
-
-        this.dispatchFailGame();
-      },
-    };
-    this.subscribe(addGuessObserver);
+    // this.gameService = new GameService(this.mediator.getDifficulty());
   }
 
   public getState(): IGameManagerState {
@@ -148,6 +121,9 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 
   public dispatchStartingSequence() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_STARTING_SEQUENCE);
+    if (this.getCurrentGame().reactions.length === 1)
+      this.getCurrentGame().setStartedAt(Date.now());
+    this.getCurrentGame().difficulty.onReactionStartingSequence(this);
     this.notify(
       this.getCurrentEvent(),
       new GameManagerResponse(
@@ -161,6 +137,7 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   @HasEvent([GameManagerEvent.DISPATCH_STARTING_SEQUENCE])
   public dispatchReactionStart() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_START);
+    this.getCurrentGame().difficulty.onReactionStart(this);
     this.notify(
       this.getCurrentEvent(),
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
@@ -170,6 +147,8 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   public dispatchReactionEnd() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
     this.getCurrentReaction().setStartedAt(Date.now());
+
+    this.getCurrentGame().difficulty.onReactionEnd(this);
     this.notify(
       this.getCurrentEvent(),
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
@@ -178,23 +157,14 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   @HasEvent([
     GameManagerEvent.DISPATCH_REACTION_END,
     GameManagerEvent.DISPATCH_ADD_GUESS,
-    GameManagerEvent.DISPATCH_FAIL_GAME,
   ])
   public dispatchAddGuess(guess: number) {
     if (this.getCurrentGame().isOver) return;
 
     this.setCurrentEvent(GameManagerEvent.DISPATCH_ADD_GUESS);
-    this.getCurrentReaction().addGuess(guess);
-    const response = new GameManagerResponse(
-      this.getState(),
-      this.getCurrentEvent(),
-      new AddGuessResponsePayload({
-        status: new ReactionService(this.getCurrentGame())
-          .withReaction(this.getCurrentReaction())
-          .calculateGuessDeviationStatus(guess),
-      })
-    );
-    this.notify(this.getCurrentEvent(), response);
+    const { difficulty } = this.getCurrentGame();
+
+    difficulty.handleAddGuess(this, guess);
   }
 
   @HasEvent([GameManagerEvent.DISPATCH_ADD_GUESS])
@@ -203,8 +173,10 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     const currentReaction = this.getCurrentReaction();
     currentReaction.setCompletedAt(Date.now());
     currentReaction.setIsGuessed();
+    const difficulty = this.getCurrentGame().difficulty;
 
-    this.getCurrentGame().setScore(this.getCurrentGame().getScore() + 1);
+    difficulty.onReactionComplete(this);
+
     this.notify(
       this.getCurrentEvent(),
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
@@ -219,9 +191,9 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     this.setCurrentEvent(
       GameManagerEvent.DISPATCH_GENERATE_NEW_WITH_RANDOM_DURATION
     );
-    const newReaction = new ReactionService(
-      this.getCurrentGame()
-    ).createReactionWithRandomDuration();
+    const { difficulty } = this.getCurrentGame();
+    const newReaction = difficulty.generateReaction(this);
+
     this.setCurrentReaction(newReaction);
     this.notify(
       this.getCurrentEvent(),
@@ -229,11 +201,18 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     );
   }
 
-  @HasEvent([GameManagerEvent.DISPATCH_ADD_GUESS])
+  @HasEvent([
+    GameManagerEvent.DISPATCH_ADD_GUESS,
+    GameManagerEvent.DISPATCH_STARTING_SEQUENCE,
+    GameManagerEvent.DISPATCH_REACTION_END,
+  ])
   public dispatchFailGame() {
     this.getCurrentReaction().setCompletedAt(Date.now());
     this.getCurrentGame().setIsOver();
+    this.getCurrentGame().setEndedAt(Date.now());
     this.setCurrentEvent(GameManagerEvent.DISPATCH_FAIL_GAME);
+
+    this.getCurrentGame().difficulty.onGameEnd(this);
 
     this.notify(
       this.getCurrentEvent(),
@@ -247,7 +226,9 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   ])
   public dispatchResetGame() {
     this.setCurrentGame(
-      this.gameService.createNewGame(this.mediator.getUserId())
+      new GameService(this.mediator.getDifficulty()).createNewGame(
+        this.mediator.getUserId()
+      )
     );
     this.setCurrentEvent(GameManagerEvent.DISPATCH_RESET_GAME);
     this.notify(
@@ -271,9 +252,10 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 
 export class AddGuessResponsePayload extends GameManagerResponsePayload<{
   status: AddGuessStatus;
+  message: string;
 }> {
   public readonly id = 'ADD_GUESS_RESPONSE';
-  constructor(data: { status: AddGuessStatus }) {
+  constructor(data: { status: AddGuessStatus; message: string }) {
     super(data);
   }
 }
@@ -294,7 +276,24 @@ export class ReactionEndResponsePayload<
   }
 }
 
+export class SetExtraPayload extends GameManagerResponsePayload<{
+  message: string;
+  type: string;
+}> {
+  public readonly id = 'SET_EXTRA_RESPONSE';
+  constructor(data: { message: string; type: string }) {
+    super(data);
+  }
+}
+
+export enum SetExtraPayloadTypes {
+  DEVIATION = 'DEVIATION',
+  COUNTDOWN = 'COUNTDOWN',
+  MESSAGE = 'MESSAGE',
+}
+
 export type AddGuessStatus =
   | 'GUESS_VALID'
   | 'GUESS_INVALID_HIGH'
-  | 'GUESS_INVALID_LOW';
+  | 'GUESS_INVALID_LOW'
+  | 'GUESS_TIMEOUT';

@@ -1,12 +1,9 @@
-import { GuessStatus } from '../enums/guess.enum';
-import { ReactionStatus } from '../enums/reaction.enum';
+import { ReactionGuess } from '../game-manager';
 
 export interface IReaction {
   duration: number;
-  guesses: number[];
+  guesses: ReactionGuess[];
   isGuessed: boolean;
-  guessStatus: GuessStatus;
-  reactionStatus: ReactionStatus;
   startedAt?: number;
   completedAt?: number;
   id: string;

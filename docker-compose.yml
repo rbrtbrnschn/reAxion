@@ -22,6 +22,8 @@ services:
       file: docker-compose.base.yml
       service: nx-app-base
     command: npx nx serve client
+    environment:
+      REACT_APP_API_URL: 
     ports:
       - "${CLIENT_OUTER_PORT:-3000}:${CLIENT_INNER_PORT:-3000}"
 

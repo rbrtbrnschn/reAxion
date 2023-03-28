@@ -1,20 +1,21 @@
+import { Settings } from '../../interfaces';
+import { Middleware } from '../../middleware';
 import { ConcretePersistorImpl, Persistor } from '../../persistor/persistor';
 import { PersistorStrategy } from '../../persistor/strategies/strategy.interface';
 import { SettingsManagerBuilder } from '../../settings-manager';
-import { SettingDecorator } from '../../settings-manager/default-settings-handler/decorators/decorator.interface';
 import { PersistedSettingsManagerDecorator } from '../persisted-settings-manager';
 
 export class PersistedSettingsManagerBuilder {
-  private decorators: SettingDecorator[];
+  private middleware: Middleware<Settings>[];
   private persistor: Persistor;
   constructor() {
     /* Refactor to SST */
     /* SettingDecoratorHandler? */
-    this.decorators = [];
+    this.middleware = [];
     this.persistor = new ConcretePersistorImpl();
   }
-  withDecorators(decorators: SettingDecorator[]) {
-    this.decorators = decorators;
+  withMiddleware(middleware: Middleware<Settings>[]) {
+    this.middleware = middleware;
     return this;
   }
   withPersistorStrategy(strategy: PersistorStrategy) {
@@ -35,7 +36,7 @@ export class PersistedSettingsManagerBuilder {
 
     return new PersistedSettingsManagerDecorator(
       new SettingsManagerBuilder()
-        .withDecorators(this.decorators)
+        .withMiddleware(this.middleware)
         .createWithInitialState(),
       this.persistor
     );

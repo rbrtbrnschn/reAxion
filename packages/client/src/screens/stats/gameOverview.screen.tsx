@@ -1,6 +1,4 @@
-import { RouteNames } from '@reaxion/common/enums';
-import { IGame } from '@reaxion/common/interfaces';
-import { GameProcessingService } from '@reaxion/core';
+import { GameProcessingService, IGame } from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect } from 'react';
@@ -8,7 +6,7 @@ import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { withNavigation } from '../../components/navigation';
 import { Stat1 } from '../../components/stats/stat1';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
-import { routes } from '../../routes';
+import { RouteNames, routes } from '../../routes';
 
 function useGameOverviewGame(userId: string) {
   return useQuery({
@@ -16,7 +14,7 @@ function useGameOverviewGame(userId: string) {
     queryFn: async (): Promise<IGame | undefined> => {
       const response = await axios.get(
         `${
-          process.env.REACT_APP_API_URL || ''
+          process.env.REACT_APP_API_URL ?? ''
         }/api/game/overview?userId=${userId}`
       );
       return response.data;

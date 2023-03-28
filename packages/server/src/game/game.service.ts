@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { IDifficulty, IGame, IGameWithStats } from '@reaxion/common/interfaces';
-import { GameProcessingService } from '@reaxion/core';
+import {
+  DifficultyStrategy,
+  GameProcessingService,
+  IGame,
+  IGameWithStats,
+} from '@reaxion/core';
 import { Model } from 'mongoose';
 import { Game, GameDocument } from '../schemas/game.schema';
 
@@ -44,7 +48,7 @@ export class GameService {
   }
 
   async getLeaderboardByDifficulty(
-    difficulty: IDifficulty['id']
+    difficulty: DifficultyStrategy['id']
   ): Promise<IGameWithStats[]> {
     const games = (await this.gameModel.aggregate([
       { $match: { 'difficulty.id': difficulty } },

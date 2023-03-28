@@ -1,6 +1,5 @@
-import { RouteNames } from '@reaxion/common/enums';
 import { useNavigate } from 'react-router-dom';
-import { routes } from '../routes';
+import { RouteNames, routes } from '../routes';
 
 interface INavigationItem {
   label: string;

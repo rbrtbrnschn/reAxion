@@ -1,12 +1,14 @@
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
+
 import {
-  GuessStatus,
+  Game as CoreGame,
   IGameWithStats,
   IReaction,
-  ReactionStatus,
-} from '@reaxion/common';
-import { Game as CoreGame, MediumDifficulty, Reaction } from '@reaxion/core';
+  Reaction,
+  TimerOnGuessDifficulty,
+  VariableDeviationDifficulty,
+} from '@reaxion/core';
 import { ModuleMocker } from 'jest-mock';
 import { v4 as uuid4 } from 'uuid';
 import { Game } from '../schemas/game.schema';
@@ -21,12 +23,10 @@ describe('GameService', () => {
     id: uuid4(),
     duration: 213,
     guesses: [123, 123, 33],
-    guessStatus: GuessStatus.IS_TOO_LOW,
     isGuessed: false,
-    reactionStatus: ReactionStatus.IS_OVER,
     startedAt: Date.now() - 3000,
   };
-  gameModel.difficulty = new MediumDifficulty();
+  gameModel.difficulty = new TimerOnGuessDifficulty();
   gameModel.failedAttempts = 0;
   gameModel.score = 0;
   gameModel.name = 'pet';
@@ -72,7 +72,7 @@ describe('GameService', () => {
 
     const igame = new CoreGame(
       uuid4(),
-      new MediumDifficulty(),
+      new VariableDeviationDifficulty(),
       0,
       0,
       'pet',
@@ -81,9 +81,7 @@ describe('GameService', () => {
           reaction.id,
           reaction.duration,
           reaction.guesses,
-          reaction.isGuessed,
-          reaction.guessStatus,
-          reaction.reactionStatus
+          reaction.isGuessed
         ),
       ],
       []
@@ -97,6 +95,6 @@ describe('GameService', () => {
       .spyOn(service, 'getLeaderboardByDifficulty')
       .mockImplementation(() => Promise.resolve(result));
 
-    expect(service.getLeaderboardByDifficulty(new MediumDifficulty().id));
+    expect(service.getLeaderboardByDifficulty(new TimerOnGuessDifficulty().id));
   });
 });

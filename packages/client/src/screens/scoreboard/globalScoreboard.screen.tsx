@@ -1,5 +1,10 @@
-import { IDifficulty, IGame, IGameWithStats } from '@reaxion/common/interfaces';
-import { DefaultSettingsHandlerImpl, difficulties } from '@reaxion/core';
+import {
+  DefaultSettingsHandlerImpl,
+  difficulties,
+  DifficultyStrategy,
+  IGame,
+  IGameWithStats,
+} from '@reaxion/core';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -8,7 +13,7 @@ import { useGameManagerContext } from '../../contexts/game-manager.context';
 
 const MyGlobalScoreboardScreen = () => {
   const { settingsManager } = useGameManagerContext();
-  const [sortBy, setSortBy] = useState<IDifficulty['id']>(
+  const [sortBy, setSortBy] = useState<DifficultyStrategy['id']>(
     DefaultSettingsHandlerImpl.defaultSettings.difficulty.id
   );
 
@@ -18,7 +23,7 @@ const MyGlobalScoreboardScreen = () => {
       queryFn: async (): Promise<IGameWithStats[]> => {
         const response = await axios.get(
           `${
-            process.env.REACT_APP_API_URL || 'http://localhost:8080'
+            process.env.REACT_APP_API_URL ?? 'http://localhost:8080'
           }/api/game/leaderboard?difficulty=${sortBy}`
         );
         return response.data;
@@ -33,10 +38,89 @@ const MyGlobalScoreboardScreen = () => {
     refetch();
   }, [sortBy]);
 
+  const content = (
+    <div className="overflow-x-auto">
+      <table className="table table-zebra w-full">
+        {/* head */}
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Score</th>
+            <th>Deviation (avg.)</th>
+            <th>Difficulty</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* row 1 */}
+          {data
+            ?.filter((game) => {
+              if (!sortBy) return true;
+              return game.difficulty.id === sortBy;
+            })
+            .sort((a, b) => b.score - a.score)
+            .map((game, index) => {
+              return (
+                <tr
+                  key={'game-' + (index + 1)}
+                  className={
+                    game.userId === settingsManager.getUserId()
+                      ? 'text-secondary'
+                      : ''
+                  }
+                >
+                  <th>
+                    {userHasWonGame(game) ? (
+                      <YouTooltip>{index + 1} </YouTooltip>
+                    ) : (
+                      index + 1
+                    )}
+                  </th>
+                  <td>
+                    {userHasWonGame(game) ? (
+                      <YouTooltip>
+                        {game?.name?.toUpperCase() || '???'}
+                      </YouTooltip>
+                    ) : (
+                      game?.name?.toUpperCase() || '???'
+                    )}
+                  </td>
+                  <td>
+                    {userHasWonGame(game) ? (
+                      <YouTooltip>{game.score} </YouTooltip>
+                    ) : (
+                      game.score
+                    )}
+                  </td>
+                  <td>
+                    {userHasWonGame(game) ? (
+                      <YouTooltip>
+                        {game.averageDeviation?.toFixed(2)}
+                        ms
+                      </YouTooltip>
+                    ) : (
+                      game.averageDeviation?.toFixed(2) + 'ms'
+                    )}
+                  </td>
+                  <td>
+                    {userHasWonGame(game) ? (
+                      <YouTooltip>{game.difficulty.name} </YouTooltip>
+                    ) : (
+                      game.difficulty.name
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+        </tbody>
+      </table>
+      {/* {isFetching && <div>Loading...</div>}
+  <div ref={targetRef}></div> */}
+    </div>
+  );
   if (isError) return <div>Error</div>;
   if (isLoading) return <div>Loading...</div>;
   if (data === null || data === undefined) return <div>Backend died.</div>;
-  if (!data.length) return <div>No Entries</div>;
 
   return (
     <div className="h-full flex flex-col px-2">
@@ -57,84 +141,7 @@ const MyGlobalScoreboardScreen = () => {
           </ul>
         </div>
       </div>
-      <div className="overflow-x-auto">
-        <table className="table table-zebra w-full">
-          {/* head */}
-          <thead>
-            <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Score</th>
-              <th>Deviation (avg.)</th>
-              <th>Difficulty</th>
-            </tr>
-          </thead>
-          <tbody>
-            {/* row 1 */}
-            {data
-              ?.filter((game) => {
-                if (!sortBy) return true;
-                return game.difficulty.id === sortBy;
-              })
-              .sort((a, b) => b.score - a.score)
-              .map((game, index) => {
-                return (
-                  <tr
-                    key={'game-' + (index + 1)}
-                    className={
-                      game.userId === settingsManager.getUserId()
-                        ? 'text-secondary'
-                        : ''
-                    }
-                  >
-                    <th>
-                      {userHasWonGame(game) ? (
-                        <YouTooltip>{index + 1} </YouTooltip>
-                      ) : (
-                        index + 1
-                      )}
-                    </th>
-                    <td>
-                      {userHasWonGame(game) ? (
-                        <YouTooltip>
-                          {game?.name?.toUpperCase() || '???'}
-                        </YouTooltip>
-                      ) : (
-                        game?.name?.toUpperCase() || '???'
-                      )}
-                    </td>
-                    <td>
-                      {userHasWonGame(game) ? (
-                        <YouTooltip>{game.score} </YouTooltip>
-                      ) : (
-                        game.score
-                      )}
-                    </td>
-                    <td>
-                      {userHasWonGame(game) ? (
-                        <YouTooltip>
-                          {game.averageDeviation?.toFixed(2)}
-                          ms
-                        </YouTooltip>
-                      ) : (
-                        game.averageDeviation?.toFixed(2) + 'ms'
-                      )}
-                    </td>
-                    <td>
-                      {userHasWonGame(game) ? (
-                        <YouTooltip>{game.difficulty.name} </YouTooltip>
-                      ) : (
-                        game.difficulty.name
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
-        {/* {isFetching && <div>Loading...</div>}
-        <div ref={targetRef}></div> */}
-      </div>
+      {data.length ? content : 'No Entries'}
     </div>
   );
 };

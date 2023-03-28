@@ -1,11 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {
-  GuessStatus,
-  IDifficulty,
-  IGame,
-  IReaction,
-  ReactionStatus,
-} from '@reaxion/common';
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { DifficultyStrategy, IGame, IReaction } from '@reaxion/core';
 import { HydratedDocument } from 'mongoose';
 
 export type GameDocument = HydratedDocument<Game>;
@@ -25,12 +19,12 @@ export class Game implements IGame {
     type: Object,
     raw: {
       id: String,
-      deviation: Number,
-      maxFailedAttempts: Number,
-      maxDuration: Number,
+      key: String,
+      name: String,
+      version: String,
     },
   })
-  difficulty: IDifficulty;
+  difficulty: DifficultyStrategy;
 
   @Prop({ default: '' })
   name: string;
@@ -38,23 +32,23 @@ export class Game implements IGame {
   @Prop({ default: 0 })
   failedAttempts: number;
 
+  @Prop({ required: true, type: Number })
+  startedAt: number;
+
+  @Prop({ required: true, type: Number })
+  endedAt: number;
+
   @Prop({
     raw: [
       {
         _id: { type: String },
         duration: { type: Number },
-        guesses: [{ type: Number }],
+        guesses: [
+          {
+            type: raw({ guess: { type: Number }, createdAt: { type: Number } }),
+          },
+        ],
         isGuessed: { type: Boolean },
-        guessStatus: {
-          type: Number,
-          enum: GuessStatus,
-          default: GuessStatus.IS_WAITING,
-        },
-        reactionStatus: {
-          type: Number,
-          enum: ReactionStatus,
-          default: ReactionStatus.HAS_NOT_STARTED,
-        },
         startedAt: { type: Number, required: true },
         completedAt: { type: Number, required: false },
       },

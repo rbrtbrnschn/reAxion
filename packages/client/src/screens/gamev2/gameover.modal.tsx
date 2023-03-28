@@ -69,8 +69,7 @@ export const GameOverModal = () => {
     }
     gameManager.dispatchSetName(input);
     const path =
-      (process.env.REACT_APP_API_URL || 'http://localhost:8080') + '/api/game';
-    console.log('posted to', path);
+      (process.env.REACT_APP_API_URL ?? 'http://localhost:8080') + '/api/game';
     axios.post(path, gameManager.getCurrentGame());
     gameManager.dispatchResetGame();
     // navigate(routes[RouteNames.RECENT_STATS_PAGE].path);

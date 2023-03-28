@@ -7,7 +7,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { IDifficulty, IGame, IGameWithStats } from '@reaxion/common';
+import { DifficultyStrategy, IGame, IGameWithStats } from '@reaxion/core';
 import { GameService } from './game.service';
 
 @Controller('game')
@@ -33,7 +33,7 @@ export class GameController {
 
   @Get('/leaderboard')
   getLeaderboardByDifficultyId(
-    @Query('difficulty') difficulty: IDifficulty['id']
+    @Query('difficulty') difficulty: DifficultyStrategy['id']
   ): Promise<IGameWithStats[]> {
     if (!difficulty) throw new ForbiddenException();
     if (difficulty === 'undefined') throw new ForbiddenException();
@@ -50,6 +50,7 @@ export class GameController {
   @Post('/')
   async addNew(@Body() game: IGame) {
     if (!game) throw new NotAcceptableException();
+    console.log('GOT GAME', game);
     const savedGame = await this.gameService.addSingle(game);
     return new Response(200, savedGame);
   }

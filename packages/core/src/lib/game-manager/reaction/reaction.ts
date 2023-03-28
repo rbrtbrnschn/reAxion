@@ -1,29 +1,23 @@
-import { GuessStatus, IReaction, ReactionStatus } from '@reaxion/common';
+import { IReaction } from '../../interfaces';
+import { ReactionGuess } from './guess';
 
 export class Reaction implements IReaction {
   public readonly key = 'REACTION_CLASS';
   constructor(
     public readonly id: string,
     public readonly duration: number,
-    public guesses: number[],
+    public readonly deviation: number,
+    public guesses: ReactionGuess[],
     public isGuessed: boolean,
-    public guessStatus: GuessStatus,
-    public reactionStatus: ReactionStatus,
     public startedAt?: number,
     public completedAt?: number
   ) {}
 
   public addGuess(guess: number) {
-    this.guesses = [...this.guesses, guess];
+    this.guesses = [...this.guesses, new ReactionGuess(guess, Date.now())];
   }
   public setIsGuessed() {
     this.isGuessed = true;
-  }
-  public setGuessStatus(guessStatus: GuessStatus) {
-    this.guessStatus = guessStatus;
-  }
-  public setReactionStatus(reactionStatus: ReactionStatus) {
-    this.reactionStatus = reactionStatus;
   }
   public setStartedAt(startedAt: number) {
     this.startedAt = startedAt;

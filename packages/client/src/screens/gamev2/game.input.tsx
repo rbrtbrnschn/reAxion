@@ -1,6 +1,5 @@
 import {
   GameManagerResponse,
-  isAddGuessResponse,
   isFailGameResponse,
   isReactionEndResponse,
   isStartingSequenceResponse,
@@ -21,26 +20,25 @@ export const GameInput = () => {
   const ref = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    if (score === 0) return;
+    setShowScoreAnimation(() => true);
     setTimeout(() => {
-      setShowScoreAnimation(false);
+      setShowScoreAnimation(() => false);
     }, 500);
   }, [score]);
   const scoreObserver: Observer<GameManagerResponse<unknown>> = {
     id: 'scoreObserver',
     update(eventName, response) {
-      if (!isAddGuessResponse(response)) return;
-      if (response.payload.data.status !== 'GUESS_VALID') return;
-      setShowScoreAnimation(true);
-      setScore(gameManager.getCurrentGame().score);
+      setScore(gameManager.getCurrentGame().getScore());
     },
   };
   const observer: Observer<GameManagerResponse<unknown>> = {
     id: 'adsasd',
     update(eventName, response: GameManagerResponse<unknown>) {
       try {
-        const newLifes =
-          gameManager.getCurrentGame().difficulty.maxFailedAttempts -
-          gameManager.getCurrentGame().getFailedAttempts();
+        const newLifes = gameManager
+          .getCurrentGame()
+          .difficulty.getLifeCount(gameManager);
         setLifes(newLifes);
       } catch (e) {}
       if (isFailGameResponse(response)) {
@@ -78,16 +76,6 @@ export const GameInput = () => {
     gameManager.dispatchAddGuess(parseInt(value));
     setValue('');
   };
-  const getLifes = () => {
-    try {
-      return (
-        gameManager.getCurrentGame().difficulty.maxFailedAttempts -
-        gameManager.getCurrentGame().getFailedAttempts()
-      );
-    } catch (e) {
-      return 0;
-    }
-  };
 
   return (
     <form
@@ -120,7 +108,7 @@ export const GameInput = () => {
               </div>
             </span>
             <span>
-              {getLifes()}
+              {lifes}
               <MyHeartOutline />
             </span>
           </div>

@@ -6,7 +6,6 @@ import {
   isReactionStartResponse,
   isStartingSequenceResponse,
   Observer,
-  ReactionService,
 } from '@reaxion/core';
 import classNames from 'classnames';
 import React, { useEffect, useState } from 'react';
@@ -16,6 +15,7 @@ import { useGameManagerContext } from '../../contexts/game-manager.context';
 import { loggerService } from '../../utils/loggerService/Logger.service';
 import { GameAlert } from './alert';
 import { GameCount } from './count';
+import { Extra } from './extra';
 import { GameInput } from './game.input';
 import { GameOverModal } from './gameover.modal';
 const MyGameScreenV2 = () => {
@@ -25,9 +25,9 @@ const MyGameScreenV2 = () => {
     update(eventName, response) {
       if (isStartingSequenceResponse(response)) {
         loggerService.debug(
-          `New Reaction with duration of ${
+          `New Reaction | duration: ${
             gameManager.getCurrentReaction().duration
-          }ms`
+          }ms | deviation: ${gameManager.getCurrentReaction().deviation}`
         );
       } else if (isReactionStartResponse(response)) {
         loggerService.debugTime('animation');
@@ -46,12 +46,11 @@ const MyGameScreenV2 = () => {
     },
   };
   useEffect(() => {
-    const game = new GameService(
-      gameManager.mediator.getDifficulty()
-    ).createNewGame(gameManager.mediator.getUserId());
-    const reaction = new ReactionService(
-      game
-    ).createReactionWithRandomDuration();
+    const difficulty = gameManager.mediator.getDifficulty();
+    const game = new GameService(difficulty).createNewGame(
+      gameManager.mediator.getUserId()
+    );
+    const reaction = difficulty.generateReaction(gameManager);
 
     gameManager.setCurrentGame(game);
     gameManager.setCurrentReaction(reaction);
@@ -69,6 +68,7 @@ const MyGameScreenV2 = () => {
       <GameAlert />
       <Flex>
         <AnimationContent className="flex flex-col justify-center items-center">
+          <Extra />
           <MvpAnimation>
             <GameCount />
           </MvpAnimation>

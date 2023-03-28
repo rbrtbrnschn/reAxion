@@ -1,7 +1,7 @@
 import { v4 as uuid, validate } from 'uuid';
 import { DefaultSettingsHandlerImpl } from './default-settings-handler';
+import { DifficultyBuilder } from './modules';
 import { AlternateColoring } from './modules/coloring';
-import { MediumDifficulty } from './modules/difficulty';
 import { SettingsManager } from './settings-manager';
 
 describe('settingsManager', () => {
@@ -20,8 +20,10 @@ describe('settingsManager', () => {
 
     settingsManager.setColoring(new AlternateColoring());
     expect(settingsManager.getColoring()).toEqual(new AlternateColoring());
-    settingsManager.setDifficulty(new MediumDifficulty());
-    expect(settingsManager.getDifficulty()).toEqual(new MediumDifficulty());
+    settingsManager.setDifficulty(new DifficultyBuilder().buildBaseTimer());
+    expect(settingsManager.getDifficulty().id).toEqual(
+      new DifficultyBuilder().buildBaseTimer().id
+    );
     settingsManager.setUserId(uuid());
     expect(
       validate(settingsManager.getUserId()) &&

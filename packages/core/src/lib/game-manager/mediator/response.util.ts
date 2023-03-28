@@ -1,11 +1,11 @@
-import { ISettings } from '@reaxion/common';
+import { Settings } from '../../interfaces/settings.interface';
 import { SettingsManagerEvent } from '../../settings-manager';
 
 export class SettingsManagerResponse<T> {
   public readonly key: string = 'SETTINGS_MANAGER_RESPONSE';
   public readonly id: string;
   constructor(
-    public readonly state: ISettings,
+    public readonly state: Settings,
     public readonly event: SettingsManagerEvent,
     public readonly payload: T
   ) {
@@ -14,7 +14,7 @@ export class SettingsManagerResponse<T> {
 }
 export class EmptySettingsManagerResponse extends SettingsManagerResponse<undefined> {
   public readonly key = 'EMPTY_RESPONSE';
-  constructor(state: ISettings, event: SettingsManagerEvent) {
+  constructor(state: Settings, event: SettingsManagerEvent) {
     super(state, event, undefined);
   }
 }

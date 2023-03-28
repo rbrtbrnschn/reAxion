@@ -1,7 +1,8 @@
-import { IColor, IDifficulty } from '@reaxion/common';
 import {
+  Coloring,
   colorings,
   difficulties,
+  DifficultyStrategy,
   isSetColoringResponse,
   isSetDifficultyResponse,
   isSetUserIdResponse,
@@ -25,10 +26,10 @@ enum UsernameChangeStatus {
 }
 const MySettingsScreen = () => {
   const { gameManager, settingsManager } = useGameManagerContext();
-  const [activeDifficulty, setActiveDiffulty] = useState<IDifficulty>(
+  const [activeDifficulty, setActiveDiffulty] = useState<DifficultyStrategy>(
     gameManager.mediator.getDifficulty()
   );
-  const [activeColoring, setActiveColoring] = useState<IColor>(
+  const [activeColoring, setActiveColoring] = useState<Coloring>(
     gameManager.mediator.getColoring()
   );
   const [userIdValue, setUserIdValue] = useState(
@@ -84,14 +85,14 @@ const MySettingsScreen = () => {
   };
 
   const mapOverGameDifficulties = (
-    cb: (key: string, difficulty: IDifficulty, index: number) => any
+    cb: (key: string, difficulty: DifficultyStrategy, index: number) => any
   ) =>
     Object.entries(difficulties).map(([key, difficulty], index) =>
       cb(key, difficulty, index)
     );
 
   const mapOverGameColorings = (
-    cb: (key: string, coloring: IColor, index: number) => any
+    cb: (key: string, coloring: Coloring, index: number) => any
   ) =>
     Object.entries(colorings).map(([key, coloring], index) =>
       cb(key, coloring, index)
@@ -114,14 +115,12 @@ const MySettingsScreen = () => {
               <h2>Game Mode</h2>
               <p>Choose your difficulty.</p>
             </div>
-            <div className="overflow-x-scroll w-full flex-grow-0 flex-shrink-1">
-              <table className="table w-full">
+            <div className="flex" style={{ flex: 1 }}>
+              <table className="table" style={{ flex: 1 }}>
                 {/* head */}
                 <thead>
                   <tr>
                     <th>Name</th>
-                    <th>Deviation</th>
-                    <th>Lifes</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -134,9 +133,18 @@ const MySettingsScreen = () => {
                       }
                       key={key}
                     >
-                      <th>{difficulty.name}</th>
-                      <td>{difficulty.deviation}ms</td>
-                      <td>{difficulty.maxFailedAttempts}</td>
+                      <th
+                        style={{
+                          overflowWrap: 'break-word',
+                          wordWrap: 'break-word',
+                        }}
+                      >
+                        {difficulty.name}
+                        <br />
+                        <small className="hidden lg:block">
+                          {difficulty.description}
+                        </small>
+                      </th>
                       <td>
                         <button
                           className="btn w-full"
@@ -151,6 +159,10 @@ const MySettingsScreen = () => {
                   ))}
                 </tbody>
               </table>
+            </div>
+            <div className="block lg:hidden prose">
+              <h3>Disclaimer</h3>
+              <p>Difficulty descriptions are not shown on mobile or tablet.</p>
             </div>
             <div className="divider"></div>
             <div className="prose">

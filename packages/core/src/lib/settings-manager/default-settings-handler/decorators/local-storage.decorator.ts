@@ -1,13 +1,16 @@
-import { ISettings } from '@reaxion/common';
+import { Settings } from '../../../interfaces';
+import { Middleware } from '../../../middleware';
 import { LocalStoragePersistorImpl } from '../../../persistor';
-import { SettingDecorator } from './decorator.interface';
 
-export class LocalStorageDecorator implements SettingDecorator {
-  decorate(): Partial<ISettings> {
-    const settings = new LocalStoragePersistorImpl().getItem<ISettings>(
-      'settings'
-    );
-    if (settings === null) return {};
-    return { ...settings };
+export const LocalStorageMiddleware: Middleware<Settings> = (context, next) => {
+  const settings = new LocalStoragePersistorImpl().getItem<Settings>(
+    'settings'
+  );
+  if (settings) {
+    Object.entries(settings).forEach(([key, value]) => {
+      if (!value) return;
+      context[key as keyof Settings] = value;
+    });
   }
-}
+  return next();
+};

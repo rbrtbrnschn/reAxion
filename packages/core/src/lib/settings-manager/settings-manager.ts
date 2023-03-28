@@ -1,11 +1,12 @@
-import { IColor, IDifficulty, ISettings } from '@reaxion/common';
 import { validate } from 'uuid';
 import {
   EmptySettingsManagerResponse,
   SettingsManagerResponse,
 } from '../game-manager';
+import { Coloring, Settings } from '../interfaces';
 import { ObserverSubject } from '../observer';
 import { DefaultSettingsHandlerImpl } from './default-settings-handler';
+import { DifficultyStrategy } from './modules/difficulty/difficulty';
 
 export enum SettingsManagerEvent {
   SET_COLORING = 'SET_COLORING',
@@ -17,8 +18,8 @@ export enum SettingsManagerEvent {
 export class SettingsManager extends ObserverSubject<
   SettingsManagerResponse<unknown>
 > {
-  protected state: ISettings;
-  constructor(initialState?: ISettings) {
+  protected state: Settings;
+  constructor(initialState?: Settings) {
     super();
     this.state = {
       ...DefaultSettingsHandlerImpl.defaultSettings,
@@ -27,13 +28,13 @@ export class SettingsManager extends ObserverSubject<
   }
 
   /* Getters */
-  getState(): ISettings {
+  getState(): Settings {
     return this.state;
   }
-  getColoring(): IColor {
+  getColoring(): Coloring {
     return this.state.coloring;
   }
-  getDifficulty(): IDifficulty {
+  getDifficulty(): DifficultyStrategy {
     return this.state.difficulty;
   }
   getUserId(): string {
@@ -44,7 +45,7 @@ export class SettingsManager extends ObserverSubject<
   }
 
   /* Setters */
-  setState(state: Partial<ISettings>) {
+  setState(state: Partial<Settings>) {
     this.state = { ...this.getState(), ...state };
     this.notify(
       SettingsManagerEvent.SET_STATE,
@@ -54,7 +55,7 @@ export class SettingsManager extends ObserverSubject<
       )
     );
   }
-  setColoring(coloring: IColor): ISettings {
+  setColoring(coloring: Coloring): Settings {
     this.setState({ coloring });
     this.notify(
       SettingsManagerEvent.SET_COLORING,
@@ -65,7 +66,7 @@ export class SettingsManager extends ObserverSubject<
     );
     return this.getState();
   }
-  setDifficulty(difficulty: IDifficulty): ISettings {
+  setDifficulty(difficulty: DifficultyStrategy): Settings {
     this.setState({ difficulty });
     this.notify(
       SettingsManagerEvent.SET_DIFFICULTY,
@@ -76,7 +77,7 @@ export class SettingsManager extends ObserverSubject<
     );
     return this.getState();
   }
-  setUserId(userId: string): ISettings {
+  setUserId(userId: string): Settings {
     if (!validate(userId) || userId.length !== 36)
       throw new UserIdIsInvalidUUIDError(userId);
     this.setState({ userId });
@@ -89,7 +90,7 @@ export class SettingsManager extends ObserverSubject<
     );
     return this.getState();
   }
-  setUsername(username: string): ISettings {
+  setUsername(username: string): Settings {
     if (!username) throw new InvalidUsernameError(username);
     if (username.length !== 3) throw new InvalidUsernameError(username);
     username.toLocaleLowerCase();

@@ -1,7 +1,5 @@
-import { GuessStatus, ReactionStatus } from '@reaxion/common';
-import { ISettings } from '@reaxion/common/interfaces';
 import { Observer } from '../observer';
-import { EasyDifficulty } from '../settings-manager/modules/difficulty';
+import { DifficultyBuilder } from '../settings-manager';
 import { SettingsManager } from '../settings-manager/settings-manager';
 import {
   AddGuessResponsePayload,
@@ -13,7 +11,6 @@ import { Game } from './game/game';
 import { GameService } from './game/game.service';
 import { GameManagerMediator } from './mediator/mediator';
 import { Reaction } from './reaction/reaction';
-import { ReactionService } from './reaction/reaction.service';
 import {
   EmptyGameManagerResponse,
   GameManagerResponse,
@@ -47,10 +44,9 @@ describe('game', () => {
     reaction = new Reaction(
       'asd',
       1000,
+      new DifficultyBuilder().buildEasy().maxDeviation,
       [],
       false,
-      GuessStatus.IS_WAITING,
-      ReactionStatus.HAS_NOT_STARTED,
       Date.now()
     );
   });
@@ -199,11 +195,11 @@ describe('game', () => {
       gameSubject.dispatchAddGuess(3);
       gameSubject.dispatchAddGuess(4);
       gameSubject.dispatchAddGuess(5);
-      gameSubject.dispatchAddGuess(6);
+      const shouldThrow = () => {
+        gameSubject.dispatchAddGuess(6);
+      };
 
-      expect(gameSubject.getCurrentGame().getFailedAttempts()).toEqual(
-        gameSubject.getCurrentGame().difficulty.maxFailedAttempts
-      );
+      expect(shouldThrow).toThrowError();
       expect(events.includes(GameManagerEvent.DISPATCH_FAIL_GAME)).toEqual(
         true
       );
@@ -213,11 +209,11 @@ describe('game', () => {
     it('should not add guess after game is over', () => {
       gameSubject.setCurrentReaction(reaction);
       gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
-      Array.from({ length: 10 }).map((_, i) => gameSubject.dispatchAddGuess(i));
-
-      expect(gameSubject.getCurrentGame().getFailedAttempts()).toEqual(
-        gameSubject.getCurrentGame().difficulty.maxFailedAttempts
-      );
+      expect(() => {
+        Array.from({ length: 10 }).map((_, i) =>
+          gameSubject.dispatchAddGuess(i)
+        );
+      }).toThrowError();
     });
 
     it('should complete game if guess correctly', () => {
@@ -251,13 +247,8 @@ describe('game', () => {
       expect(gameSubject.getCurrentGame().getScore()).toBeGreaterThanOrEqual(1);
     });
 
-    // 0. gameService
-    // 1. frontend mvp
-
-    // 2.may need to write converters or storage engine (TAKE A LOOK INTO AFTER FRONTEND WORKS)
+    // TODO .may need to write converters or storage engine (TAKE A LOOK INTO AFTER FRONTEND WORKS)
     // -> game class and reaction class may need to take ids/keys to allow for this
-
-    // should generate and set new current reaction upon valid guess
     it('should generate and set new current reaction upon valid guess', () => {
       gameSubject.setCurrentReaction(reaction);
       gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
@@ -276,15 +267,15 @@ describe('game', () => {
     it('should reset game', () => {
       gameSubject.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_END);
       gameSubject.setCurrentReaction(reaction);
-      Array.from({
-        length: gameSubject.mediator.getDifficulty().maxFailedAttempts,
-      }).forEach(() =>
-        gameSubject.dispatchAddGuess(
-          gameSubject.getCurrentReaction().duration +
-            gameSubject.getCurrentGame().difficulty.deviation +
-            1
-        )
-      );
+      expect(() => {
+        Array.from({
+          length: 6,
+        }).forEach(() =>
+          gameSubject.dispatchAddGuess(
+            gameSubject.getCurrentReaction().duration + -10000
+          )
+        );
+      }).toThrowError();
 
       expect(gameSubject.getCurrentGame().reactions.length).toEqual(1);
       gameSubject.dispatchResetGame();
@@ -295,48 +286,12 @@ describe('game', () => {
 
   describe('reaction service', () => {
     it('should calculate guess correctly ', () => {
-      const reactionService = new ReactionService(game).withReaction(reaction);
-
+      gameSubject.setCurrentReaction(reaction);
       expect(
-        reactionService.guessIsRight(
-          reaction.duration - game.difficulty.deviation
-        )
-      ).toEqual(true);
-      expect(
-        reactionService.guessIsRight(
-          reaction.duration - game.difficulty.deviation - 1
-        )
-      ).toEqual(false);
-    });
-
-    it('should create new reaction with random duration', () => {
-      const easySettings: Pick<ISettings, 'difficulty'> = {
-        difficulty: new EasyDifficulty(),
-      };
-      const mediumSettings: Pick<ISettings, 'difficulty'> = {
-        difficulty: new EasyDifficulty(),
-      };
-
-      function generateRandomDurations(settings: ISettings, amount = 100) {
-        const service = new ReactionService(game);
-        return Array.from({ length: amount }).map(
-          () => service.createReactionWithRandomDuration().duration
-        );
-      }
-      const easyDurations = generateRandomDurations(easySettings as ISettings);
-      const easyIsTrue = easyDurations.every(
-        (e) => e <= easySettings.difficulty.maxDuration
-      );
-
-      const mediumDurations = generateRandomDurations(
-        mediumSettings as ISettings
-      );
-      const mediumIsTrue = mediumDurations.every(
-        (e) => e <= mediumSettings.difficulty.maxDuration
-      );
-
-      expect(easyIsTrue).toEqual(true);
-      expect(mediumIsTrue).toEqual(true);
+        gameSubject
+          .getCurrentGame()
+          .difficulty.guessIsValid(gameSubject, reaction.duration)
+      ).toEqual('GUESS_VALID');
     });
   });
 
@@ -356,7 +311,7 @@ describe('game', () => {
     it('should not fail', () => {
       // reaction 1
       gameSubject.setCurrentGame(
-        new Game('', new EasyDifficulty(), 0, 0, '', [], [])
+        new Game('', new DifficultyBuilder().buildEasy(), 0, 0, '', [], [])
       );
       gameSubject.setCurrentReaction(reaction);
 
@@ -375,6 +330,7 @@ describe('game', () => {
       };
       gameSubject.subscribe(onCompleteObserver);
       gameSubject.dispatchAddGuess(reaction.duration);
+      expect(gameSubject.getCurrentGame().getScore()).toEqual(1);
 
       // reaction 2
       const notYetAllowed2 = () => {
@@ -391,6 +347,10 @@ describe('game', () => {
       gameSubject.dispatchAddGuess(1);
       gameSubject.dispatchAddGuess(1);
       gameSubject.dispatchAddGuess(1);
+
+      expect(() => {
+        gameSubject.dispatchAddGuess(1);
+      }).toThrowError();
 
       expect(gameSubject.getCurrentGame().isOver).toEqual(true);
       expect(gameSubject.getCurrentEvent()).toEqual(
