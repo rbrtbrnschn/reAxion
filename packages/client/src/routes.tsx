@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { GameScreenV2 } from './screens/gamev2/game.screen';
 import { HomeScreen } from './screens/home/home.screen';
+import { MatchScreen } from './screens/match/match.screen';
 import { GlobalScoreboardScreen } from './screens/scoreboard/globalScoreboard.screen';
 import { PersonalScoreboardScreen } from './screens/scoreboard/personalScoreboard.screen';
 import { SettingsScreen } from './screens/settings/settings.screen';
@@ -13,6 +14,7 @@ export enum RouteNames {
   SCOREBOARD_PERSONAL_PAGE,
   SCOREBOARD_GLOBAL_PAGE,
   SETTINGS_PAGE,
+  MATCH_PAGE,
 }
 
 export const routes: Record<
@@ -43,5 +45,9 @@ export const routes: Record<
   [RouteNames.SETTINGS_PAGE]: {
     path: '/settings',
     element: <SettingsScreen />,
+  },
+  [RouteNames.MATCH_PAGE]: {
+    path: '/match/:roomId',
+    element: <MatchScreen />,
   },
 };
