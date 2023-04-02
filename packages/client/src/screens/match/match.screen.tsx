@@ -1,93 +1,99 @@
-import { useEffect, useRef, useState } from 'react';
+import {
+  GameManagerResponse,
+  GameService,
+  isCompleteReactionResponse,
+  isReactionEndResponse,
+  isReactionStartResponse,
+  isStartingSequenceResponse,
+  Observer,
+} from '@reaxion/core';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { io, Socket } from 'socket.io-client';
+import styled from 'styled-components';
 import { withNavigation } from '../../components/navigation';
 import { useGameManagerContext } from '../../contexts/game-manager.context';
+import { loggerService } from '../../utils/loggerService/Logger.service';
+import { GameAlert } from '../gamev2/alert';
+import { Animation } from '../gamev2/animation';
+import { GameCount } from '../gamev2/count';
+import { Extra } from '../gamev2/extra';
+import { GameInput } from '../gamev2/game.input';
+import { GameOverModal } from '../gamev2/gameover.modal';
+import { Extra as Extra2 } from './extra';
 
-interface Response<T> {
-  data: T;
-}
-type MatchResponse = Response<{ [userId: string]: number }>;
-
-const convertToScore = (response: MatchResponse, userId: string): number[] => {
-  const sortedEntries = Object.entries(response.data).sort(([key1], [key2]) => {
-    if (key1 === userId) return -1; // make userId the first entry
-    if (key2 === userId) return 1; // make userId the second entry
-    return 0; // otherwise, keep the order
-  });
-
-  const sortedData = Object.fromEntries(sortedEntries);
-  return Object.values(sortedData);
-};
 const MyMatchScreen = () => {
-  const { settingsManager } = useGameManagerContext();
+  const { gameManager } = useGameManagerContext();
   const { roomId } = useParams();
-  const myUserId = settingsManager.getUserId();
-  const [score, setScore] = useState<number[]>([]);
-  const socketRef = useRef<Socket>();
+
+  const loggerObserver: Observer<GameManagerResponse<unknown>> = {
+    id: 'loggerObserver',
+    update(eventName, response) {
+      if (isStartingSequenceResponse(response)) {
+        loggerService.debug(
+          `New Reaction | duration: ${
+            gameManager.getCurrentReaction().duration
+          }ms | deviation: ${gameManager.getCurrentReaction().deviation}`
+        );
+      } else if (isReactionStartResponse(response)) {
+        loggerService.debugTime('animation');
+      } else if (isReactionEndResponse(response)) {
+        loggerService.debugTimeEnd('animation');
+      }
+    },
+  };
+  const observer: Observer<GameManagerResponse<unknown>> = {
+    id: 'logger',
+    update(eventName, response) {
+      if (isCompleteReactionResponse(response)) {
+        gameManager.dispatchGenerateNewWithRandomDuration();
+        gameManager.dispatchStartingSequence();
+      }
+    },
+  };
   useEffect(() => {
-    const _socket = io('http://localhost:8080');
-    _socket.on('connect', function () {
-      socketRef.current = _socket;
-      console.log('Connected');
+    const difficulty = gameManager.mediator.getDifficulty();
+    const game = new GameService(difficulty).createNewGame(
+      gameManager.mediator.getUserId()
+    );
+    const reaction = difficulty.generateReaction(gameManager);
 
-      _socket.on('match:ready', function (response: MatchResponse) {
-        console.log('Match Begins');
-        const newScore = convertToScore(response, myUserId);
-        setScore([...newScore]);
-      });
+    gameManager.setCurrentGame(game);
+    gameManager.setCurrentReaction(reaction);
+    const observers = [observer, loggerObserver];
+    observers.forEach((o) => gameManager.subscribe(o));
 
-      _socket.on('match:increase-score', function (response: MatchResponse) {
-        console.log('Match Increase Score');
-        const newScore = convertToScore(response, myUserId);
-        setScore([...newScore]);
-      });
-
-      _socket.emit(
-        'match:join-room',
-        { roomId: roomId, userId: settingsManager.getUserId() },
-        (response: any) => {
-          console.log('joined room');
-        }
-      );
-    });
-
-    _socket.on('disconnect', function () {
-      _socket.emit('match:close-room', { roomId });
-    });
-
+    gameManager.dispatchStartingSequence();
     return () => {
-      _socket.disconnect();
+      observers.forEach((o) => gameManager.unsubscribe(o));
     };
   }, []);
 
-  const handleCloseRoom = () => {
-    socketRef.current?.emit('match:close-room', { roomId }, () => {
-      console.log('closed room');
-    });
-  };
-  const handleIncreaseScore = () => {
-    console.log(socketRef.current);
-    socketRef.current?.emit('match:increase-score', {
-      roomId,
-      userId: myUserId,
-    });
-  };
   return (
-    <div>
-      <button className="btn" onClick={handleCloseRoom}>
-        Close Room
-      </button>
-      <button className="btn btn-primary" onClick={handleIncreaseScore}>
-        Increase Score
-      </button>
-      <div className="prose">
-        <h3>Score</h3>
-        {score.map((s, index) => (
-          <p key={index}>{s}</p>
-        ))}
-      </div>
+    <div className={'flex flex-col p-4 h-full'}>
+      <GameAlert />
+      <Flex>
+        <AnimationContent className="flex flex-col justify-center items-center">
+          <Extra2 />
+          <Extra />
+          <Animation>
+            <GameCount />
+          </Animation>
+        </AnimationContent>
+        <GameInput />
+      </Flex>
+      <GameOverModal />
     </div>
   );
 };
+
+const Flex = styled.div`
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+`;
+
+const AnimationContent = styled.div`
+  flex-grow: 1;
+`;
+
 export const MatchScreen = withNavigation(MyMatchScreen);

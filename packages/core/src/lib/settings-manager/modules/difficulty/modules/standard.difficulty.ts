@@ -102,6 +102,11 @@ export class StandardDifficulty
     const isValid = guessStatus === 'GUESS_VALID';
     if (isValid) {
       gameManager.notify(gameManager.getCurrentEvent(), response);
+      try {
+        gameManager.matchProxy.dispatchScoreIncrease();
+      } catch (e) {
+        console.log(e);
+      }
       return gameManager.dispatchCompleteReaction();
     }
 

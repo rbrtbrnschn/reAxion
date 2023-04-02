@@ -11,7 +11,12 @@ import { AppService } from './app.service';
     GameModule,
     MatchModule,
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGODB_ROOT_USERNAME}:${process.env.MONGODB_ROOT_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGO_PORT}`,
+      [
+        process.env.MONGODB_ROOT_USERNAME,
+        process.env.MONGODB_ROOT_PASSWORD,
+      ].some((e) => e)
+        ? `mongodb://${process.env.MONGODB_ROOT_USERNAME}:${process.env.MONGODB_ROOT_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGO_PORT}`
+        : `mongodb://${process.env.MONGODB_HOST}:${process.env.MONGO_PORT}`,
       {
         connectionFactory: (connection) => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires

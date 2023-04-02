@@ -3,6 +3,7 @@ import {
   GameManagerMediator,
   LocalStorageMiddleware,
   LocalStoragePersistorImpl,
+  MatchProxy,
   PersistedSettingsManagerBuilder,
   RehydrateSettingsMiddleware,
   SettingsManager,
@@ -16,7 +17,10 @@ interface IGameManagerContext {
 }
 
 export const GameManagerContext = createContext<IGameManagerContext>({
-  gameManager: new GameManager(new GameManagerMediator(new SettingsManager())),
+  gameManager: new GameManager(
+    new GameManagerMediator(new SettingsManager()),
+    new MatchProxy()
+  ),
   settingsManager: new SettingsManager(),
 });
 
@@ -35,7 +39,7 @@ export const GameManagerProvider: React.FC<any> = ({ children }) => {
     .withPersistorStrategy(new LocalStoragePersistorImpl())
     .createWithInitialState();
   const gameManagerMediator = new GameManagerMediator(settingsManager);
-  const gameManager = new GameManager(gameManagerMediator);
+  const gameManager = new GameManager(gameManagerMediator, new MatchProxy());
 
   return (
     <GameManagerContext.Provider value={{ gameManager, settingsManager }}>

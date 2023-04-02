@@ -4,12 +4,15 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
+  WsException,
 } from '@nestjs/websockets';
+import {
+  MatchEvent,
+  MatchGatewayResponse,
+  MatchState,
+  MatchStatus,
+} from '@reaxion/core';
 import { Server, Socket } from 'socket.io';
-
-interface State {
-  [userId: string]: number;
-}
 
 @WebSocketGateway({
   cors: {
@@ -19,63 +22,94 @@ interface State {
 export class MatchGateway {
   @WebSocketServer()
   server: Server;
-  matches: Map<string, State> = new Map();
+  matches: Map<string, MatchState> = new Map();
 
-  @SubscribeMessage('match:join-room')
+  @SubscribeMessage(MatchEvent.JOIN_ROOM)
   openRoom(
     @ConnectedSocket() socket: Socket,
     @MessageBody('userId') userId: string,
     @MessageBody('roomId') roomId: string
-  ): string {
+  ): MatchGatewayResponse {
+    console.log('hit endpoint:', userId, roomId);
     const room = this.server.sockets.adapter.rooms.get(roomId);
     const connections = room ? room.size : 0;
     if (connections >= 2) return;
 
     socket.join(roomId);
-    const match = this.matches.get(roomId);
-    if (!match) this.matches.set(roomId, { [userId]: 0 });
-    if (match) this.matches.set(roomId, { ...match, [userId]: 0 });
+    const match = this.matches.get(roomId) || {};
+    match[userId] = 0;
+    this.matches.set(roomId, match);
     if (connections === 1) {
-      socket.emit('match:ready', {
+      socket.emit(MatchEvent.READY, {
         data: match,
       });
-      socket.to(roomId).emit('match:ready', {
+      socket.to(roomId).emit(MatchEvent.READY, {
         data: match,
       });
-      return MatchStatus.READY;
+      return new MatchGatewayResponse(MatchStatus.READY, match);
     }
-    return MatchStatus.WAITING;
+    return new MatchGatewayResponse(MatchStatus.WAITING, match);
   }
 
-  @SubscribeMessage('match:increase-score')
+  @SubscribeMessage(MatchEvent.INCREASE_SCORE)
   increaseScore(
     @ConnectedSocket() socket: Socket,
     @MessageBody('userId') userId: string,
     @MessageBody('roomId') roomId: string
-  ): string {
+  ): MatchGatewayResponse {
     const match = this.matches.get(roomId);
-    if (!match) throw new Error('No Room Found.');
+    if (!match) return new MatchGatewayResponse(MatchStatus.NO_ROOM_FOUND, {});
+    if (Object.values(match).length !== 2)
+      return new MatchGatewayResponse(MatchStatus.NOT_READY, {});
 
     match[userId] += 1;
-    socket.to(roomId).emit('match:increase-score', {
+    socket.to(roomId).emit(MatchEvent.INCREASE_SCORE, {
       data: match,
     });
-    socket.emit('match:increase-score', { data: match });
-    return MatchStatus.INCREASE_SCORE;
+    socket.emit(MatchEvent.INCREASE_SCORE, { data: match });
+    return new MatchGatewayResponse(MatchStatus.INCREASE_SCORE, match);
   }
 
-  @SubscribeMessage('match:close-room')
+  @SubscribeMessage(MatchEvent.END)
+  endMatch(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody('userId') userId: string,
+    @MessageBody('roomId') roomId: string
+  ): MatchGatewayResponse {
+    const match = this.matches.get(roomId);
+    if (!match) return new MatchGatewayResponse(MatchStatus.NO_ROOM_FOUND, {});
+
+    socket.emit(MatchEvent.END, { data: match });
+    socket.to(roomId).emit(MatchEvent.END, {
+      data: match,
+    });
+
+    this.matches.delete(roomId);
+    return new MatchGatewayResponse(MatchStatus.END, match);
+  }
+
+  @SubscribeMessage(MatchEvent.LEAVE_ROOM)
   closeRoom(
     @ConnectedSocket() socket: Socket,
     @MessageBody('roomId') roomId: string
   ) {
+    socket.to(roomId).emit(MatchEvent.LEAVE_ROOM, {
+      data: {},
+    });
+    socket.emit(MatchEvent.LEAVE_ROOM, { data: {} });
     socket.leave(roomId);
-    return 'a';
+    return new MatchGatewayResponse(MatchStatus.LEFT_ROOM, {});
   }
 }
 
-enum MatchStatus {
-  WAITING = 'WAITING',
-  READY = 'READY',
-  INCREASE_SCORE = 'INCREASE_SCORE',
+class NoRoomFoundException extends WsException {
+  constructor(roomId) {
+    super({ code: 403, message: 'No Room Found', roomId });
+  }
+}
+
+class MatchNotReadyException extends Error {
+  constructor(roomId) {
+    super(`Match '${roomId}' Not Ready.`);
+  }
 }

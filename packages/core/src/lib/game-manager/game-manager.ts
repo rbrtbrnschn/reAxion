@@ -1,3 +1,5 @@
+import { Socket } from 'socket.io';
+import { MatchProxy } from '../match-proxy';
 import { ObserverSubject } from '../observer';
 import {
   NoCurrentGameError,
@@ -38,20 +40,18 @@ export enum GameManagerEvent {
 
 type MyResponseType = GameManagerResponse<unknown>;
 export class GameManager extends ObserverSubject<MyResponseType> {
-  // private readonly gameService: GameService;
   private state: IGameManagerState = {
     games: [],
     events: [],
   };
   constructor(
     public readonly mediator: GameManagerMediator,
+    public readonly matchProxy: MatchProxy,
     gameState?: Partial<IGameManagerState>
   ) {
     super();
     this.state = { ...this.state, ...gameState };
-    // this.gameService = new GameService(this.mediator.getDifficulty());
   }
-
   public getState(): IGameManagerState {
     return this.state;
   }
@@ -59,7 +59,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     this.state = { ...gameState };
     return this.getState();
   }
-
   public getCurrentReaction(): Reaction {
     const currentReaction = this.getCurrentGame().getCurrentReaction();
     if (!currentReaction) throw new NoCurrentReactionError();
@@ -89,7 +88,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 
     return prevGame;
   }
-
   public getCurrentEvent(): GameManagerEvent {
     const events = [...this.getCurrentGame().events];
     const currentEvent = events.pop();
@@ -98,11 +96,14 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     return currentEvent;
   }
 
+  public setSocket(socket: Socket) {
+    this.setSocket(socket);
+    return this;
+  }
   public setCurrentReaction(reaction: Reaction): IGameManagerState {
     this.getCurrentGame().setCurrentReaction(reaction);
     return this.getState();
   }
-
   public setCurrentGame(game: Game): IGameManagerState {
     this.setState({
       ...this.getState(),
@@ -110,7 +111,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     });
     return this.getState();
   }
-
   public setCurrentEvent(event: GameManagerEvent): IGameManagerState {
     this.getCurrentGame().setEvents([
       ...this.getCurrentGame().getEvents(),
@@ -118,7 +118,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
     ]);
     return this.getState();
   }
-
   public dispatchStartingSequence() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_STARTING_SEQUENCE);
     if (this.getCurrentGame().reactions.length === 1)
@@ -133,7 +132,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       )
     );
   }
-
   @HasEvent([GameManagerEvent.DISPATCH_STARTING_SEQUENCE])
   public dispatchReactionStart() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_REACTION_START);
@@ -166,7 +164,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
 
     difficulty.handleAddGuess(this, guess);
   }
-
   @HasEvent([GameManagerEvent.DISPATCH_ADD_GUESS])
   public dispatchCompleteReaction() {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_COMPLETE_REACTION);
@@ -182,7 +179,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
     );
   }
-
   @HasEvent([
     GameManagerEvent.DISPATCH_RESET_GAME,
     GameManagerEvent.DISPATCH_COMPLETE_REACTION,
@@ -200,7 +196,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
     );
   }
-
   @HasEvent([
     GameManagerEvent.DISPATCH_ADD_GUESS,
     GameManagerEvent.DISPATCH_STARTING_SEQUENCE,
@@ -219,7 +214,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
     );
   }
-
   @HasEvent([
     GameManagerEvent.DISPATCH_FAIL_GAME,
     GameManagerEvent.DISPATCH_SET_NAME,
@@ -236,7 +230,6 @@ export class GameManager extends ObserverSubject<MyResponseType> {
       new EmptyGameManagerResponse(this.getState(), this.getCurrentEvent())
     );
   }
-
   @HasEvent([GameManagerEvent.DISPATCH_FAIL_GAME])
   public dispatchSetName(name: string) {
     this.setCurrentEvent(GameManagerEvent.DISPATCH_SET_NAME);
@@ -250,6 +243,11 @@ export class GameManager extends ObserverSubject<MyResponseType> {
   }
 }
 
+class NoSocketError extends Error {
+  constructor() {
+    super('No Socket Found.');
+  }
+}
 export class AddGuessResponsePayload extends GameManagerResponsePayload<{
   status: AddGuessStatus;
   message: string;

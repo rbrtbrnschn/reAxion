@@ -39,7 +39,7 @@
     "@nestjs/testing": "^9.0.0",
     "@nrwl/cypress": "15.8.5",
     "@nrwl/eslint-plugin-nx": "15.8.5",
-    "@nrwl/jest": "15.8.5",
+    "@nrwl/jest": "^15.9.2",
     "@nrwl/js": "15.8.5",
     "@nrwl/linter": "15.8.5",
     "@nrwl/nest": "^15.8.5",
